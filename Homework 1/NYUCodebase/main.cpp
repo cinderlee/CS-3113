@@ -48,9 +48,6 @@ int main(int argc, char *argv[])
         glewInit();
     #endif
     
-    //glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
     glViewport(0, 0, 880, 450);
     ShaderProgram program;
@@ -72,23 +69,29 @@ int main(int argc, char *argv[])
     float current_position = 1.5f;
     
     Matrix projectionMatrix;
+    Matrix viewMatrix;
+    projectionMatrix.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
+    
+    // for touken texture
     Matrix modelMatrix;
     modelMatrix.Translate(-1.2f, -1.3f, 0.0f);
     modelMatrix.Rotate (0.25);
     modelMatrix.Scale(0.75f, 0.75f, 1.0f);
-    Matrix viewMatrix;
-    projectionMatrix.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
    
+    // for sakura
     Matrix modelMatrix2;
     modelMatrix2.Translate(-1.75f, -0.55f, 0.0f);
     modelMatrix2.Scale (3.5f, 3.5f, 1.0f);
     
+    // for articuno
     Matrix modelMatrix3;
     modelMatrix3.Translate(2.0f, 1.5f, 0.0f);
     
+    // for background
     Matrix modelBackground;
     modelBackground.Scale (1.80f, 1.5f, 1.0f);
     
+    // for untexture polygons
     Matrix shapes;
     Matrix viewMatrixUn;
     shapes.Translate (2.0f, 1.0f, 0.0f);
@@ -119,7 +122,7 @@ int main(int argc, char *argv[])
         float elapsed = ticks - lastFrameTicks;
         lastFrameTicks = ticks;
         
-        
+        // background set up
         program.SetModelMatrix(modelBackground);
         glBindTexture(GL_TEXTURE_2D, background);
         float vertices3[] = {-2, -1.5, 2, -1.5, 2, 1.5, -2, -1.5, 2, 1.5, -2, 1.5};
@@ -130,6 +133,8 @@ int main(int argc, char *argv[])
         glEnableVertexAttribArray(program.texCoordAttribute);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         
+        
+        // sakura tree set up
         program.SetModelMatrix(modelMatrix2);
         glBindTexture(GL_TEXTURE_2D, sakura);
         float vertices2[] = {-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5};
@@ -140,6 +145,7 @@ int main(int argc, char *argv[])
         glEnableVertexAttribArray(program.texCoordAttribute);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         
+        // articuno set up and movement
         program.SetModelMatrix(modelMatrix3);
         glBindTexture(GL_TEXTURE_2D, articuno);
         current_position += elapsed * direction;
@@ -157,6 +163,8 @@ int main(int argc, char *argv[])
         glEnableVertexAttribArray(program.texCoordAttribute);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         
+        
+        // touken set up and rocking movement
         program.SetModelMatrix(modelMatrix);
         glBindTexture(GL_TEXTURE_2D,toukenTexture);
         totalTime += 0.4 * elapsed;
@@ -170,7 +178,6 @@ int main(int argc, char *argv[])
         program.SetProjectionMatrix(projectionMatrix);
         program.SetViewMatrix(viewMatrix);
         
-
         float vertices[] = {-0.7, -0.95, 0.7, -0.95, 0.7, 0.95, -0.7, -0.95, 0.7, 0.95, -0.7, 0.95};
         glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
         glEnableVertexAttribArray(program.positionAttribute);
@@ -182,7 +189,7 @@ int main(int argc, char *argv[])
         glDisableVertexAttribArray(program.positionAttribute);
         glDisableVertexAttribArray(program.texCoordAttribute);
     
-        
+        // setting up a diamond star
         programUntextured.SetModelMatrix(shapes);
         programUntextured.SetViewMatrix(viewMatrixUn);
         programUntextured.SetProjectionMatrix(projectionMatrix);
