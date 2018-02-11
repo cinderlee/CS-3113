@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		00137864202F6B65006171F8 /* Mikazuki-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 00137863202F6B65006171F8 /* Mikazuki-2.png */; };
-		00137866202F6BFE006171F8 /* touken2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 00137865202F6BFE006171F8 /* touken2.gif */; };
 		00137868202F863D006171F8 /* Articuno.png in Resources */ = {isa = PBXBuildFile; fileRef = 00137867202F863C006171F8 /* Articuno.png */; };
 		0013786A203014B0006171F8 /* sakura.png in Resources */ = {isa = PBXBuildFile; fileRef = 00137869203014B0006171F8 /* sakura.png */; };
 		0013786E20302D11006171F8 /* Kanda_Shrine.png in Resources */ = {isa = PBXBuildFile; fileRef = 0013786D20302D11006171F8 /* Kanda_Shrine.png */; };
+		004306AD2030F27A002357C9 /* butterfly.png in Resources */ = {isa = PBXBuildFile; fileRef = 004306AC2030F279002357C9 /* butterfly.png */; };
 		6D5A86AE19AE5C710066C1FD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5A86AD19AE5C710066C1FD /* Cocoa.framework */; };
 		6D5A86B819AE5C710066C1FD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6D5A86B619AE5C710066C1FD /* InfoPlist.strings */; };
 		6D5A86BA19AE5C710066C1FD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D5A86B919AE5C710066C1FD /* main.cpp */; };
@@ -30,10 +30,10 @@
 
 /* Begin PBXFileReference section */
 		00137863202F6B65006171F8 /* Mikazuki-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Mikazuki-2.png"; sourceTree = "<group>"; };
-		00137865202F6BFE006171F8 /* touken2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = touken2.gif; sourceTree = "<group>"; };
 		00137867202F863C006171F8 /* Articuno.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Articuno.png; sourceTree = "<group>"; };
 		00137869203014B0006171F8 /* sakura.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sakura.png; sourceTree = "<group>"; };
 		0013786D20302D11006171F8 /* Kanda_Shrine.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Kanda_Shrine.png; sourceTree = "<group>"; };
+		004306AC2030F279002357C9 /* butterfly.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = butterfly.png; sourceTree = "<group>"; };
 		6D5A86AA19AE5C710066C1FD /* NYUCodebase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NYUCodebase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5A86AD19AE5C710066C1FD /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6D5A86B019AE5C710066C1FD /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -154,10 +154,10 @@
 		6D5A86E119AE5CAA0066C1FD /* Code */ = {
 			isa = PBXGroup;
 			children = (
+				004306AC2030F279002357C9 /* butterfly.png */,
 				0013786D20302D11006171F8 /* Kanda_Shrine.png */,
 				00137869203014B0006171F8 /* sakura.png */,
 				00137867202F863C006171F8 /* Articuno.png */,
-				00137865202F6BFE006171F8 /* touken2.gif */,
 				00137863202F6B65006171F8 /* Mikazuki-2.png */,
 				6DEF23BB1B96CC2600BCE792 /* fragment.glsl */,
 				6DE9D2F01BA6AB8C002D599C /* fragment_textured.glsl */,
@@ -227,10 +227,10 @@
 			files = (
 				0013786A203014B0006171F8 /* sakura.png in Resources */,
 				6D5A86B819AE5C710066C1FD /* InfoPlist.strings in Resources */,
-				00137866202F6BFE006171F8 /* touken2.gif in Resources */,
 				6DEF23C11B96CC2600BCE792 /* fragment.glsl in Resources */,
 				6DE9D2F11BA6AB8C002D599C /* fragment_textured.glsl in Resources */,
 				00137864202F6B65006171F8 /* Mikazuki-2.png in Resources */,
+				004306AD2030F27A002357C9 /* butterfly.png in Resources */,
 				6D5A86C619AE5C710066C1FD /* Images.xcassets in Resources */,
 				00137868202F863D006171F8 /* Articuno.png in Resources */,
 				6D5A86BE19AE5C710066C1FD /* Credits.rtf in Resources */,

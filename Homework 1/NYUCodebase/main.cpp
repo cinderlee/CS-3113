@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
     GLuint toukenTexture = LoadTexture(RESOURCE_FOLDER"Mikazuki-2.png");
     GLuint articuno = LoadTexture(RESOURCE_FOLDER"Articuno.png");
     GLuint sakura = LoadTexture(RESOURCE_FOLDER"sakura.png");
+    GLuint butterfly = LoadTexture(RESOURCE_FOLDER"butterfly.png");
     GLuint background = LoadTexture (RESOURCE_FOLDER"Kanda_Shrine.png");
     
     ShaderProgram programUntextured;
@@ -75,8 +76,8 @@ int main(int argc, char *argv[])
     // for touken texture
     Matrix modelMatrix;
     modelMatrix.Translate(-1.2f, -1.3f, 0.0f);
-    modelMatrix.Rotate (0.25);
-    modelMatrix.Scale(0.75f, 0.75f, 1.0f);
+    modelMatrix.Rotate (0.50);
+    modelMatrix.Scale (0.75f, 0.75f, 1.0f);
    
     // for sakura
     Matrix modelMatrix2;
@@ -86,6 +87,11 @@ int main(int argc, char *argv[])
     // for articuno
     Matrix modelMatrix3;
     modelMatrix3.Translate(2.0f, 1.5f, 0.0f);
+    
+    // for butterfly
+    Matrix modelMatrix4;
+    modelMatrix4.Translate(2.0f, 1.0f, 0.0f);
+    modelMatrix4.Rotate(0.5);
     
     // for background
     Matrix modelBackground;
@@ -164,12 +170,27 @@ int main(int argc, char *argv[])
         glDrawArrays(GL_TRIANGLES, 0, 6);
         
         
+        
+        // butterfly set up
+        program.SetModelMatrix(modelMatrix4);
+        glBindTexture(GL_TEXTURE_2D, butterfly);
+    
+        float vertices5[] = {-0.5, -1.0, 0.5, -1.0, 0.5, 0.5, -0.5, -1.0, 0.5, 0.5, -0.5, 0.5};
+        glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices5);
+        glEnableVertexAttribArray(program.positionAttribute);
+        float texCoords5[] = {0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0};
+        glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords5);
+        glEnableVertexAttribArray(program.texCoordAttribute);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        
+        
+        
         // touken set up and rocking movement
         program.SetModelMatrix(modelMatrix);
         glBindTexture(GL_TEXTURE_2D,toukenTexture);
-        totalTime += 0.4 * elapsed;
+        totalTime += 0.5 * elapsed;
         angle = elapsed * back ;
-        modelMatrix.Rotate (angle);
+        modelMatrix.Rotate (0.5 * angle);
         
         if (totalTime > 0.2) {
             back *= -1;
