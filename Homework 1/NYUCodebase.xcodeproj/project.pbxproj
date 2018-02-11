@@ -7,12 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0013785C202F2B22006171F8 /* touken.png in Resources */ = {isa = PBXBuildFile; fileRef = 0013785B202F2B22006171F8 /* touken.png */; };
 		00137864202F6B65006171F8 /* Mikazuki-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 00137863202F6B65006171F8 /* Mikazuki-2.png */; };
 		00137866202F6BFE006171F8 /* touken2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 00137865202F6BFE006171F8 /* touken2.gif */; };
 		00137868202F863D006171F8 /* Articuno.png in Resources */ = {isa = PBXBuildFile; fileRef = 00137867202F863C006171F8 /* Articuno.png */; };
 		0013786A203014B0006171F8 /* sakura.png in Resources */ = {isa = PBXBuildFile; fileRef = 00137869203014B0006171F8 /* sakura.png */; };
-		0013786C20302BDB006171F8 /* background.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0013786B20302BDB006171F8 /* background.jpg */; };
 		0013786E20302D11006171F8 /* Kanda_Shrine.png in Resources */ = {isa = PBXBuildFile; fileRef = 0013786D20302D11006171F8 /* Kanda_Shrine.png */; };
 		6D5A86AE19AE5C710066C1FD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5A86AD19AE5C710066C1FD /* Cocoa.framework */; };
 		6D5A86B819AE5C710066C1FD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6D5A86B619AE5C710066C1FD /* InfoPlist.strings */; };
@@ -31,12 +29,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0013785B202F2B22006171F8 /* touken.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = touken.png; sourceTree = "<group>"; };
 		00137863202F6B65006171F8 /* Mikazuki-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Mikazuki-2.png"; sourceTree = "<group>"; };
 		00137865202F6BFE006171F8 /* touken2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = touken2.gif; sourceTree = "<group>"; };
 		00137867202F863C006171F8 /* Articuno.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Articuno.png; sourceTree = "<group>"; };
 		00137869203014B0006171F8 /* sakura.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sakura.png; sourceTree = "<group>"; };
-		0013786B20302BDB006171F8 /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
 		0013786D20302D11006171F8 /* Kanda_Shrine.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Kanda_Shrine.png; sourceTree = "<group>"; };
 		6D5A86AA19AE5C710066C1FD /* NYUCodebase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NYUCodebase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5A86AD19AE5C710066C1FD /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -159,12 +155,10 @@
 			isa = PBXGroup;
 			children = (
 				0013786D20302D11006171F8 /* Kanda_Shrine.png */,
-				0013786B20302BDB006171F8 /* background.jpg */,
 				00137869203014B0006171F8 /* sakura.png */,
 				00137867202F863C006171F8 /* Articuno.png */,
 				00137865202F6BFE006171F8 /* touken2.gif */,
 				00137863202F6B65006171F8 /* Mikazuki-2.png */,
-				0013785B202F2B22006171F8 /* touken.png */,
 				6DEF23BB1B96CC2600BCE792 /* fragment.glsl */,
 				6DE9D2F01BA6AB8C002D599C /* fragment_textured.glsl */,
 				6DC707691BA7273500225B7D /* vertex_textured.glsl */,
@@ -232,13 +226,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				0013786A203014B0006171F8 /* sakura.png in Resources */,
-				0013786C20302BDB006171F8 /* background.jpg in Resources */,
 				6D5A86B819AE5C710066C1FD /* InfoPlist.strings in Resources */,
 				00137866202F6BFE006171F8 /* touken2.gif in Resources */,
 				6DEF23C11B96CC2600BCE792 /* fragment.glsl in Resources */,
 				6DE9D2F11BA6AB8C002D599C /* fragment_textured.glsl in Resources */,
 				00137864202F6B65006171F8 /* Mikazuki-2.png in Resources */,
-				0013785C202F2B22006171F8 /* touken.png in Resources */,
 				6D5A86C619AE5C710066C1FD /* Images.xcassets in Resources */,
 				00137868202F863D006171F8 /* Articuno.png in Resources */,
 				6D5A86BE19AE5C710066C1FD /* Credits.rtf in Resources */,
