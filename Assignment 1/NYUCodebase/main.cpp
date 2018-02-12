@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
         totalTime += 0.5 * elapsed;
         angle = elapsed * back ;
         modelMatrix.Rotate (0.5 * angle);
-        //change direction of rotation if totalTime > 0.2
+        //change direction of rotation if totalTime >= 0.2
         if (totalTime >= 0.2) {
             back *= -1;
             totalTime = 0;
