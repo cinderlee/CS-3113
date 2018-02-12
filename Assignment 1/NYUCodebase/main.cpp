@@ -119,10 +119,8 @@ int main(int argc, char *argv[])
             }
         }
         
-        
         glClearColor(1.0f, 0.0f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
         
         float ticks = (float)SDL_GetTicks()/1000.0f;
         float elapsed = ticks - lastFrameTicks;
@@ -157,6 +155,7 @@ int main(int argc, char *argv[])
         current_position += elapsed * direction;
         move = elapsed;
         modelMatrix3.Translate(elapsed * direction, 0.0f, 0.0f);
+        // check for bounds
         if (current_position <= -3.55 || current_position + 1 >= 3.55){
             direction *= -1;
         }
@@ -168,8 +167,6 @@ int main(int argc, char *argv[])
         glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords4);
         glEnableVertexAttribArray(program.texCoordAttribute);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        
-        
         
         // butterfly set up
         program.SetModelMatrix(modelMatrix4);
@@ -183,16 +180,14 @@ int main(int argc, char *argv[])
         glEnableVertexAttribArray(program.texCoordAttribute);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         
-        
-        
         // touken set up and rocking movement
         program.SetModelMatrix(modelMatrix);
         glBindTexture(GL_TEXTURE_2D,toukenTexture);
         totalTime += 0.5 * elapsed;
         angle = elapsed * back ;
         modelMatrix.Rotate (0.5 * angle);
-        
-        if (totalTime > 0.2) {
+        //change direction of rotation if totalTime > 0.2
+        if (totalTime >= 0.2) {
             back *= -1;
             totalTime = 0;
         }
