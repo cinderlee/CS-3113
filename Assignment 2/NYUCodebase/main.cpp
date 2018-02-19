@@ -15,6 +15,15 @@
 #define RESOURCE_FOLDER "NYUCodebase.app/Contents/Resources/"
 #endif
 
+class Entity;
+void Setup (Matrix& projection);
+void ProcessEvents (SDL_Event& event, bool& done);
+void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed);
+void Render (Entity& pad1, Entity& pad2, Entity& ballster,
+             Matrix& model, Matrix& model2, Matrix& model3,
+             Matrix& view, Matrix& view2, Matrix& view3, ShaderProgram& program);
+bool Collision (Entity& pad, Entity& ballster);
+
 class Entity {
 public:
     Entity (float xcoord, float ycoord, float widthster,
@@ -22,8 +31,11 @@ public:
     x (xcoord), y (ycoord), width (widthster), height (heightster),
     velocity_x (velx), velocity_y (vely) {}
     
-    void Draw(ShaderProgram &program) {
+    void Draw(ShaderProgram &program, Matrix& model, Matrix& view) {
         glUseProgram(program.programID);
+        program.SetModelMatrix(model);
+        program.SetViewMatrix(view);
+        program.SetColor(1.0, 1.0, 1.0, 0.0f);
         float verticesUntextured[] = {x - width/2, y + height/2, x -width/2, y - height/2, x + width/2, y -height/2, x - width/2, y + height/2, x + width/2, y - height/2, x + width/2, y + height/2};
         glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, verticesUntextured);
         glEnableVertexAttribArray(program.positionAttribute);
@@ -47,6 +59,54 @@ SDL_Window* displayWindow;
 
 int main(int argc, char *argv[])
 {
+    Matrix projectionMatrix;
+    Setup (projectionMatrix);
+    ShaderProgram programUntextured;
+    programUntextured.Load(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
+
+    Matrix viewMatrix;
+    Matrix modelMatrix;
+    Entity paddle1 = Entity (-3.0, 0.0, 0.15f, 0.5f, 0.0f, 2.5f);
+    
+    Matrix viewMatrix2;
+    Matrix modelMatrix2;
+    Entity paddle2 = Entity (3.0, 0.0, 0.15, 0.5f, 0.0f, 2.5f);
+    
+    Matrix viewMatrix3;
+    Matrix modelMatrix3;
+    Entity ball = Entity (0.0f, 0.0f, 0.15f, 0.15f, -0.025f, -0.025f);
+    
+    SDL_Event event;
+    bool done = false;
+    
+    float lastFrameTicks = 0.0f;
+    float elapsed = 0.0f;
+
+    
+    while (!done) {
+        
+        ProcessEvents(event, done);
+        
+        float ticks = (float)SDL_GetTicks()/1000.0f;
+        elapsed = ticks - lastFrameTicks;
+        lastFrameTicks = ticks;
+        
+        programUntextured.SetProjectionMatrix(projectionMatrix);
+        
+        Update (paddle1, paddle2, ball, elapsed);
+        
+        Render (paddle1, paddle2, ball,
+                modelMatrix, modelMatrix2, modelMatrix3,
+                viewMatrix, viewMatrix2, viewMatrix3, programUntextured);
+    
+        SDL_GL_SwapWindow(displayWindow);
+    }
+    
+    SDL_Quit();
+    return 0;
+}
+
+void Setup (Matrix& projection) {
     SDL_Init(SDL_INIT_VIDEO);
     displayWindow = SDL_CreateWindow("My Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 540, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
@@ -55,126 +115,88 @@ int main(int argc, char *argv[])
     glewInit();
 #endif
     glViewport(0, 0, 960, 540);
-    ShaderProgram programUntextured;
-    programUntextured.Load(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
     
-    Matrix projectionMatrix;
-    Matrix viewMatrix;
-    Matrix modelMatrix;
-    projectionMatrix.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
-    Entity paddle1 = Entity (-3.0, 0.0, 0.15f, 0.5f, 0.0f, 7.0f);
-    
-    Matrix viewMatrix2;
-    Matrix modelMatrix2;
-    Entity paddle2 = Entity (3.0, 0.0, 0.15, 0.5f, 0.0f, 7.0f);
-    
-    Matrix viewMatrix3;
-    Matrix modelMatrix3;
-    Entity ball = Entity (0.0f, 0.0f, 0.15f, 0.15f, -1.0f, -1.0f);
-    
-    SDL_Event event;
-    bool done = false;
-    
-    float lastFrameTicks = 0.0f;
-    float elapsed = 0.0f;
-    
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
+    projection.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
+}
 
+void ProcessEvents (SDL_Event& event, bool& done){
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+            done = true;
+        }
+    }
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed) {
+    const Uint8 *keys = SDL_GetKeyboardState(NULL);
     
-    while (!done) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
-                done = true;
-            }
-            else if(event.type == SDL_KEYDOWN) {
-                //if(event.key.keysym.scancode == SDL_SCANCODE_DOWN) {
-                if (keys [SDL_SCANCODE_DOWN]){
-                    if (paddle2.y - paddle2.height/2 - (elapsed * paddle2.velocity_y) < -2.0f ) {
-                        paddle2.y = -2.0f + paddle2.height/2;
-                    }
-                    else {
-                        paddle2.y -= elapsed * paddle2.velocity_y;
-                    }
-                }
-                //else if(event.key.keysym.scancode == SDL_SCANCODE_UP) {
-                if (keys [SDL_SCANCODE_UP]) {
-                    if (paddle2.y + paddle2.height/2 + (elapsed * paddle2.velocity_y) > 2.0f ) {
-                        paddle2.y = 2.0f - paddle2.height/2;
-                    }
-                    else {
-                        paddle2.y += elapsed * paddle2.velocity_y;
-                    }
-                }
-                //if(event.key.keysym.scancode == SDL_SCANCODE_S) {
-                if (keys [SDL_SCANCODE_S]) {
-                    if (paddle1.y - paddle1.height/2 - (elapsed * paddle1.velocity_y) < -2.0f ) {
-                        paddle1.y = -2.0f + paddle1.height/2;
-                    }
-                    else {
-                        paddle1.y -= elapsed * paddle1.velocity_y;
-                    }
-                }
-                //else if(event.key.keysym.scancode == SDL_SCANCODE_W) {
-                if (keys [SDL_SCANCODE_W]) {
-                    if (paddle1.y + paddle1.height/2 + (elapsed * paddle1.velocity_y) > 2.0f ) {
-                        paddle1.y = 2.0f - paddle1.height/2;
-                    }
-                    else {
-                        paddle1.y += elapsed * paddle1.velocity_y;
-                    }
-                }
-            }
+    if (keys [SDL_SCANCODE_DOWN]){
+        if (pad2.y - pad2.height/2 - (elapsed * pad2.velocity_y) < -2.0f ) {
+            pad2.y = -2.0f + pad2.height/2;
         }
-        glClear(GL_COLOR_BUFFER_BIT);
-        float ticks = (float)SDL_GetTicks()/1000.0f;
-        elapsed = ticks - lastFrameTicks;
-        lastFrameTicks = ticks;
-            
-        programUntextured.SetModelMatrix(modelMatrix);
-        programUntextured.SetViewMatrix(viewMatrix);
-        programUntextured.SetProjectionMatrix(projectionMatrix);
-        programUntextured.SetColor(1.0, 1.0, 1.0, 0.0f);
-        paddle1.Draw (programUntextured);
-        
-        programUntextured.SetModelMatrix(modelMatrix2);
-        programUntextured.SetViewMatrix(viewMatrix2);
-        programUntextured.SetColor(1.0, 1.0, 1.0, 0.0);
-        paddle2.Draw (programUntextured);
-        
-        programUntextured.SetModelMatrix(modelMatrix3);
-        programUntextured.SetViewMatrix(viewMatrix3);
-        programUntextured.SetColor(1.0, 1.0, 1.0, 0.0);
-        ball.Draw (programUntextured);
-        
-        ball.x += elapsed * ball.velocity_x;
-        ball.y += elapsed * ball.velocity_y;
-        
-        if (!(paddle2.y - paddle2.height/2 > ball.y + ball.height / 2) &&
-            !( paddle2.y + paddle2.height/2 < ball.y - ball.height/2 ) &&
-            !(paddle2.x - paddle2.width/2 > ball.x + ball.width/2) &&
-            ! (paddle2.x + paddle2.width/2 < ball.x - ball.width/2 )) {
-                ball.velocity_x *= -1;
-                std:: cout << "hi";
-                
+        else {
+            pad2.y -= elapsed * pad2.velocity_y;
         }
-        else if (!(paddle1.y - paddle1.height/2 > ball.y + ball.height / 2) &&
-                 !( paddle1.y + paddle1.height/2 < ball.y - ball.height/2 ) &&
-                 !(paddle1.x + paddle1.width/2 < ball.x - ball.width/2) &&
-                 ! (paddle1.x - paddle1.width/2 > ball.x + ball.width /2)) {
-            ball.velocity_x *= -1;
-                     std:: cout << "bye";
+    }
+    //else if(event.key.keysym.scancode == SDL_SCANCODE_UP) {
+    if (keys [SDL_SCANCODE_UP]) {
+        if (pad2.y + pad2.height/2 + (elapsed * pad2.velocity_y) > 2.0f ) {
+            pad2.y = 2.0f - pad2.height/2;
         }
-        else if (ball.y + ball.height/2 >= 2.0f) {
-            ball.velocity_y *= -1;
+        else {
+            pad2.y += elapsed * pad2.velocity_y;
         }
-        else if (ball.y - ball.height/2 <= -2.0f) {
-            ball.velocity_y *= -1;
+    }
+    //if(event.key.keysym.scancode == SDL_SCANCODE_S) {
+    if (keys [SDL_SCANCODE_S]) {
+        if (pad1.y - pad1.height/2 - (elapsed * pad1.velocity_y) < -2.0f ) {
+            pad1.y = -2.0f + pad1.height/2;
         }
-        
-    
-        SDL_GL_SwapWindow(displayWindow);
+        else {
+            pad1.y -= elapsed * pad1.velocity_y;
+        }
+    }
+    //else if(event.key.keysym.scancode == SDL_SCANCODE_W) {
+    if (keys [SDL_SCANCODE_W]) {
+        if (pad1.y + pad1.height/2 + (elapsed * pad1.velocity_y) > 2.0f ) {
+            pad1.y = 2.0f - pad1.height/2;
+        }
+        else {
+            pad1.y += elapsed * pad1.velocity_y;
+        }
     }
     
-    SDL_Quit();
-    return 0;
+    ballster.x += 0.5 * ballster.velocity_x;
+    ballster.y += 0.5 * ballster.velocity_y;
+    
+    if ((Collision (pad2, ballster) && ballster.velocity_x > 0) ||
+        (Collision (pad1, ballster) && ballster.velocity_x < 0)){
+        ballster.velocity_x *= -1;
+    }
+    else if (ballster.y + ballster.height/2 >= 2.0f) {
+        ballster.velocity_y *= -1;
+    }
+    else if (ballster.y - ballster.height/2 <= -2.0f) {
+        ballster.velocity_y *= -1;
+    }
+}
+
+void Render (Entity& pad1, Entity& pad2, Entity& ballster,
+             Matrix& model, Matrix& model2, Matrix& model3,
+             Matrix& view, Matrix& view2, Matrix& view3, ShaderProgram& program) {
+    pad1.Draw (program,model,view);
+    pad2.Draw (program, model2, view2);
+    ballster.Draw (program, model3, view3);
+    
+}
+
+bool Collision (Entity& pad, Entity& ballster){
+    if (! (pad.y - pad.height/2 > ballster.y + ballster.height / 2 ||
+           pad.y + pad.height/2 < ballster.y - ballster.height/2 ||
+           pad.x - pad.width/2 > ballster.x + ballster.width/2 ||
+           pad.x + pad.width/2 < ballster.x - ballster.width/2) ) {
+        return true;
+    }
+    return false;
 }
