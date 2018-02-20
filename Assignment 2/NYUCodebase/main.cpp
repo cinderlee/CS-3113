@@ -39,7 +39,7 @@ public:
         glUseProgram(program.programID);
         program.SetModelMatrix(model);
         program.SetViewMatrix(view);
-        program.SetColor(red, green, blue, 0.0f);
+        program.SetColor(red, 1.0f, blue, 0.0f);
         float verticesUntextured[] = {x - width/2, y + height/2, x -width/2, y - height/2, x + width/2, y -height/2, x - width/2, y + height/2, x + width/2, y - height/2, x + width/2, y + height/2};
         glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, verticesUntextured);
         glEnableVertexAttribArray(program.positionAttribute);
@@ -55,7 +55,6 @@ public:
     float velocity_y;
     float red = 1.0;
     float blue = 1.0;
-    float green = 1.0;
 };
 
 
