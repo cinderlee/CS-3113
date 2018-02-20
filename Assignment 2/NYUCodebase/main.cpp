@@ -250,6 +250,8 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     if ( (ballster.x < -3.55f || ballster.x > 3.55f) && !win) {
         win = true;
         Win (pad1, pad2);
+        
+        //make winning paddle green
         if (ballster.x < -3.55f) {
             ballster.x = 1.77f;
             pad2.red = 0.0f;
@@ -260,6 +262,7 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
             pad1.red = 0.0f;
             pad1.blue = 0.0f;
         }
+        
         ballster.y = pad1.y + pad1.height/2;
         ballster.velocity_x = 0.0f;
         ballster.velocity_y = 1.0f;
@@ -287,7 +290,7 @@ bool Collision (Entity& pad, Entity& ballster){
     return false;
 }
 
-// when one side wins
+// when one side wins, adjust entities' attributes
 void Win (Entity& pad1, Entity& pad2) {
     pad1.x = -1.77f;
     pad1.y = 0.0f;
