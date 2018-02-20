@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     // ball
     Matrix viewMatrix3;
     Matrix modelMatrix3;
-    Entity ball = Entity (0.0f, 0.0f, 0.15f, 0.15f, -1.5f, -1.5f);
+    Entity ball = Entity (0.0f, 0.0f, 0.15f, 0.15f, -2.5f, -2.0f);
     
     SDL_Event event;
     bool done = false;
@@ -196,8 +196,8 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
         win = false;
         ballster.x = 0.0f;
         ballster.y = 0.0f;
-        ballster.velocity_x = -1.5f;
-        ballster.velocity_y = -1.5f;
+        ballster.velocity_x = -2.5f;
+        ballster.velocity_y = -2.0f;
         pad1.x = -3.0f;
         pad1.y = 0.0f;
         pad2.x = 3.0f;
