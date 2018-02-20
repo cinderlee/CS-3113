@@ -223,33 +223,27 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     if ( (Collision (pad1, ballster) || Collision (pad2, ballster) ) &&
              win && ballster.velocity_y < 0) {
         ballster.velocity_y *= -1;
-        std::cout<<"yo";
-        
     }
     
     // movement of ball on winning screen
     else if (ballster.y >= 0.5f && win && ballster.velocity_y > 0) {
         ballster.velocity_y *= -1;
-        std::cout<<"yom";
     }
     
     // collision betwen paddles and ball in middle of game
     else if ((Collision (pad2, ballster) && ballster.velocity_x > 0 && !win) ||
         (Collision (pad1, ballster) && ballster.velocity_x < 0 && !win)){
         ballster.velocity_x *= -1;
-        std::cout<<"solo";
     }
     
     // check for ball at the top border
     else if (ballster.y + ballster.height/2 >= 2.0f && ballster.velocity_y > 0) {
         ballster.velocity_y *= -1;
-        std::cout<<"bolom";
     }
     
     // check for ball at the bottom border
     else if (ballster.y - ballster.height/2 <= -2.0f && ballster.velocity_y < 0) {
         ballster.velocity_y *= -1;
-        std::cout<<"comop";
     }
     
     // check if ball is at the 'goal'
@@ -269,7 +263,6 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
         ballster.y = pad1.y + pad1.height/2;
         ballster.velocity_x = 0.0f;
         ballster.velocity_y = 1.0f;
-        std::cout<<"yoopfkqwp";
     }
 }
 
