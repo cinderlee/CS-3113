@@ -1,3 +1,7 @@
+// PONG Assignment
+// Cindy Lee
+// cl3616
+
 #ifdef _WINDOWS
 #include <GL/glew.h>
 #endif
