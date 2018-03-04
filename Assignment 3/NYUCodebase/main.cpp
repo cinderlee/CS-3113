@@ -18,16 +18,15 @@
 #define RESOURCE_FOLDER "NYUCodebase.app/Contents/Resources/"
 #endif
 
-//class GameState {
-//public:
-//    GameState() {;
-////    Entity player;
-////    Entity enemies[12];
-////    Entity bullets[10];
-//    int score = 0;
-//};
+class GameState {
+public:
+    GameState(Entity& player) : player (player) {}
+    Entity player;
+    //Entity enemies[12];
+    //Entity bullets[10];
+    int score = 0;
+};
 
-//GameState state;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL};
 GameMode mode = STATE_MAIN_MENU;
 ShaderProgram program;
@@ -38,6 +37,7 @@ SDL_Window* displayWindow;
 Entity player = Entity (0.0f, -1.5f, 0.0f);
 SheetSprite spritester;
 Matrix projectionMatrix;
+GameState state (player);
 
 GLuint LoadTexture(const char *filePath) {
     int w,h,comp;
