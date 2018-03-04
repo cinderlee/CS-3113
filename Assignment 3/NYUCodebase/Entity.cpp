@@ -10,6 +10,7 @@
 #include "ShaderProgram.h"
 #include "SheetSprite.h"
 
+Entity::Entity () {}
 Entity::Entity (float x, float y, float z) : position (Vector3 (x,y,z)) {}
 
 void Entity::Draw(ShaderProgram *program ) {

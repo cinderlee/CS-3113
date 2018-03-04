@@ -18,14 +18,7 @@
 #define RESOURCE_FOLDER "NYUCodebase.app/Contents/Resources/"
 #endif
 
-class GameState {
-public:
-    GameState(Entity& player) : player (player) {}
-    Entity player;
-    //Entity enemies[12];
-    //Entity bullets[10];
-    int score = 0;
-};
+
 
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL};
 GameMode mode = STATE_MAIN_MENU;
@@ -37,7 +30,22 @@ SDL_Window* displayWindow;
 Entity player = Entity (0.0f, -1.5f, 0.0f);
 SheetSprite spritester;
 Matrix projectionMatrix;
-GameState state (player);
+
+class GameState {
+public:
+    GameState() {}
+    void Draw (ShaderProgram* program) {
+        player.Draw (program);
+        for (int i = 0; i < 15; i++){
+            enemies [i].Draw(program);
+        }
+    }
+    Entity player;
+    Entity enemies[15];
+    Entity bullets[10];
+    int score = 0;
+};
+GameState state;
 
 GLuint LoadTexture(const char *filePath) {
     int w,h,comp;
@@ -78,6 +86,26 @@ void Setup () {
     
     spritester = SheetSprite(spriteSheet, 112.0f/1024.0f, 791.0f/1024.0f, 112.0f/1024.0f, 75.0f/1024.0f, 0.3f);
     player.sprite = spritester;
+    
+    state.player = player;
+    
+    float x = 0.0f;
+    float y= 0.0f;
+    float z = 0.0f;
+    state.enemies [0] = Entity (x, y, z);
+    SheetSprite enemy  = SheetSprite(spriteSheet, 444.0f/1024.0f, 0.0/1024.0f, 91.0f/1024.0f, 91.0f/1024.0f, 0.3f);
+    state.enemies [0].sprite = enemy;
+    for (int i = 1; i < 15; i++ ) {
+        if (i % 5 == 0) {
+            x = 0.0f;
+            y += 0.5f;
+        }
+        else {
+            x += 0.5;
+        }
+        state.enemies [i] = Entity (x, y, z);
+        state.enemies [i].sprite = enemy;
+    }
     
 }
 
@@ -140,21 +168,29 @@ void mainRender () {
 
 void gameLevelRender (float elapsed) {
     if (keys [SDL_SCANCODE_LEFT] ){
-        if (player.position.x - player.velocity.x * elapsed <= -2.5f) {
-            player.position.x = -2.5f;
+        if (state.player.position.x - state.player.velocity.x * elapsed <= -2.5f) {
+            state.player.position.x = -2.5f;
         }
         else {
-            player.position.x -= player.velocity.x * elapsed;
+            state.player.position.x -= state.player.velocity.x * elapsed;
         }
     }
     if (keys [SDL_SCANCODE_RIGHT] ){
-        if (player.position.x + player.velocity.x * elapsed >= 2.5f) {
-            player.position.x = 2.5f;
+        if (state.player.position.x + state.player.velocity.x * elapsed >= 2.5f) {
+            state.player.position.x = 2.5f;
         }
         else {
-            player.position.x += player.velocity.x * elapsed;
+            state.player.position.x += state.player.velocity.x * elapsed;
         }
     }
+    
+    for (int i = 0; i < 15; i++) {
+        if ((state.enemies [0].position.x <= -2.5f && state.enemies [0].velocity.x < 0) || (state.enemies [4].position.x >= 2.5f && state.enemies [4].velocity.x > 0)) {
+            state.enemies[i].velocity.x *= -1;
+        }
+        state.enemies [i].position.x += state.enemies[i].velocity.x *elapsed;
+    }
+    
 }
 
 void Render(float elapsed) {
@@ -168,7 +204,8 @@ void Render(float elapsed) {
             break;
         case STATE_GAME_LEVEL:
             gameLevelRender(elapsed);
-            player.Draw (&program);
+            //player.Draw (&program);
+            state.Draw(&program);
             break;
     } }
 
