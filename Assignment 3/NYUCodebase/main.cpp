@@ -18,6 +18,8 @@
 #define RESOURCE_FOLDER "NYUCodebase.app/Contents/Resources/"
 #endif
 
+#define FIXED_TIMESTEP 0.0166666f
+#define MAX_TIMESTEPS 6
 
 
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL};
@@ -30,6 +32,7 @@ SDL_Window* displayWindow;
 Entity player = Entity (0.0f, -1.5f, 0.0f);
 SheetSprite spritester;
 Matrix projectionMatrix;
+Matrix viewMatrix;
 
 class GameState {
 public:
@@ -81,10 +84,11 @@ void Setup () {
     spriteSheet = LoadTexture(RESOURCE_FOLDER "sheet.png");
     textie = LoadTexture(RESOURCE_FOLDER "font1.png");
     
+    program.SetViewMatrix(viewMatrix);
     projectionMatrix.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
     program.SetProjectionMatrix(projectionMatrix);
     
-    spritester = SheetSprite(spriteSheet, 112.0f/1024.0f, 791.0f/1024.0f, 112.0f/1024.0f, 75.0f/1024.0f, 0.3f);
+    spritester = SheetSprite(spriteSheet, 112.0f/1024.0f, 791.0f/1024.0f, 112.0f/1024.0f, 75.0f/1024.0f, 0.2f);
     player.sprite = spritester;
     
     state.player = player;
@@ -93,7 +97,7 @@ void Setup () {
     float y= 0.0f;
     float z = 0.0f;
     state.enemies [0] = Entity (x, y, z);
-    SheetSprite enemy  = SheetSprite(spriteSheet, 444.0f/1024.0f, 0.0/1024.0f, 91.0f/1024.0f, 91.0f/1024.0f, 0.3f);
+    SheetSprite enemy  = SheetSprite(spriteSheet, 444.0f/1024.0f, 0.0/1024.0f, 91.0f/1024.0f, 91.0f/1024.0f, 0.2f);
     state.enemies [0].sprite = enemy;
     for (int i = 1; i < 15; i++ ) {
         if (i % 5 == 0) {
@@ -150,7 +154,6 @@ void DrawText(ShaderProgram *program, int fontTexture, std::string text, float s
 
 void DrawWords (ShaderProgram* program, int fontTexture, std::string text, float size, float spacing, float x, float y) {
     Matrix modelMatrix;
-    Matrix viewMatrix;
     modelMatrix.Translate(x, y, 0.0f);
     program -> SetModelMatrix(modelMatrix);
     program -> SetViewMatrix(viewMatrix);
@@ -166,7 +169,7 @@ void mainRender () {
     }
 }
 
-void gameLevelRender (float elapsed) {
+void gameLevelUpdate (float elapsed) {
     if (keys [SDL_SCANCODE_LEFT] ){
         if (state.player.position.x - state.player.velocity.x * elapsed <= -2.5f) {
             state.player.position.x = -2.5f;
@@ -184,11 +187,60 @@ void gameLevelRender (float elapsed) {
         }
     }
     
-    for (int i = 0; i < 15; i++) {
-        if ((state.enemies [0].position.x <= -2.5f && state.enemies [0].velocity.x < 0) || (state.enemies [4].position.x >= 2.5f && state.enemies [4].velocity.x > 0)) {
-            state.enemies[i].velocity.x *= -1;
+    for (int index = 0; index < 15; index++) {
+        state.enemies [index].position.x += state.enemies[index].velocity.x * elapsed;
+    }
+    
+    if (state.enemies [0].position.x <= -2.5f && state.enemies [0].velocity.x < 0) {
+        float x = -2.5f;
+        for (int i = 0; i < 5; i++ ) {
+            state.enemies [i].position.x = x;
+            x += 0.5;
+            state.enemies [i].velocity.x *= -1;
         }
-        state.enemies [i].position.x += state.enemies[i].velocity.x *elapsed;
+    }
+    if (state.enemies [4].position.x >= 2.5f && state.enemies [4].velocity.x > 0) {
+        float x2 = 2.5f;
+        for (int i = 4; i >= 0; i-- ) {
+            state.enemies [i].position.x = x2;
+            std::cout << state.enemies [i].position.x;
+            x2 -= 0.5f;
+            state.enemies [i].velocity.x *= -1;
+        }
+    }
+    
+    if (state.enemies [5].position.x <= -2.5f && state.enemies [5].velocity.x < 0) {
+        float x = -2.5f;
+        for (int i = 5; i < 10; i++ ) {
+            state.enemies [i].position.x = x;
+            x += 0.5;
+            state.enemies [i].velocity.x *= -1;
+        }
+    }
+    if (state.enemies [9].position.x >= 2.5f && state.enemies [9].velocity.x > 0) {
+        float x2 = 2.5f;
+        for (int i = 9; i >= 5; i-- ) {
+            state.enemies [i].position.x = x2;
+            x2 -= 0.5;
+            state.enemies [i].velocity.x *= -1;
+        }
+    }
+    
+    if (state.enemies [10].position.x <= -2.5f && state.enemies [10].velocity.x < 0) {
+        float x = -2.5f;
+        for (int i = 10; i < 15; i++ ) {
+            state.enemies [i].position.x = x;
+            x += 0.5;
+            state.enemies [i].velocity.x *= -1;
+        }
+    }
+    if (state.enemies [14].position.x >= 2.5f && state.enemies [14].velocity.x > 0) {
+        float x2 = 2.5f;
+        for (int i = 14; i >= 10; i-- ) {
+            state.enemies [i].position.x = x2;
+            x2 -= 0.5;
+            state.enemies [i].velocity.x *= -1;
+        }
     }
     
 }
@@ -203,8 +255,9 @@ void Render(float elapsed) {
             mainRender();
             break;
         case STATE_GAME_LEVEL:
-            gameLevelRender(elapsed);
             //player.Draw (&program);
+            
+            gameLevelUpdate (FIXED_TIMESTEP);
             state.Draw(&program);
             break;
     } }
@@ -222,6 +275,7 @@ int main(int argc, char *argv[])
     
     float lastFrameTicks = 0.0f;
     float elapsed = 0.0f;
+    float accumulator = 0.0f;
     
     while (!done) {
         while (SDL_PollEvent(&event)) {
@@ -234,7 +288,16 @@ int main(int argc, char *argv[])
         elapsed = ticks - lastFrameTicks;
         lastFrameTicks = ticks;
         
-        Render(elapsed);
+        elapsed += accumulator;
+        if(elapsed < FIXED_TIMESTEP) {
+            accumulator = elapsed;
+            continue; }
+        while(elapsed >= FIXED_TIMESTEP) {
+            //Update(FIXED_TIMESTEP);
+            Render(FIXED_TIMESTEP);
+            elapsed -= FIXED_TIMESTEP;
+        }
+        accumulator = elapsed;
         
         SDL_GL_SwapWindow(displayWindow);
         
