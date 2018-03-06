@@ -12,6 +12,7 @@
 		006F08E1204C644200EEBC3B /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006F08DF204C644200EEBC3B /* Entity.cpp */; };
 		006F08E4204C649C00EEBC3B /* SheetSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006F08E2204C649C00EEBC3B /* SheetSprite.cpp */; };
 		006F08E7204C7AE000EEBC3B /* Vector3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006F08E5204C7AE000EEBC3B /* Vector3.cpp */; };
+		00EF88AE204F01E4009393F8 /* GameState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00EF88AC204F01E4009393F8 /* GameState.cpp */; };
 		6D5A86AE19AE5C710066C1FD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5A86AD19AE5C710066C1FD /* Cocoa.framework */; };
 		6D5A86B819AE5C710066C1FD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6D5A86B619AE5C710066C1FD /* InfoPlist.strings */; };
 		6D5A86BA19AE5C710066C1FD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D5A86B919AE5C710066C1FD /* main.cpp */; };
@@ -37,6 +38,8 @@
 		006F08E3204C649C00EEBC3B /* SheetSprite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SheetSprite.h; sourceTree = "<group>"; };
 		006F08E5204C7AE000EEBC3B /* Vector3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Vector3.cpp; sourceTree = "<group>"; };
 		006F08E6204C7AE000EEBC3B /* Vector3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vector3.h; sourceTree = "<group>"; };
+		00EF88AC204F01E4009393F8 /* GameState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GameState.cpp; sourceTree = "<group>"; };
+		00EF88AD204F01E4009393F8 /* GameState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameState.h; sourceTree = "<group>"; };
 		6D5A86AA19AE5C710066C1FD /* NYUCodebase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NYUCodebase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5A86AD19AE5C710066C1FD /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6D5A86B019AE5C710066C1FD /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -162,6 +165,8 @@
 				006F08E2204C649C00EEBC3B /* SheetSprite.cpp */,
 				006F08E3204C649C00EEBC3B /* SheetSprite.h */,
 				006F08DF204C644200EEBC3B /* Entity.cpp */,
+				00EF88AC204F01E4009393F8 /* GameState.cpp */,
+				00EF88AD204F01E4009393F8 /* GameState.h */,
 				006F08E0204C644200EEBC3B /* Entity.h */,
 				006F08E5204C7AE000EEBC3B /* Vector3.cpp */,
 				006F08E6204C7AE000EEBC3B /* Vector3.h */,
@@ -254,6 +259,7 @@
 				006F08E4204C649C00EEBC3B /* SheetSprite.cpp in Sources */,
 				006F08E7204C7AE000EEBC3B /* Vector3.cpp in Sources */,
 				6DEF23C31B96CC2600BCE792 /* ShaderProgram.cpp in Sources */,
+				00EF88AE204F01E4009393F8 /* GameState.cpp in Sources */,
 				6DEF23C21B96CC2600BCE792 /* Matrix.cpp in Sources */,
 				6D5A86BA19AE5C710066C1FD /* main.cpp in Sources */,
 			);

@@ -16,14 +16,17 @@
 class Entity {
 public:
     Entity ();
-    Entity (float x, float y, float z);
+    Entity (int sprites, float x, float y, float z, float spriteX, float spriteY, float width, float height, float size);
     void Draw(ShaderProgram* program);
     void Update(float elapsed);
+    bool Collision (Entity* other);
     Vector3 position = Vector3 (0.0f, 0.0f, 0.0f);
     Vector3 velocity = Vector3 (1.0f, 0.0f, 0.0f);
-    //Vector3 size;
+    Vector3 sizeEnt = Vector3 (0.0f, 0.0f, 0.0f);
     float rotation;
     SheetSprite sprite;
+    bool alive = true;
+    bool active = true;
 };
 
 
