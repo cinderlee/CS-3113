@@ -22,7 +22,9 @@
 
 #define FIXED_TIMESTEP 0.0166666f
 #define MAX_TIMESTEPS 6
+#define MAX_ENEMIES 32
 
+//global variables
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
 GameMode mode = STATE_MAIN_MENU;
 ShaderProgram program;
@@ -34,6 +36,7 @@ SheetSprite spritester;
 Matrix projectionMatrix;
 Matrix viewMatrix;
 
+//prototypes
 GLuint LoadTexture(const char *filePath);
 void Setup ();
 void ProcessEvents (SDL_Event& event, bool& done);
@@ -224,7 +227,7 @@ void gameLevelUpdate (float elapsed, float& coolDown, float& enemyDown) {
     }
     
     if (enemyDown >= 0.1f) {
-        state.shootEnemyBullet(state.enemies [rand() % 32], spriteSheet);
+        state.shootEnemyBullet(state.enemies [rand() % MAX_ENEMIES], spriteSheet);
         enemyDown = 0.0f;
     }
     
@@ -236,7 +239,7 @@ void gameLevelUpdate (float elapsed, float& coolDown, float& enemyDown) {
         state.bullets [i].position.y += state.bullets [i].velocity.y * elapsed;
     }
     
-    for (int index = 0; index < 32; index++) {
+    for (int index = 0; index < MAX_ENEMIES; index++) {
         state.enemies [index].position.x += state.enemies[index].velocity.x * elapsed;
     }
     
@@ -299,7 +302,7 @@ void gameLevelUpdate (float elapsed, float& coolDown, float& enemyDown) {
     
     if (state.enemies [24].position.x <= -4.0f && state.enemies [24].velocity.x < 0) {
         float x = -4.0f;
-        for (int i = 24; i < 32; i++ ) {
+        for (int i = 24; i < MAX_ENEMIES; i++ ) {
             state.enemies [i].position.x = x;
             x += 0.6;
             state.enemies [i].position.y -= state.enemies[i].velocity.y * elapsed ;

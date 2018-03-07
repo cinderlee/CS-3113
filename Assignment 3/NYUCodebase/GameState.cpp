@@ -10,7 +10,7 @@
 #include "Entity.h"
 #include "SheetSprite.h"
 #include <vector>
-
+#define MAX_ENEMIES 32
 GameState::GameState () {}
 
 // initializing player and enemies
@@ -21,7 +21,7 @@ GameState::GameState(int sprites) {
     float y= 0.0f;
     float z = 0.0f;
     
-    for (int i = 0; i < 32; i++ ) {
+    for (int i = 0; i < MAX_ENEMIES; i++ ) {
         if (i % 8 == 0) {
             x = 0.0f;
             y += 0.5f;
@@ -83,7 +83,7 @@ bool GameState::shouldRemoveEnemyBullet (Entity thing) {
 // drawing game
 void GameState::Draw (ShaderProgram* program) {
     player.Draw (program);
-    for (int i = 0; i < 32; i++){
+    for (int i = 0; i < MAX_ENEMIES; i++){
         if (enemies [i].alive) {
             enemies [i].Draw(program);
         }
@@ -100,7 +100,7 @@ void GameState::Draw (ShaderProgram* program) {
 // checking for any collisions in game
 void GameState::Collision () {
     for (size_t index = 0 ; index < playerBullets.size () ; index++) {
-        for (int enemy = 0; enemy < 32; enemy++) {
+        for (int enemy = 0; enemy < MAX_ENEMIES; enemy++) {
             
             // collision between enemy and player bullet
             if (playerBullets [index].Collision(& (enemies[enemy])) && enemies[enemy].alive && enemies [enemy].active && playerBullets[index].alive) {
@@ -159,7 +159,7 @@ void GameState::Collision () {
     }
     
     // check for collision between enemy and player
-    for (size_t index = 0; index < 32; index ++ ) {
+    for (size_t index = 0; index < MAX_ENEMIES; index ++ ) {
         if (enemies [index].Collision(&player) && enemies [index].alive) {
             player.alive = false;
         }
@@ -176,7 +176,7 @@ void GameState::Collision () {
 // check to see if game is over, whether player won or lost
 bool GameState::gameOver () {
     bool test = true;
-    for (int index =0 ; index < 32; index++) {
+    for (int index =0 ; index < MAX_ENEMIES; index++) {
         if (enemies [index].alive) {
             test = false;
         }
@@ -193,7 +193,7 @@ void GameState::reset () {
     float y= 0.0f;
     float z = 0.0f;
     
-    for (int i = 0; i < 32; i++ ) {
+    for (int i = 0; i < MAX_ENEMIES; i++ ) {
         if (i % 8 == 0) {
             x = 0.0f;
             y += 0.5f;
@@ -204,7 +204,7 @@ void GameState::reset () {
         enemies [i].position = Vector3 (x, y, z);
         enemies [i].alive = true;
         enemies [i].active = true;
-        if (i >= 8 && i < 32) {
+        if (i >= 8 && i < MAX_ENEMIES) {
             enemies [i].active = false;
         }
     }

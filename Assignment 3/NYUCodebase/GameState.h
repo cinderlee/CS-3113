@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include "Entity.h"
 #include "SheetSprite.h"
+#define MAX_ENEMIES 32
 
 class GameState {
 public:
@@ -30,7 +31,7 @@ public:
     
     Entity player;
     std::vector <Entity> playerBullets;
-    Entity enemies[32];
+    Entity enemies[MAX_ENEMIES];
     std::vector <Entity> bullets;
     int lives = 3;
     int score = 0;
