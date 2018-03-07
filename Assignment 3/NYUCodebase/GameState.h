@@ -24,12 +24,15 @@ public:
     void shootEnemyBullet (Entity& enemy, int sprites);
     bool static shouldRemoveEnemyBullet (Entity thing);
     void Collision ();
+    bool gameOver ();
+    void reset ();
     
     
     Entity player;
     std::vector <Entity> playerBullets;
     Entity enemies[32];
     std::vector <Entity> bullets;
+    int lives = 3;
     int score = 0;
 };
 

@@ -10,9 +10,12 @@
 #include "ShaderProgram.h"
 
 SheetSprite::SheetSprite() {};
+
+// creating a sprite
 SheetSprite::SheetSprite(unsigned int textureID, float u, float v, float width, float height, float
                          size): textureID(textureID), u(u), v(v), width(width), height (height), size(size) {};
 
+// drawing the sprite
 void SheetSprite::Draw(ShaderProgram *program) {
     glBindTexture(GL_TEXTURE_2D, textureID);
     GLfloat texCoords[] = {

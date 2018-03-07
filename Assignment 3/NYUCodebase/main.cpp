@@ -6,6 +6,7 @@
 #include <SDL_opengl.h>
 #include <SDL_image.h>
 #include <vector>
+#include <string>
 #include "Matrix.h"
 #include "ShaderProgram.h"
 #include "stb_image.h"
@@ -32,8 +33,64 @@ SDL_Window* displayWindow;
 SheetSprite spritester;
 Matrix projectionMatrix;
 Matrix viewMatrix;
-void Setup ();
 
+GLuint LoadTexture(const char *filePath);
+void Setup ();
+void ProcessEvents (SDL_Event& event, bool& done);
+void DrawText(ShaderProgram *program, int fontTexture, std::string text, float size, float spacing);
+void DrawWords (ShaderProgram* program, int fontTexture, std::string text, float size, float spacing, float x, float y);
+void mainRender ();
+void gameLevelUpdate (float elapsed, float& coolDown, float& enemyDown);
+void Update (float timestep, float& coolDown, float& enemyDown);
+void gameRender ();
+void gameOverRender ();
+void Render ();
+GameState state;
+
+
+int main(int argc, char *argv[])
+{
+    Setup ();
+    SDL_Event event;
+    bool done = false;
+    
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    float lastFrameTicks = 0.0f;
+    float elapsed = 0.0f;
+    float accumulator = 0.0f;
+    float coolDown = 0.0f;
+    float enemyCoolDown = 0.0f;
+    
+    while (!done) {
+        ProcessEvents(event, done);
+        
+        float ticks = (float)SDL_GetTicks()/1000.0f;
+        elapsed = ticks - lastFrameTicks;
+        lastFrameTicks = ticks;
+        
+        elapsed += accumulator;
+        if(elapsed < FIXED_TIMESTEP) {
+            accumulator = elapsed;
+            continue; }
+        while(elapsed >= FIXED_TIMESTEP) {
+            coolDown += FIXED_TIMESTEP;
+            enemyCoolDown += FIXED_TIMESTEP;
+            Update (FIXED_TIMESTEP, coolDown, enemyCoolDown);
+            Render();
+            elapsed -= FIXED_TIMESTEP;
+        }
+        accumulator = elapsed;
+        
+
+        SDL_GL_SwapWindow(displayWindow);
+        
+    }
+    
+    SDL_Quit();
+    return 0;
+}
 
 GLuint LoadTexture(const char *filePath) {
     int w,h,comp;
@@ -53,8 +110,39 @@ GLuint LoadTexture(const char *filePath) {
     return retTexture;
 }
 
-GameState state;
 
+void Setup () {
+    SDL_Init(SDL_INIT_VIDEO);
+    displayWindow = SDL_CreateWindow("My Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 540, SDL_WINDOW_OPENGL);
+    SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
+    SDL_GL_MakeCurrent(displayWindow, context);
+#ifdef _WINDOWS
+    glewInit();
+#endif
+    
+    glViewport(0, 0, 960, 540);
+    
+    program.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
+    spriteSheet = LoadTexture(RESOURCE_FOLDER "sheet.png");
+    textie = LoadTexture(RESOURCE_FOLDER "font1.png");
+    
+    state = GameState(spriteSheet);
+    
+    srand (time (NULL));
+    
+    // set view and projection matrices
+    program.SetViewMatrix(viewMatrix);
+    projectionMatrix.SetOrthoProjection(-5.25, 5.25, -3.0f, 3.0f, -1.50f, 1.5f);
+    program.SetProjectionMatrix(projectionMatrix);
+}
+
+void ProcessEvents (SDL_Event& event, bool& done) {
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+            done = true;
+        }
+    }
+}
 
 void DrawText(ShaderProgram *program, int fontTexture, std::string text, float size, float spacing) {
     
@@ -84,7 +172,7 @@ void DrawText(ShaderProgram *program, int fontTexture, std::string text, float s
     
     // draw this data (use the .data() method of std::vector to get pointer to data)
     // draw this yourself, use text.size() * 6 or vertexData.size()/2 to get number of vertices
-
+    
     glBindTexture(GL_TEXTURE_2D, fontTexture);
     glVertexAttribPointer(program -> positionAttribute, 2, GL_FLOAT, false, 0, vertexData.data());
     glEnableVertexAttribArray(program -> positionAttribute);
@@ -135,8 +223,7 @@ void gameLevelUpdate (float elapsed, float& coolDown, float& enemyDown) {
         coolDown = 0.0f;
     }
     
-    if (enemyDown >= 0.3f) {
-        //std :: cout << rand () % 32 << std::endl;
+    if (enemyDown >= 0.1f) {
         state.shootEnemyBullet(state.enemies [rand() % 32], spriteSheet);
         enemyDown = 0.0f;
     }
@@ -228,9 +315,54 @@ void gameLevelUpdate (float elapsed, float& coolDown, float& enemyDown) {
             state.enemies [i].velocity.x *= -1;
         }
     }
+    if (state.gameOver()) {
+        mode = STATE_GAME_OVER;
+    }
+    if (keys [SDL_SCANCODE_R]) {
+        state.reset();
+        mode = STATE_MAIN_MENU;
+    }
 }
 
-void Render(float elapsed, float& coolDown, float& enemyDown) {
+void Update (float timestep, float& coolDown, float& enemyDown) {
+    switch (mode) {
+        case STATE_MAIN_MENU:
+            break;
+        case STATE_GAME_LEVEL:
+            gameLevelUpdate (FIXED_TIMESTEP, coolDown, enemyDown);
+            state.Collision ();
+            if (keys [SDL_SCANCODE_R]) {
+                state.reset();
+                mode = STATE_MAIN_MENU;
+            }
+            break;
+        case STATE_GAME_OVER:
+            if (keys [SDL_SCANCODE_R]) {
+                state.reset();
+                mode = STATE_MAIN_MENU;
+            }
+            break;
+    }
+}
+
+void gameRender () {
+    state.Draw(&program);
+    DrawWords(&program, textie, "SCORE: " + std::to_string (state.score), 0.3f, 0.0f, -1*(-0.5f * 0.3) - (15*0.3/2) - 2.5f, 2.5f );
+    DrawWords(&program, textie, "LIVES: " + std::to_string (state.lives), 0.3f, 0.0f, -1*(-0.5f * 0.3) - (15*0.3/2) + 2.5f, 2.5f );
+}
+
+void gameOverRender (){
+    if (state.player.alive == false) {
+        DrawWords(&program, textie, "GAME OVER", 0.4f, 0.0f, -1*(-0.5f * 0.4) - (9*0.4/2), 0.5f );
+        DrawWords(&program, textie, "You Lost", 0.4f, 0.0f, -1*(-0.5f * 0.4) - (8*0.4/2), -0.5f );
+    }
+    else {
+        DrawWords(&program, textie, "CONGRATULATIONS", 0.4f, 0.0f, -1*(-0.5f * 0.4) - (15*0.4/2), 0.5f );
+        DrawWords(&program, textie, "YOU WON", 0.4f, 0.0f, -1*(-0.5f * 0.4) - (7*0.4/2), -0.5f );
+    }
+}
+
+void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -240,94 +372,11 @@ void Render(float elapsed, float& coolDown, float& enemyDown) {
             mainRender();
             break;
         case STATE_GAME_LEVEL:
-            //player.Draw (&program);
-            
-            gameLevelUpdate (FIXED_TIMESTEP, coolDown, enemyDown);
-            state.Collision ();
-            state.Draw(&program);
-            if (state.player.alive == false) {
-                mode = STATE_GAME_OVER;
-            }
+            gameRender();
             break;
         case STATE_GAME_OVER:
-            if (state.player.alive == false) {
-                DrawWords(&program, textie, "GAME OVER", 0.4f, 0.0f, -1*(-0.5f * 0.4) - (9*0.4/2), 0.5f );
-                DrawWords(&program, textie, "You Lost", 0.4f, 0.0f, -1*(-0.5f * 0.4) - (8*0.4/2), -0.5f );
-            }
-            
-    } }
-
-
-int main(int argc, char *argv[])
-{
-    Setup ();
-    SDL_Event event;
-    bool done = false;
-    
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    float lastFrameTicks = 0.0f;
-    float elapsed = 0.0f;
-    float accumulator = 0.0f;
-    float coolDown = 0.0f;
-    float enemyCoolDown = 0.0f;
-    while (!done) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
-                done = true;
-            }
-        }
-    
-        float ticks = (float)SDL_GetTicks()/1000.0f;
-        elapsed = ticks - lastFrameTicks;
-        lastFrameTicks = ticks;
-        
-        elapsed += accumulator;
-        if(elapsed < FIXED_TIMESTEP) {
-            accumulator = elapsed;
-            continue; }
-        while(elapsed >= FIXED_TIMESTEP) {
-            //Update(FIXED_TIMESTEP);
-            coolDown += FIXED_TIMESTEP;
-            enemyCoolDown += FIXED_TIMESTEP;
-            std::cout <<enemyCoolDown << std::endl;
-            Render(FIXED_TIMESTEP, coolDown, enemyCoolDown);
-            elapsed -= FIXED_TIMESTEP;
-        }
-        accumulator = elapsed;
-        
-        SDL_GL_SwapWindow(displayWindow);
-        
+            gameOverRender();
+            break;
     }
-    
-    SDL_Quit();
-    return 0;
-}
-
-void Setup () {
-    SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("My Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 540, SDL_WINDOW_OPENGL);
-    SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
-    SDL_GL_MakeCurrent(displayWindow, context);
-#ifdef _WINDOWS
-    glewInit();
-#endif
-    
-    glViewport(0, 0, 960, 540);
-    
-    program.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
-    spriteSheet = LoadTexture(RESOURCE_FOLDER "sheet.png");
-    textie = LoadTexture(RESOURCE_FOLDER "font1.png");
-    
-    state = GameState(spriteSheet);
-    
-    srand (time (NULL));
-    
-    program.SetViewMatrix(viewMatrix);
-    projectionMatrix.SetOrthoProjection(-5.25, 5.25, -3.0f, 3.0f, -1.50f, 1.5f);
-    program.SetProjectionMatrix(projectionMatrix);
-    
-    
 }
 

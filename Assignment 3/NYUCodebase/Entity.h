@@ -20,9 +20,12 @@ public:
     void Draw(ShaderProgram* program);
     void Update(float elapsed);
     bool Collision (Entity* other);
+    
+    
     Vector3 position = Vector3 (0.0f, 0.0f, 0.0f);
     Vector3 velocity = Vector3 (1.0f, 0.0f, 0.0f);
     Vector3 sizeEnt = Vector3 (0.0f, 0.0f, 0.0f);
+    
     float rotation;
     SheetSprite sprite;
     bool alive = true;
