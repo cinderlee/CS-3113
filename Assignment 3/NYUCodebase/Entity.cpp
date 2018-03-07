@@ -15,6 +15,7 @@ Entity::Entity (int sprites, float x, float y, float z, float spriteX, float spr
     sprite = SheetSprite (sprites, spriteX/1024.0f, spriteY/1024.0f, width/1024.0f, height/1024.0f, size);
 }
 
+
 void Entity::Draw(ShaderProgram *program ) {
         Matrix modelMatrix;
         Matrix viewMatrix;
