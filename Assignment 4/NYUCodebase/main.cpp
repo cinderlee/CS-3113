@@ -15,6 +15,8 @@
 #include "FlareMap.h"
 #include "GameState.h"
 
+// In this platform, if you hit an enemy or spikes you return back to the beginning
+// In order to win, you must reach the end of the game and receive the key
 
 ShaderProgram program;
 Matrix viewMatrix;
