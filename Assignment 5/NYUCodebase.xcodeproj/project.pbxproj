@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		00DADB1520714463004CEE3C /* SatCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00DADB1420714463004CEE3C /* SatCollision.cpp */; };
 		00EFE8BD207174D100F1EB58 /* Vector3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00EFE8BC207174D100F1EB58 /* Vector3.cpp */; };
+		00EFE8C02074ECF900F1EB58 /* Shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00EFE8BE2074ECF900F1EB58 /* Shape.cpp */; };
+		00EFE8C32074EDCF00F1EB58 /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00EFE8C12074EDCF00F1EB58 /* Entity.cpp */; };
 		6D5A86AE19AE5C710066C1FD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5A86AD19AE5C710066C1FD /* Cocoa.framework */; };
 		6D5A86B819AE5C710066C1FD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6D5A86B619AE5C710066C1FD /* InfoPlist.strings */; };
 		6D5A86BA19AE5C710066C1FD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D5A86B919AE5C710066C1FD /* main.cpp */; };
@@ -30,6 +32,10 @@
 		00DADB1420714463004CEE3C /* SatCollision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SatCollision.cpp; sourceTree = "<group>"; };
 		00EFE8BB207174D000F1EB58 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector3.h; sourceTree = "<group>"; };
 		00EFE8BC207174D100F1EB58 /* Vector3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector3.cpp; sourceTree = "<group>"; };
+		00EFE8BE2074ECF900F1EB58 /* Shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shape.cpp; sourceTree = "<group>"; };
+		00EFE8BF2074ECF900F1EB58 /* Shape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
+		00EFE8C12074EDCF00F1EB58 /* Entity.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
+		00EFE8C22074EDCF00F1EB58 /* Entity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
 		6D5A86AA19AE5C710066C1FD /* NYUCodebase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NYUCodebase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5A86AD19AE5C710066C1FD /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6D5A86B019AE5C710066C1FD /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -152,6 +158,10 @@
 			children = (
 				6DEF23BB1B96CC2600BCE792 /* fragment.glsl */,
 				6DE9D2F01BA6AB8C002D599C /* fragment_textured.glsl */,
+				00EFE8BE2074ECF900F1EB58 /* Shape.cpp */,
+				00EFE8BF2074ECF900F1EB58 /* Shape.h */,
+				00EFE8C12074EDCF00F1EB58 /* Entity.cpp */,
+				00EFE8C22074EDCF00F1EB58 /* Entity.h */,
 				6DC707691BA7273500225B7D /* vertex_textured.glsl */,
 				6DEF23BC1B96CC2600BCE792 /* Matrix.cpp */,
 				6DEF23BD1B96CC2600BCE792 /* Matrix.h */,
@@ -239,9 +249,11 @@
 			files = (
 				6DEF23C31B96CC2600BCE792 /* ShaderProgram.cpp in Sources */,
 				00EFE8BD207174D100F1EB58 /* Vector3.cpp in Sources */,
+				00EFE8C32074EDCF00F1EB58 /* Entity.cpp in Sources */,
 				00DADB1520714463004CEE3C /* SatCollision.cpp in Sources */,
 				6DEF23C21B96CC2600BCE792 /* Matrix.cpp in Sources */,
 				6D5A86BA19AE5C710066C1FD /* main.cpp in Sources */,
+				00EFE8C02074ECF900F1EB58 /* Shape.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
