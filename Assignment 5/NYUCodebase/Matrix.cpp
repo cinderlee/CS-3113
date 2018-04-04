@@ -219,6 +219,7 @@ void Matrix::SetPerspectiveProjection(float fov, float aspect, float zNear, floa
     m[3][3] = 0.0f;
 }
 
+// overloaded multiplication with vector
 Vector3 Matrix::operator* (const Vector3& stuff) const {
     float x = 0.0f;
     float y = 0.0f;
