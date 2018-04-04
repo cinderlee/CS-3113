@@ -34,6 +34,9 @@ void ProcessEvents (SDL_Event& event, bool& done);
 void Update ();
 void Render ();
 
+void CollideBorder ();
+void CollideShape ();
+
 int main(int argc, char *argv[])
 {
     srand (time (NULL));
@@ -130,7 +133,8 @@ void Setup () {
     //initialize shapes vector
     float translatorx = 0.0f;
     float translatory = 0.0f;
-   
+    float randomizer = -1.0f;
+    
     for (int i = 0; i < 15 ; i ++) {
         Rectangle rect = Rectangle (1.0f, 0.5f);
         Entity one = Entity (rect);
@@ -156,6 +160,11 @@ void Setup () {
         one.modelMatrix.Rotate (one.rotator);
         one.modelMatrix.Scale (one.scale.x, one.scale.y, 0.0f);
         
+        one.velocity.x *= randomizer;
+        randomizer *= -1;
+        if (i % 3 == 0) {
+            one.velocity.y *= -1;
+        }
         shapes.push_back (one);
         
     
@@ -172,9 +181,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
     }
 }
 
-// update for movement and collisions
-void Update () {
-    
+void CollideBorder () {
     // check each shape with the border shapes
     for (int i = 0; i < shapes.size (); i ++ ) {
         for (int j = 0; j < cornerShapes.size (); j++ ) {
@@ -200,7 +207,7 @@ void Update () {
             if (collided) {
                 // if colliding with top border
                 if (cornerShapes[j].topBar) {
-                   
+                    
                     shapes[i].objectPosition.x += penetration.first;
                     shapes [i].objectPosition.y += penetration.second;
                     
@@ -220,7 +227,7 @@ void Update () {
                 
                 // if colliding with left border
                 else if (cornerShapes[j].leftBar) {
-                   
+                    
                     shapes[i].objectPosition.x +=  penetration.first;
                     shapes [i].objectPosition.y += penetration.second;
                     
@@ -242,7 +249,9 @@ void Update () {
             }
         }
     }
-    
+}
+
+void CollideShape () {
     // checking collision between shapes
     for (int i = 0 ; i < shapes.size (); i ++) {
         for (int j = i + 1 ; j < shapes.size (); j++ ) {
@@ -265,6 +274,7 @@ void Update () {
             bool collided = CheckSATCollision(e1Points, e2Points, penetration);
             
             // adjust positions and velocities of both shapes
+            // translate matrix for next collision check
             if (collided) {
                 
                 shapes[i].objectPosition.x += (penetration.first * 0.5f);
@@ -284,6 +294,14 @@ void Update () {
             }
         }
     }
+}
+
+// update for movement and collisions
+void Update () {
+    
+    CollideBorder ();
+    
+    CollideShape ();
     
     // adjust movement position of the shapes
     for (int i = 0; i < shapes.size () ; i++) {
