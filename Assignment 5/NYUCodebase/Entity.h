@@ -29,9 +29,9 @@ public:
     Vector3 scale = Vector3 (1.0f, 1.0f, 0.0f);
     Vector3 objectPosition = Vector3 (0.0f, 0.0f, 0.0f);
     
-    float red = 0.0f;
-    float blue = 0.0f;
-    float green = 0.0f;
+    float red = 1.0f;
+    float blue = 1.0f;
+    float green = 1.0f;
     
     bool topBar = false;
     bool bottomBar = false;

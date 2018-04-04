@@ -142,14 +142,17 @@ void Setup () {
         translatorx = 1.0f / (rand () + 1);
         translatory = 1.0f  / (rand () + 1);
         
-        one.red = 1.0f / (rand () + 1);
-        one.blue = 1.0f / (rand () + 1);
-        one.green = 1.0f / (rand () + 1);
+        one.red = (rand () % 10) / 10.0f;
+        one.blue = (rand () % 10) / 10.0f;
+        one.green = (rand () % 10) / 10.0f;
         
         one.modelMatrix.Translate(translatorx, translatory, 0.0f);
         one.modelMatrix.Rotate (one.rotator);
         one.modelMatrix.Scale (one.scale.x, one.scale.y, 0.0f);
         
+        std :: cout << "red : " << one.red << std::endl;
+         std :: cout << "green : " << one.green << std::endl;
+         std :: cout << "blue : " << one.blue << std::endl;
         shapes.push_back (one);
         
     
@@ -279,8 +282,9 @@ void Render () {
         cornerShapes[ i]. Draw (&program);
     }
     
+   
     for (int i = 0; i < shapes.size (); i ++ ) {
-        
+        program.SetColor(shapes[i].red, shapes[i].green, shapes[i].blue, 0.0f);
         shapes [i].Draw (&program);
     }
 }
