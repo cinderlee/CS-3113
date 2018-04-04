@@ -316,7 +316,7 @@ void Update () {
 void Render () {
     for (int i = 0; i < shapes.size (); i ++ ) {
         // set shape's color with it rbg value
-        program.SetColor(shapes[i].red, shapes[i].green, shapes[i].blue, 0.0f);
+        program.SetColor(shapes[i].red, shapes[i].green, shapes[i].blue, 1.0f);
         shapes [i].Draw (&program);
     }
 }
