@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     while (!done) {
         ProcessEvents (event, done);
         glClear(GL_COLOR_BUFFER_BIT);
-        //program.SetColor(0.0f, 1.0f,0.0f , 0.0f);
+      
         
         float ticks = (float)SDL_GetTicks()/1000.0f;
         elapsed = ticks - lastFrameTicks;
@@ -98,6 +98,7 @@ void Setup () {
     program.SetProjectionMatrix(projectionMatrix);
     
     
+    //initialize the corner rectangles
     Rectangle topster = Rectangle (10.50, 3.0f);
     Rectangle bottomster = Rectangle (10.50, 3.0f);
     Rectangle leftster = Rectangle (3.0f, 6.0f);
@@ -126,33 +127,35 @@ void Setup () {
     cornerShapes.push_back (right);
     
    
+    //initialize shapes vector
     float translatorx = 0.0f;
     float translatory = 0.0f;
    
-    for (int i = 0; i < 7 ; i ++) {
-        Rectangle rect = Rectangle (1.0f, 1.0f);
+    for (int i = 0; i < 15 ; i ++) {
+        Rectangle rect = Rectangle (1.0f, 0.5f);
         Entity one = Entity (rect);
        
+        // scale shape
         one.scale.x = (rand() / (float)RAND_MAX * 0.4) + 0.5f;
-        std :: cout << one.scale.x << std::endl;
-        
         one.scale.y = (rand() / (float)RAND_MAX * 0.4) + 0.5f;
         
+        // rotate shape
         one.rotator = rand() / (2 * M_PI);
+        
+        // translate shape
         translatorx = 1.0f / (rand () + 1);
         translatory = 1.0f  / (rand () + 1);
         
-        one.red = (rand () % 10) / 10.0f;
-        one.blue = (rand () % 10) / 10.0f;
-        one.green = (rand () % 10) / 10.0f;
         
+        // set color of shape
+        one.red = (rand () % 100) / 100.0f;
+        one.green = (rand () % 100) / 100.0f;
+        
+        // perform transformations
         one.modelMatrix.Translate(translatorx, translatory, 0.0f);
         one.modelMatrix.Rotate (one.rotator);
         one.modelMatrix.Scale (one.scale.x, one.scale.y, 0.0f);
         
-        std :: cout << "red : " << one.red << std::endl;
-         std :: cout << "green : " << one.green << std::endl;
-         std :: cout << "blue : " << one.blue << std::endl;
         shapes.push_back (one);
         
     
@@ -160,6 +163,7 @@ void Setup () {
     
 }
 
+// processing events
 void ProcessEvents (SDL_Event& event, bool& done) {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
@@ -168,7 +172,10 @@ void ProcessEvents (SDL_Event& event, bool& done) {
     }
 }
 
+// update for movement and collisions
 void Update () {
+    
+    // check each shape with the border shapes
     for (int i = 0; i < shapes.size (); i ++ ) {
         for (int j = 0; j < cornerShapes.size (); j++ ) {
             std::pair<float,float> penetration;
@@ -185,52 +192,58 @@ void Update () {
             for(int s=0; s < cornerShapes [j].item.cornerVertices().size (); s++) {
                 Vector3 point = cornerShapes[j].modelMatrix * cornerShapes[j].item.cornerVertices()[s];
                 e2Points.push_back(std::make_pair(point.x, point.y));
-                
             }
             
             bool collided = CheckSATCollision(e1Points, e2Points, penetration);
             
-            
+            // if colliding with borders, adjust positions and velocities
             if (collided) {
-                std::cout << "YOOOO" << std::endl;
-                std:: cout << penetration.first<< std::endl;
-                std::cout << penetration.second << std:: endl;
+                // if colliding with top border
                 if (cornerShapes[j].topBar) {
-                    
+                   
                     shapes[i].objectPosition.x += penetration.first;
                     shapes [i].objectPosition.y += penetration.second;
                     
                     shapes[i].velocity.y *= -1;
                     
-                    std::cout << "TOP" << std::endl;
                 }
+                
+                // if colliding with bottom border
                 else if (cornerShapes[j].bottomBar ) {
+                    
                     shapes[i].objectPosition.x += penetration.first;
                     shapes [i].objectPosition.y += penetration.second;
                     
                     shapes[i].velocity.y *= -1;
-                    std::cout << "BOTTOm" << std::endl;
+                    
                 }
+                
+                // if colliding with left border
                 else if (cornerShapes[j].leftBar) {
+                   
                     shapes[i].objectPosition.x +=  penetration.first;
                     shapes [i].objectPosition.y += penetration.second;
                     
                     shapes[i].velocity.x *= -1;
-                    std::cout << "LEFT" << std::endl;
+                    
                 }
+                
+                // if colliding with right border
                 else if (cornerShapes[j].rightBar) {
+                    
                     shapes[i].objectPosition.x +=  penetration.first;
                     shapes [i].objectPosition.y +=  penetration.second;
                     
                     shapes[i].velocity.x *= -1;
-                    std::cout << "RIGHT" << std::endl;
                 }
                 
+                // translate the modelMatrix for next collision checking
                 shapes[i].modelMatrix.Translate(penetration.first, penetration.second, 0.0f);
             }
         }
     }
     
+    // checking collision between shapes
     for (int i = 0 ; i < shapes.size (); i ++) {
         for (int j = i + 1 ; j < shapes.size (); j++ ) {
             
@@ -250,6 +263,8 @@ void Update () {
             }
             
             bool collided = CheckSATCollision(e1Points, e2Points, penetration);
+            
+            // adjust positions and velocities of both shapes
             if (collided) {
                 
                 shapes[i].objectPosition.x += (penetration.first * 0.5f);
@@ -261,6 +276,7 @@ void Update () {
                 
                 shapes[i].modelMatrix.Translate(penetration.first * 0.5f,penetration.second * 0.5f, 0.0f);
                 shapes[j].modelMatrix.Translate(-1* penetration.first * 0.5f, -1* penetration.second * 0.5f, 0.0f);
+                
                 shapes [i].velocity.x *= -1;
                 shapes [i].velocity.y *= -1;
                 shapes [j].velocity.x *= -1;
@@ -269,6 +285,7 @@ void Update () {
         }
     }
     
+    // adjust movement position of the shapes
     for (int i = 0; i < shapes.size () ; i++) {
         shapes [i].objectPosition.x += shapes[i].velocity.x  * FIXED_TIMESTEP;
         shapes [i].objectPosition.y += shapes[i].velocity.y  * FIXED_TIMESTEP;
@@ -277,13 +294,11 @@ void Update () {
 
 }
 
+//Draw the shapes
 void Render () {
-    for (int i =0; i < cornerShapes.size (); i ++) {
-        cornerShapes[ i]. Draw (&program);
-    }
-    
    
     for (int i = 0; i < shapes.size (); i ++ ) {
+        // set shape's color with it rbg value
         program.SetColor(shapes[i].red, shapes[i].green, shapes[i].blue, 0.0f);
         shapes [i].Draw (&program);
     }
