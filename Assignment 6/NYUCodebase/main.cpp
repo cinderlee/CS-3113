@@ -20,6 +20,7 @@
 #define RESOURCE_FOLDER "NYUCodebase.app/Contents/Resources/"
 #endif
 
+#define FIXED_TIMESTEP 0.0166666f
 Mix_Chunk *paddleSound;
 Mix_Chunk *winningSound;
 
@@ -99,6 +100,7 @@ int main(int argc, char *argv[])
     
     float lastFrameTicks = 0.0f;
     float elapsed = 0.0f;
+    float accumulator = 0.0f;
     
     Mix_Music *music;
     music = Mix_LoadMUS ( RESOURCE_FOLDER"BossMain.wav" );
@@ -120,8 +122,17 @@ int main(int argc, char *argv[])
         elapsed = ticks - lastFrameTicks;
         lastFrameTicks = ticks;
         
-        // update objects' movement
-        Update (paddle1, paddle2, ball, elapsed, win);
+        elapsed += accumulator;
+        if(elapsed < FIXED_TIMESTEP) {
+            accumulator = elapsed;
+            continue;
+        }
+        while(elapsed >= FIXED_TIMESTEP) {
+            
+            Update (paddle1, paddle2, ball, FIXED_TIMESTEP, win);
+            elapsed -= FIXED_TIMESTEP;
+        }
+        accumulator = elapsed;
         
         //draw the objects
         Render (paddle1, paddle2, ball,
