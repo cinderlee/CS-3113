@@ -260,6 +260,8 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     // collision betwen paddles and ball in middle of game
     else if ((Collision (pad2, ballster) && ballster.velocity_x > 0 && !win) ||
         (Collision (pad1, ballster) && ballster.velocity_x < 0 && !win)){
+        
+        // play paddle sound
         Mix_PlayChannel (-1, paddleSound, 0);
         ballster.velocity_x *= -1;
     }
@@ -277,6 +279,7 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     // check if ball is at the 'goal'
     if ( (ballster.x < -5.325f || ballster.x > 5.325f) && !win) {
         win = true;
+        //play winning sound
         Mix_PlayChannel (-1, winningSound, 0);
         Win (pad1, pad2);
         
