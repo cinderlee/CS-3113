@@ -10,7 +10,6 @@
 		0091A5A4208BAF6D003C02A3 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091A5A3208BAF6D003C02A3 /* SDL2_mixer.framework */; };
 		0091A5A6208BB439003C02A3 /* BossMain.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0091A5A5208BB438003C02A3 /* BossMain.wav */; };
 		0091A5A9208BD80E003C02A3 /* slimeball.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0091A5A8208BD80E003C02A3 /* slimeball.wav */; };
-		00F4885A208BE8C40080545F /* Jingle_Achievement_00.wav in Resources */ = {isa = PBXBuildFile; fileRef = 00F48859208BE8C40080545F /* Jingle_Achievement_00.wav */; };
 		00F4885E208BEBDB0080545F /* gold-1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 00F4885D208BEBDB0080545F /* gold-1.wav */; };
 		6D5A86AE19AE5C710066C1FD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5A86AD19AE5C710066C1FD /* Cocoa.framework */; };
 		6D5A86B819AE5C710066C1FD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6D5A86B619AE5C710066C1FD /* InfoPlist.strings */; };
@@ -32,7 +31,6 @@
 		0091A5A3208BAF6D003C02A3 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
 		0091A5A5208BB438003C02A3 /* BossMain.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = BossMain.wav; sourceTree = "<group>"; };
 		0091A5A8208BD80E003C02A3 /* slimeball.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = slimeball.wav; sourceTree = "<group>"; };
-		00F48859208BE8C40080545F /* Jingle_Achievement_00.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Jingle_Achievement_00.wav; sourceTree = "<group>"; };
 		00F4885D208BEBDB0080545F /* gold-1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "gold-1.wav"; sourceTree = "<group>"; };
 		6D5A86AA19AE5C710066C1FD /* NYUCodebase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NYUCodebase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D5A86AD19AE5C710066C1FD /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -167,7 +165,6 @@
 				6D5A86B919AE5C710066C1FD /* main.cpp */,
 				0091A5A5208BB438003C02A3 /* BossMain.wav */,
 				0091A5A8208BD80E003C02A3 /* slimeball.wav */,
-				00F48859208BE8C40080545F /* Jingle_Achievement_00.wav */,
 				00F4885D208BEBDB0080545F /* gold-1.wav */,
 			);
 			name = Code;
@@ -234,7 +231,6 @@
 				0091A5A6208BB439003C02A3 /* BossMain.wav in Resources */,
 				00F4885E208BEBDB0080545F /* gold-1.wav in Resources */,
 				6D5A86BE19AE5C710066C1FD /* Credits.rtf in Resources */,
-				00F4885A208BE8C40080545F /* Jingle_Achievement_00.wav in Resources */,
 				6DEF23C41B96CC2600BCE792 /* vertex.glsl in Resources */,
 				6DC7076A1BA7273500225B7D /* vertex_textured.glsl in Resources */,
 			);

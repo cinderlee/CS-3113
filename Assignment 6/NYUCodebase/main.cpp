@@ -20,9 +20,8 @@
 #define RESOURCE_FOLDER "NYUCodebase.app/Contents/Resources/"
 #endif
 
-Mix_Chunk *someSound;
-Mix_Chunk *someSound2;
-Mix_Chunk *someSound3;
+Mix_Chunk *paddleSound;
+Mix_Chunk *winningSound;
 
 // prototypes
 class Entity;
@@ -31,7 +30,7 @@ void ProcessEvents (SDL_Event& event, bool& done);
 void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& win);
 void Render (Entity& pad1, Entity& pad2, Entity& ballster,
              Matrix& model, Matrix& model2, Matrix& model3,
-             Matrix& view, Matrix& view2, Matrix& view3, ShaderProgram& program);
+            ShaderProgram& program);
 bool Collision (Entity& pad, Entity& ballster);
 void Win (Entity& pad1, Entity& pad2);
 
@@ -44,10 +43,9 @@ public:
     velocity_x (velx), velocity_y (vely) {}
     
     // draws the object
-    void Draw(ShaderProgram &program, Matrix& model, Matrix& view) {
+    void Draw(ShaderProgram &program, Matrix& model) {
         glUseProgram(program.programID);
         program.SetModelMatrix(model);
-        program.SetViewMatrix(view);
         program.SetColor(red, 1.0f, blue, 1.0f);
         float verticesUntextured[] = {x - width/2, y + height/2, x -width/2, y - height/2, x + width/2, y -height/2, x - width/2, y + height/2, x + width/2, y - height/2, x + width/2, y + height/2};
         glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, verticesUntextured);
@@ -72,26 +70,28 @@ SDL_Window* displayWindow;
 int main(int argc, char *argv[])
 {
     Matrix projectionMatrix;
+    Matrix viewMatrix;
     
     // sets up the projection matrix and display
     Setup (projectionMatrix);
     ShaderProgram programUntextured;
     programUntextured.Load(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
 
+    // set the projection matrix and view matrix
+    programUntextured.SetProjectionMatrix(projectionMatrix);
+    programUntextured.SetViewMatrix(viewMatrix);
+    
     // left paddle
-    Matrix viewMatrix;
     Matrix modelMatrix;
-    Entity paddle1 = Entity (-3.0, 0.0, 0.15f, 0.75f, 0.0f, 2.5f);
+    Entity paddle1 = Entity (-4.5, 0.0, 0.25f, 1.125f, 0.0f, 2.5f);
     
     // right paddle
-    Matrix viewMatrix2;
     Matrix modelMatrix2;
-    Entity paddle2 = Entity (3.0, 0.0, 0.15, 0.75f, 0.0f, 2.5f);
+    Entity paddle2 = Entity (4.5, 0.0, 0.25f, 1.125f, 0.0f, 2.5f);
     
     // ball
-    Matrix viewMatrix3;
     Matrix modelMatrix3;
-    Entity ball = Entity (0.0f, 0.0f, 0.15f, 0.15f, -1.5f, -1.0f);
+    Entity ball = Entity (0.0f, 0.0f, 0.25f, 0.25f, -1.5f, -1.0f);
     
     SDL_Event event;
     bool done = false;
@@ -105,12 +105,9 @@ int main(int argc, char *argv[])
     Mix_VolumeMusic(25);
     Mix_PlayMusic (music, -1);
     
-    someSound = Mix_LoadWAV (RESOURCE_FOLDER"slimeball.wav");
+    paddleSound = Mix_LoadWAV (RESOURCE_FOLDER"slimeball.wav");
 
-    someSound2 = Mix_LoadWAV (RESOURCE_FOLDER"gold-1.wav");
-    if (someSound2 == nullptr) {
-        std::cout << "soundSound2: " << Mix_GetError() << std::endl;
-    }
+    winningSound = Mix_LoadWAV (RESOURCE_FOLDER"gold-1.wav");
    
     
 
@@ -123,16 +120,13 @@ int main(int argc, char *argv[])
         elapsed = ticks - lastFrameTicks;
         lastFrameTicks = ticks;
         
-        // set the projection matrix
-        programUntextured.SetProjectionMatrix(projectionMatrix);
-        
         // update objects' movement
         Update (paddle1, paddle2, ball, elapsed, win);
         
         //draw the objects
         Render (paddle1, paddle2, ball,
                 modelMatrix, modelMatrix2, modelMatrix3,
-                viewMatrix, viewMatrix2, viewMatrix3, programUntextured);
+                programUntextured);
     
         SDL_GL_SwapWindow(displayWindow);
     }
@@ -151,8 +145,7 @@ void Setup (Matrix& projection) {
     glewInit();
 #endif
     glViewport(0, 0, 960, 540);
-    
-    projection.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
+    projection.SetOrthoProjection(-5.325, 5.325, -3.0f, 3.0f, -1.50f, 1.5f);
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     
 }
@@ -174,8 +167,8 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     // key down - move paddle 2 down
     // if at the border - stay at border
     if (keys [SDL_SCANCODE_DOWN]){
-        if (pad2.y - pad2.height/2 - (elapsed * pad2.velocity_y) < -2.0f ) {
-            pad2.y = -2.0f + pad2.height/2;
+        if (pad2.y - pad2.height/2 - (elapsed * pad2.velocity_y) < -3.0f ) {
+            pad2.y = -3.0f + pad2.height/2;
         }
         else {
             pad2.y -= elapsed * pad2.velocity_y;
@@ -185,8 +178,8 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     //key up - move paddle 2 up
     //if at the border- stay at boarder
     if (keys [SDL_SCANCODE_UP]) {
-        if (pad2.y + pad2.height/2 + (elapsed * pad2.velocity_y) > 2.0f ) {
-            pad2.y = 2.0f - pad2.height/2;
+        if (pad2.y + pad2.height/2 + (elapsed * pad2.velocity_y) > 3.0f ) {
+            pad2.y = 3.0f - pad2.height/2;
         }
         else {
             pad2.y += elapsed * pad2.velocity_y;
@@ -196,8 +189,8 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     //key up - move paddle 1 down
     //if at the border- stay at boarder
     if (keys [SDL_SCANCODE_S]) {
-        if (pad1.y - pad1.height/2 - (elapsed * pad1.velocity_y) < -2.0f ) {
-            pad1.y = -2.0f + pad1.height/2;
+        if (pad1.y - pad1.height/2 - (elapsed * pad1.velocity_y) < -3.0f ) {
+            pad1.y = -3.0f + pad1.height/2;
         }
         else {
             pad1.y -= elapsed * pad1.velocity_y;
@@ -207,8 +200,8 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     //key up - move paddle 1 up
     //if at the border- stay at boarder
     if (keys [SDL_SCANCODE_W]) {
-        if (pad1.y + pad1.height/2 + (elapsed * pad1.velocity_y) > 2.0f ) {
-            pad1.y = 2.0f - pad1.height/2;
+        if (pad1.y + pad1.height/2 + (elapsed * pad1.velocity_y) > 3.0f ) {
+            pad1.y = 3.0f - pad1.height/2;
         }
         else {
             pad1.y += elapsed * pad1.velocity_y;
@@ -222,14 +215,14 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
         ballster.y = 0.0f;
         ballster.velocity_x = -2.5f;
         ballster.velocity_y = -2.0f;
-        pad1.x = -3.0f;
+        pad1.x = -4.5f;
         pad1.y = 0.0f;
-        pad2.x = 3.0f;
+        pad2.x = 4.5f;
         pad2.y = 0.0f;
-        pad1.width = 0.15f;
-        pad1.height = 0.75f;
-        pad2.height = 0.75f;
-        pad2.width = 0.15f;
+        pad1.width = 0.25f;
+        pad1.height = 1.125f;
+        pad2.height = 1.125f;
+        pad2.width = 0.25f;
         pad2.red = 1.0f;
         pad2.blue = 1.0f;
         pad1.red = 1.0f;
@@ -249,41 +242,41 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
     }
     
     // movement of ball on winning screen
-    else if (ballster.y >= 0.5f && win && ballster.velocity_y > 0) {
+    else if (ballster.y >= 1.0f && win && ballster.velocity_y > 0) {
         ballster.velocity_y *= -1;
     }
     
     // collision betwen paddles and ball in middle of game
     else if ((Collision (pad2, ballster) && ballster.velocity_x > 0 && !win) ||
         (Collision (pad1, ballster) && ballster.velocity_x < 0 && !win)){
-        Mix_PlayChannel (-1, someSound, 0);
+        Mix_PlayChannel (-1, paddleSound, 0);
         ballster.velocity_x *= -1;
     }
     
     // check for ball at the top border
-    else if (ballster.y + ballster.height/2 >= 2.0f && ballster.velocity_y > 0) {
+    else if (ballster.y + ballster.height/2 >= 3.0f && ballster.velocity_y > 0) {
         ballster.velocity_y *= -1;
     }
     
     // check for ball at the bottom border
-    else if (ballster.y - ballster.height/2 <= -2.0f && ballster.velocity_y < 0) {
+    else if (ballster.y - ballster.height/2 <= -3.0f && ballster.velocity_y < 0) {
         ballster.velocity_y *= -1;
     }
     
     // check if ball is at the 'goal'
-    if ( (ballster.x < -3.55f || ballster.x > 3.55f) && !win) {
+    if ( (ballster.x < -5.325f || ballster.x > 5.325f) && !win) {
         win = true;
-        Mix_PlayChannel (-1, someSound2, 0);
+        Mix_PlayChannel (-1, winningSound, 0);
         Win (pad1, pad2);
         
         //make winning paddle green
-        if (ballster.x < -3.55f) {
-            ballster.x = 1.77f;
+        if (ballster.x < -5.32f) {
+            ballster.x = 2.25;
             pad2.red = 0.0f;
             pad2.blue = 0.0f;
         }
         else {
-            ballster.x = -1.77f;
+            ballster.x = -2.25;
             pad1.red = 0.0f;
             pad1.blue = 0.0f;
         }
@@ -297,10 +290,10 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
 // draw the objects
 void Render (Entity& pad1, Entity& pad2, Entity& ballster,
              Matrix& model, Matrix& model2, Matrix& model3,
-             Matrix& view, Matrix& view2, Matrix& view3, ShaderProgram& program) {
-    pad1.Draw (program,model,view);
-    pad2.Draw (program, model2, view2);
-    ballster.Draw (program, model3, view3);
+             ShaderProgram& program) {
+    pad1.Draw (program,model);
+    pad2.Draw (program, model2);
+    ballster.Draw (program, model3);
     
 }
 
@@ -317,14 +310,14 @@ bool Collision (Entity& pad, Entity& ballster){
 
 // when one side wins, adjust entities' attributes
 void Win (Entity& pad1, Entity& pad2) {
-    pad1.x = -1.77f;
+    pad1.x = -2.25f;
     pad1.y = 0.0f;
-    pad1.width = 0.75f;
-    pad1.height = 0.15f;
-    pad2.x = 1.77f;
+    pad1.width = 1.125f;
+    pad1.height = 0.25;
+    pad2.x = 2.25f;
     pad2.y = 0.0f;
-    pad2.width = 0.75f;
-    pad2.height = 0.15f;
+    pad2.width = 1.125f;
+    pad2.height = 0.25;
     pad1.velocity_y = 0.0f;
     pad2.velocity_y = 0.0f;
 }
