@@ -141,6 +141,10 @@ int main(int argc, char *argv[])
         SDL_GL_SwapWindow(displayWindow);
     }
     
+    // clean up upon quitting
+    Mix_FreeChunk(winningSound);
+    Mix_FreeChunk(paddleSound);
+    Mix_FreeMusic(music);
     SDL_Quit();
     return 0;
 }
