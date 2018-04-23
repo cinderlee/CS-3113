@@ -1,6 +1,8 @@
 // PONG Assignment
 // Cindy Lee
 // cl3616
+// Added sound to ball and paddle collision
+// Added sound when one side wins 
 
 #ifdef _WINDOWS
 #include <GL/glew.h>
