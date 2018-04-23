@@ -283,7 +283,7 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
         Win (pad1, pad2);
         
         //make winning paddle green
-        if (ballster.x < -5.32f) {
+        if (ballster.x < -5.325f) {
             ballster.x = 2.25;
             pad2.red = 0.0f;
             pad2.blue = 0.0f;
