@@ -31,9 +31,6 @@ class Entity;
 void Setup (Matrix& projection);
 void ProcessEvents (SDL_Event& event, bool& done);
 void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& win);
-//void Render (Entity& pad1, Entity& pad2, Entity& ballster,
-//             Matrix& model, Matrix& model2, Matrix& model3,
-//            ShaderProgram& program);
 void Render (Entity& pad1, Entity& pad2, Entity& ballster, ShaderProgram& program);
 bool Collision (Entity& pad, Entity& ballster);
 void Win (Entity& pad1, Entity& pad2);
