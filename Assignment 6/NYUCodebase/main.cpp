@@ -2,7 +2,7 @@
 // Cindy Lee
 // cl3616
 // Added sound to ball and paddle collision
-// Added sound when one side wins 
+// Added sound when one side wins
 
 #ifdef _WINDOWS
 #include <GL/glew.h>
@@ -31,9 +31,10 @@ class Entity;
 void Setup (Matrix& projection);
 void ProcessEvents (SDL_Event& event, bool& done);
 void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& win);
-void Render (Entity& pad1, Entity& pad2, Entity& ballster,
-             Matrix& model, Matrix& model2, Matrix& model3,
-            ShaderProgram& program);
+//void Render (Entity& pad1, Entity& pad2, Entity& ballster,
+//             Matrix& model, Matrix& model2, Matrix& model3,
+//            ShaderProgram& program);
+void Render (Entity& pad1, Entity& pad2, Entity& ballster, ShaderProgram& program);
 bool Collision (Entity& pad, Entity& ballster);
 void Win (Entity& pad1, Entity& pad2);
 
@@ -46,11 +47,13 @@ public:
     velocity_x (velx), velocity_y (vely) {}
     
     // draws the object
-    void Draw(ShaderProgram &program, Matrix& model) {
+    void Draw(ShaderProgram &program) {
         glUseProgram(program.programID);
-        program.SetModelMatrix(model);
+        modelMatrix.Identity();
+        modelMatrix.SetPosition (x, y, 0.0f);
+        program.SetModelMatrix(modelMatrix);
         program.SetColor(red, 1.0f, blue, 1.0f);
-        float verticesUntextured[] = {x - width/2, y + height/2, x -width/2, y - height/2, x + width/2, y -height/2, x - width/2, y + height/2, x + width/2, y - height/2, x + width/2, y + height/2};
+        float verticesUntextured[] = {-1 * width/2, height/2, -1 * width/2, -1 * height/2, width/2, -1 * height/2, -1 * width/2, height/2, width/2, -1 *height/2, width/2, height/2};
         glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, verticesUntextured);
         glEnableVertexAttribArray(program.positionAttribute);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -65,6 +68,7 @@ public:
     float velocity_y;
     float red = 1.0;
     float blue = 1.0;
+    Matrix modelMatrix;
 };
 
 
@@ -85,15 +89,12 @@ int main(int argc, char *argv[])
     programUntextured.SetViewMatrix(viewMatrix);
     
     // left paddle
-    Matrix modelMatrix;
     Entity paddle1 = Entity (-4.5, 0.0, 0.25f, 1.125f, 0.0f, 2.5f);
     
     // right paddle
-    Matrix modelMatrix2;
     Entity paddle2 = Entity (4.5, 0.0, 0.25f, 1.125f, 0.0f, 2.5f);
     
     // ball
-    Matrix modelMatrix3;
     Entity ball = Entity (0.0f, 0.0f, 0.25f, 0.25f, -2.5f, -2.0f);
     
     SDL_Event event;
@@ -138,7 +139,6 @@ int main(int argc, char *argv[])
         
         //draw the objects
         Render (paddle1, paddle2, ball,
-                modelMatrix, modelMatrix2, modelMatrix3,
                 programUntextured);
     
         SDL_GL_SwapWindow(displayWindow);
@@ -305,11 +305,10 @@ void Update (Entity& pad1, Entity& pad2, Entity& ballster, float elapsed, bool& 
 
 // draw the objects
 void Render (Entity& pad1, Entity& pad2, Entity& ballster,
-             Matrix& model, Matrix& model2, Matrix& model3,
              ShaderProgram& program) {
-    pad1.Draw (program,model);
-    pad2.Draw (program, model2);
-    ballster.Draw (program, model3);
+    pad1.Draw (program);
+    pad2.Draw (program);
+    ballster.Draw (program);
     
 }
 
