@@ -209,9 +209,27 @@ void GameLevelUpdate (float elapsed) {
     state.player.velocity.x = lerp(state.player.velocity.x, 0.0f, elapsed * 1.5);
     state.player.velocity.y = lerp(state.player.velocity.y, 0.0f, elapsed * 1.5);
     
-    // calculating x position
+    // calculating x velocity
     state.player.velocity.x += state.player.acceleration.x * elapsed;
+    
+
+    state.player.velocity.y += state.player.acceleration.y * elapsed;
+    state.player.velocity.y += state.player.gravity.y * elapsed;
+    
+    // calculating positions
+    state.player.position.y += state.player.velocity.y * elapsed;
+    state.CollisionY ();
+    
+    // "jumping"
+    if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
+        
+        state.player.velocity.y = 3.0f;
+        state.player.acceleration.y = 1.0f;
+        
+    }
+    
     state.player.position.x += state.player.velocity.x * elapsed;
+    state.CollisionX ();
     
     // if moving past the left edge of game
     if (state.player.position.x - state.player.sizeEnt.x/2 <= 0.0f) {
@@ -223,32 +241,12 @@ void GameLevelUpdate (float elapsed) {
         state.player.position.x = state.mappy -> mapWidth * 0.3 - state.player.sizeEnt.x/2;
     }
     
-    state.Collision ();
-    //std::cout <<state.player.collidedBottom;
-    
-    // "jumping"
-    if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
-        
-        state.player.velocity.y = 2.0f;
-        state.player.acceleration.y = 1.0f;
-        
-    }
-    
-    // calculting positions
-    state.player.velocity.y += state.player.acceleration.y * elapsed;
-    state.player.position.y += state.player.velocity.y * elapsed;
-    
-    // applying gravity and changes in y
-    state.player.velocity.y += state.player.acceleration.y * elapsed;
-    state.player.position.y += state.player.gravity.y * elapsed;
-    
-    
     //if hitting the top of the window (can happen when trying to jump onto clouds)
     if (state.player.position.y + state.player.sizeEnt.y/2 >= 0) {
         state.player.position.y = 0 - state.player.sizeEnt.y/2;
     }
     
-    state.Collision ();
+
     
     // adjusting viewMatrix
     viewX = -state.player.position.x;

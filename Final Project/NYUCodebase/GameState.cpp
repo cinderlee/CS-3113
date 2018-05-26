@@ -39,7 +39,7 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "playerRed") {
             
             player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850, 518, 39, 48, TILE_SIZE);
-            player.gravity.y = -0.5f;
+            player.gravity.y = -1.5f;
         }
         
         // creating the enemies
@@ -55,8 +55,6 @@ void GameState::LoadLevel () {
             key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961, 495, 29, 30, TILE_SIZE /2);
         }
     }
-    
-    std::cout << enemies.size () << std::endl;
 }
 
 void GameState::UpdateLevel() {
@@ -108,7 +106,6 @@ void GameState::Collision () {
     bool rightTile = false;
     
     for (int x: solidTiles) {
-        std::cout << x << std:: endl;
         std::cout << mappy -> mapData [TileBottomY ][TileX] - 1 << std::endl;
         if (x == mappy -> mapData[TileBottomY] [TileX] - 1) {
             bottomTile = true;
@@ -204,8 +201,8 @@ void GameState::CollisionX () {
             player.acceleration.x = 0.0f;
             player.velocity.x = 0.0f;
             player.position.x -= (player.position.x + player.sizeEnt.x/2 - worldRightX) ;
-            player.collidedRight = true;
         }
+        player.collidedRight = true;
     }
     
     // if left tile is solid
@@ -215,8 +212,8 @@ void GameState::CollisionX () {
             player.acceleration.x = 0.0f;
             player.velocity.x = 0.0f;
             player.position.x += (worldLeftX - player.position.x - player.sizeEnt.x/2) + 2 * TILE_SIZE;
-            player.collidedLeft = true;
         }
+        player.collidedLeft = true;
     }
 }
 
@@ -253,8 +250,8 @@ void GameState::CollisionY () {
             player.acceleration.y = 0.0f;
             player.velocity.y = 0.0f;
             player.position.y += (worldBotY - player.position.y - player.sizeEnt.y/2) + TILE_SIZE;
-            player.collidedBottom = true;
         }
+        player.collidedBottom = true;
     }
     
     
@@ -265,8 +262,8 @@ void GameState::CollisionY () {
             player.acceleration.y = 0.0f;
             player.velocity.y = 0.0f;
             player.position.y -= (player.position.y + player.sizeEnt.y/2 - worldTopY) + TILE_SIZE;
-            player.collidedTop = true;
         }
+         player.collidedTop = true;
     }
   
 }
