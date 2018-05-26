@@ -187,65 +187,68 @@ void ProcessEvents (SDL_Event& event, bool& done) {
 
 //updating the game
 void GameLevelUpdate (float elapsed) {
-    state.Collision();
     
+    state.player.collisionBools();
     
-    // applying friction
-    state.player.velocity.x = lerp(state.player.velocity.x, 0.0f, elapsed * 1.5);
+    state.player.acceleration.x = 0.0f;
+    state.player.acceleration.y = 0.0f;
     
     //move left
-    if (keys [SDL_SCANCODE_LEFT] ){
-        state.player.velocity.x = -1.0f;
-        
-        state.player.acceleration.x = 1.5f;
-        
-        state.player.velocity.x += state.player.acceleration.x * elapsed;
-        
-        
+    if (keys [SDL_SCANCODE_LEFT]){
+        state.player.velocity.x = -0.5f;
+        state.player.acceleration.x = -1.0f;
     }
     
     // move right
-    if (keys [SDL_SCANCODE_RIGHT] ){
-        state.player.velocity.x = 1.0f;
-        
-        state.player.acceleration.x = 1.5f;
-        
-        state.player.velocity.x += state.player.acceleration.x * elapsed;
+    if (keys [SDL_SCANCODE_RIGHT]){
+        state.player.velocity.x = 0.5f;
+        state.player.acceleration.x = 1.0f;
     }
     
-    // "jumping"
-    if (keys [SDL_SCANCODE_UP] ){
-        
-        state.player.velocity.y = 1.0f;
-        
-        state.player.acceleration.y = 1.0f;
-        
-        state.player.velocity.y += state.player.acceleration.y * elapsed;
-        
-        state.player.velocity.y += state.player.gravity.y * elapsed;
-        
-    }
+    // applying friction
+    state.player.velocity.x = lerp(state.player.velocity.x, 0.0f, elapsed * 1.5);
+    state.player.velocity.y = lerp(state.player.velocity.y, 0.0f, elapsed * 1.5);
     
-    // calculting positions
+    // calculating x position
+    state.player.velocity.x += state.player.acceleration.x * elapsed;
     state.player.position.x += state.player.velocity.x * elapsed;
-    state.player.velocity.y += state.player.acceleration.y * elapsed;
-    state.player.position.y += state.player.velocity.y * elapsed;
-    state.player.acceleration.x = 0.0f;
-    
-    // applying gravity and changes in y
-    state.player.velocity.y += state.player.acceleration.y * elapsed;
-    state.player.position.y += state.player.velocity.y * elapsed;
-    state.player.gravity.y = 0.0f;
     
     // if moving past the left edge of game
     if (state.player.position.x - state.player.sizeEnt.x/2 <= 0.0f) {
         state.player.position.x = 0.0f + state.player.sizeEnt.x/2;
     }
     
+    // if moving past the right edge of game
+    if (state.player.position.x + state.player.sizeEnt.x/2 >= state.mappy -> mapWidth * 0.3) {
+        state.player.position.x = state.mappy -> mapWidth * 0.3 - state.player.sizeEnt.x/2;
+    }
+    
+    state.Collision ();
+    //std::cout <<state.player.collidedBottom;
+    
+    // "jumping"
+    if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
+        
+        state.player.velocity.y = 2.0f;
+        state.player.acceleration.y = 1.0f;
+        
+    }
+    
+    // calculting positions
+    state.player.velocity.y += state.player.acceleration.y * elapsed;
+    state.player.position.y += state.player.velocity.y * elapsed;
+    
+    // applying gravity and changes in y
+    state.player.velocity.y += state.player.acceleration.y * elapsed;
+    state.player.position.y += state.player.gravity.y * elapsed;
+    
+    
     //if hitting the top of the window (can happen when trying to jump onto clouds)
     if (state.player.position.y + state.player.sizeEnt.y/2 >= 0) {
         state.player.position.y = 0 - state.player.sizeEnt.y/2;
     }
+    
+    state.Collision ();
     
     // adjusting viewMatrix
     viewX = -state.player.position.x;
@@ -263,7 +266,6 @@ void GameLevelUpdate (float elapsed) {
         viewY = 2.0;
     }
     
-    state.player.collisionBools();
 }
 
 void mainRender () {

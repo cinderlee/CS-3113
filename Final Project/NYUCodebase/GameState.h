@@ -26,17 +26,19 @@ public:
     int GetLevel ();
     void Draw (ShaderProgram* program);
     void Collision ();
+    void CollisionX ();
+    void CollisionY ();
     
     
     Entity player;
     Entity key;
     std::vector <Entity> enemies;
-    int sprites = 0;
-    int spritePlayer = 0;
-    int spriteEnemy = 0;
     FlareMap* mappy;
     
 private:
+    int sprites = 0;
+    int spritePlayer = 0;
+    int spriteEnemy = 0;
     int level = 0;
     int lives = 5;
     std::vector <int> solidTiles = {0, 1, 2, 3, 5, 6, 7};
