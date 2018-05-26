@@ -22,6 +22,7 @@ public:
     void Update(float elapsed);
     bool Collision (Entity* other);
     void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
+    void collisionBools ();
     
     Vector3 position = Vector3 (0.0f, 0.0f, 0.0f);
     Vector3 velocity = Vector3 (0.0f, 0.0f, 0.0f);

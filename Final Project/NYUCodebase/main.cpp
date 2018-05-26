@@ -262,6 +262,8 @@ void GameLevelUpdate (float elapsed) {
     else if (viewY <= 2.0) {
         viewY = 2.0;
     }
+    
+    state.player.collisionBools();
 }
 
 void mainRender () {

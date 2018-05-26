@@ -102,51 +102,75 @@ void GameState::Collision () {
     player.worldToTileCoordinates(player.position.x - player.sizeEnt.x/2, player.position.y - player.sizeEnt.y/2 , &TileLeftX, &TileBottomY);
     player.worldToTileCoordinates(player.position.x + player.sizeEnt.x/2, player.position.y + player.sizeEnt.y/2, &TileRightX, &TileTopY);
     
+    bool bottomTile = false;
+    bool topTile = false;
+    bool leftTile = false;
+    bool rightTile = false;
+    
+    for (int x: solidTiles) {
+        if (x == mappy -> mapData[TileBottomY] [TileX] - 1) {
+            bottomTile = true;
+        }
+        if (x == mappy -> mapData [TileTopY][ TileX] - 1) {
+            topTile = true;
+        }
+        if (x == mappy -> mapData [TileY][TileRightX] - 1) {
+            rightTile = true;
+        }
+        if (x == mappy -> mapData [TileY][TileLeftX] - 1) {
+            leftTile = true;
+        }
+    }
+    
     // if tile below is 0, free fall
-    if (mappy -> mapData[TileBottomY] [TileX] == 0) {
+    if (!bottomTile) {
         player.gravity.y = -0.55f;
         player.velocity.y = -1.0f;
     }
     
     
     // if tile below is solid, reset bottom to be on top
-    else if (mappy -> mapData [TileBottomY][ TileX] != 0) {
+    else if (bottomTile) {
         float worldBotY = -1 * TILE_SIZE * TileBottomY;
         if (worldBotY > player.position.y - player.sizeEnt.y/2) {
             player.acceleration.y = 0.0f;
             player.velocity.y = 0.0f;
             player.position.y += (worldBotY - player.position.y - player.sizeEnt.y/2) + TILE_SIZE;
+            player.collidedBottom = true;
         }
     }
     
     
     // if tile above is solid
-    if (mappy -> mapData [TileTopY][ TileX] != 0) {
+    if (topTile) {
         float worldTopY = -1 * TILE_SIZE * TileTopY;
         if (worldTopY - TILE_SIZE < player.position.y + player.sizeEnt.y/2) {
             player.acceleration.y = 0.0f;
             player.velocity.y = 0.0f;
             player.position.y -= (player.position.y + player.sizeEnt.y/2 - worldTopY) + TILE_SIZE;
+            player.collidedTop = true;
         }
     }
     
     // if right tile is solid
-    if (mappy -> mapData [TileY][TileRightX] != 0) {
+    if (rightTile) {
         float worldRightX = TILE_SIZE * TileRightX;
         if (worldRightX < player.position.x + player.sizeEnt.x/2) {
             player.acceleration.x = 0.0f;
             player.velocity.x = 0.0f;
             player.position.x -= (player.position.x + player.sizeEnt.x/2 - worldRightX) ;
+            player.collidedRight = true;
         }
     }
     
     // if left tile is solid
-    if (mappy -> mapData [TileY][TileLeftX] != 0) {
+    if (leftTile) {
         float worldLeftX = TILE_SIZE * TileLeftX;
         if (worldLeftX + TILE_SIZE > player.position.x - player.sizeEnt.x/2) {
             player.acceleration.x = 0.0f;
             player.velocity.x = 0.0f;
             player.position.x += (worldLeftX - player.position.x - player.sizeEnt.x/2) + 2 * TILE_SIZE;
+            player.collidedLeft = true;
         }
     }
     

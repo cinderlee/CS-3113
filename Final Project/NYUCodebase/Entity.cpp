@@ -46,3 +46,10 @@ void Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, int 
     *gridY = (int)(-worldY / 0.3f);
 }
 
+void Entity::collisionBools () {
+    collidedLeft = false;
+    collidedRight = false;
+    collidedTop = false;
+    collidedBottom = false;
+}
+
