@@ -46,6 +46,14 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "spider") {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 929, 949, 32, 44, TILE_SIZE));
         }
+        
+        if (mappy -> entities [index].type == "keyRed") {
+            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 962, 252, 29, 30, TILE_SIZE /2 );
+        }
+        
+        if (mappy -> entities [index].type == "keyGreen") {
+            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961, 495, 29, 30, TILE_SIZE /2);
+        }
     }
     
     std::cout << enemies.size () << std::endl;
@@ -63,6 +71,7 @@ void GameState::Draw (ShaderProgram* program) {
     for (int i = 0; i < enemies.size (); i++){
         enemies[i].Draw (program);
     }
+    key.Draw (program);
 }
 
 // checking for any collisions in game
