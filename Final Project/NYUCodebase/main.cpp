@@ -41,6 +41,7 @@ bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
 GameMode mode = STATE_MAIN_MENU;
 
+void LoadingTextures();
 void Setup();
 void ProcessEvents (SDL_Event& event, bool& done);
 void Update (float elapsed, int& direction);
@@ -130,6 +131,20 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+void LoadingTextures () {
+    tilesheet = LoadTexture(RESOURCE_FOLDER"Resources/tilesheet_complete.png");
+    playerSheet = LoadTexture(RESOURCE_FOLDER"Resources/spritesheet_complete.png");
+    enemySheet = LoadTexture(RESOURCE_FOLDER"Resources/enemies.png");
+    textie = LoadTexture(RESOURCE_FOLDER "Resources/font1.png");
+    backgroundOne = LoadTexture(RESOURCE_FOLDER"Resources/set1_background.png");
+    backgroundTwo = LoadTexture(RESOURCE_FOLDER"Resources/bg_castle.png");
+    backgroundThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_background.png");
+    hillsOne = LoadTexture(RESOURCE_FOLDER"Resources/set1_hills.png");
+    hillsThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_hills.png");
+    tilesOne = LoadTexture(RESOURCE_FOLDER"Resources/set1_tiles.png");
+    tilesThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_tiles.png");
+}
+
 // setting up game
 void Setup () {
     SDL_Init(SDL_INIT_VIDEO);
@@ -143,19 +158,9 @@ void Setup () {
     glViewport(0, 0, 1280, 720);
     
     program.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
-    tilesheet = LoadTexture(RESOURCE_FOLDER"tilesheet_complete.png");
-    playerSheet = LoadTexture(RESOURCE_FOLDER"spritesheet_complete.png");
-    enemySheet = LoadTexture(RESOURCE_FOLDER"enemies.png");
-    textie = LoadTexture(RESOURCE_FOLDER "font1.png");
-    backgroundOne = LoadTexture(RESOURCE_FOLDER"set1_background.png");
-    backgroundTwo = LoadTexture(RESOURCE_FOLDER"bg_castle.png");
-    backgroundThree = LoadTexture(RESOURCE_FOLDER"set3_background.png");
-    hillsOne = LoadTexture(RESOURCE_FOLDER"set1_hills.png");
-    hillsThree = LoadTexture(RESOURCE_FOLDER"set3_hills.png");
-    tilesOne = LoadTexture(RESOURCE_FOLDER"set1_tiles.png");
-    tilesThree = LoadTexture(RESOURCE_FOLDER"set3_tiles.png");
+    LoadingTextures();
     
-    state.Initiate (tilesheet, playerSheet, enemySheet, RESOURCE_FOLDER"FinalTitle.txt");
+    state.Initiate (tilesheet, playerSheet, enemySheet, RESOURCE_FOLDER"Resources/FinalTitle.txt");
     
     glUseProgram(program.programID);
     

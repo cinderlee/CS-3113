@@ -33,8 +33,7 @@ void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEn
         // creating the enemies
         if (mappy.entities [index].type == "spider") {
             enemies.push_back (Entity (spritePlayer, (mappy.entities [index].x + 0.5) * TILE_SIZE, (mappy.entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 929, 949, 32, 44, TILE_SIZE));
-            // enemies [ enemies.size () - 1].velocity.y = 1.0f;
-            // enemies [ enemies.size () - 1].acceleration.y = 0.5f;
+        
         }
     }
 
