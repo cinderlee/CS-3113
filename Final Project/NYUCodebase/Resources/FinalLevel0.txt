@@ -7,7 +7,7 @@ orientation=orthogonal
 background_color=0,0,0,255
 
 [tilesets]
-tileset=Github/CS-3113/Final Project/NYUCodebase/tilesheet_complete.png,64,64,0,0
+tileset=Github/CS-3113/Final Project/NYUCodebase/Resources/tilesheet_complete.png,64,64,0,0
 
 [layer]
 type=Tile Layer 1

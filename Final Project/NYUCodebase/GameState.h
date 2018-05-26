@@ -19,7 +19,10 @@
 class GameState {
 public:
     GameState ();
-    void Initiate (int spriteTiles, int spritesterPlayer, int spritesterEnemy, const std::string fileName);
+    void Initiate (int spriteTiles, int spritesterPlayer, int spritesterEnemy);
+    void LoadLevel ();
+    void UpdateLevel ();
+    void Update ();
     void Draw (ShaderProgram* program);
     void Collision ();
     
@@ -30,9 +33,11 @@ public:
     int sprites = 0;
     int spritePlayer = 0;
     int spriteEnemy = 0;
-    int level = 0;
-    int lives = 5; 
     FlareMap mappy;
+    
+private:
+    int level = 0;
+    int lives = 5;
 };
 
 

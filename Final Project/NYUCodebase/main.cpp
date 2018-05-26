@@ -160,7 +160,7 @@ void Setup () {
     program.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
     LoadingTextures();
     
-    state.Initiate (tilesheet, playerSheet, enemySheet, RESOURCE_FOLDER"Resources/FinalTitle.txt");
+    state.Initiate (tilesheet, playerSheet, enemySheet);
     
     glUseProgram(program.programID);
     
@@ -168,7 +168,6 @@ void Setup () {
     projectionMatrix.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
     viewX = -3.55f;
     viewY = -1 * state.player.position.y;
-    //std::cout << state.player.position.y << "saveme";
     if (viewY >= state.mappy.mapHeight * TILE_SIZE - 2.0) {
         viewY = state.mappy.mapHeight * TILE_SIZE - 2.0;
     }
@@ -188,7 +187,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
 
 //updating the game
 void GameLevelUpdate (float elapsed) {
-    //state.Collision();
+    state.Collision();
     
     
     // applying friction
@@ -265,6 +264,21 @@ void GameLevelUpdate (float elapsed) {
 //    }
 //    program.SetViewMatrix(viewMatrix);
     
+    viewX = -state.player.position.x;
+    viewY = -state.player.position.y;
+    if (viewX >= -3.55) {
+        viewX = -3.55;
+    }
+    else if (-viewX >= state.mappy.mapWidth * TILE_SIZE - 3.55) {
+        viewX = -(state.mappy.mapWidth * TILE_SIZE - 3.55);
+    }
+    if (viewY >= state.mappy.mapHeight * TILE_SIZE - 2.0) {
+        viewY = state.mappy.mapHeight * TILE_SIZE - 2.0;
+    }
+    else if (viewY <= 2.0) {
+        viewY = 2.0;
+    }
+    std::cout << viewX << ", " << viewY << std::endl;
 }
 
 void mainRender () {
@@ -284,6 +298,34 @@ void mainRender () {
     DrawWords (&program, textie, "Press Space to Start", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (20*0.25/2), viewY + 0.5f );
 }
 
+void mainUpdate (float elapsed, int& direction) {
+    if (-viewX >= state.mappy.mapWidth * TILE_SIZE - 3.55) {
+        viewX = -(state.mappy.mapWidth * TILE_SIZE - 3.55);
+        direction *= -1;
+    }
+    if (viewX >= -3.55) {
+        direction *= -1;
+        viewX = -3.55;
+    }
+    viewX -= elapsed * direction;
+    if (direction == -1) {
+        viewX -= elapsed * 3 * direction;
+    }
+    if (keys [SDL_SCANCODE_SPACE] ){
+        mode = STATE_GAME_LEVEL;
+        state.UpdateLevel ();
+        viewX = 0.0f;
+        viewY= 0.0f;
+    }
+}
+
+void gameRender () {
+    viewMatrix.Identity();
+    viewMatrix.SetPosition(viewX, viewY, 0.0f);
+    program.SetViewMatrix(viewMatrix);
+    state.Draw (&program);
+}
+
 // drawing game
 void Render () {
     
@@ -292,7 +334,7 @@ void Render () {
             mainRender();
             break;
         case STATE_GAME_LEVEL:
-            //gameRender();
+            gameRender();
             break;
         case STATE_GAME_OVER:
             //gameOverRender();
@@ -345,27 +387,14 @@ void DrawText(ShaderProgram *program, int fontTexture, std::string text, float s
 void Update (float elapsed, int& direction ){
     switch (mode) {
         case STATE_MAIN_MENU:
-            if (-viewX >= state.mappy.mapWidth * TILE_SIZE - 3.55) {
-                viewX = -(state.mappy.mapWidth * TILE_SIZE - 3.55);
-                direction *= -1;
-            }
-            if (viewX >= -3.55) {
-                direction *= -1;
-                viewX = -3.55;
-            }
-            viewX -= elapsed * direction;
-            if (direction == -1) {
-                viewX -= elapsed * 3 * direction;
-            }
-            if (keys [SDL_SCANCODE_SPACE] ){
-                mode = STATE_GAME_LEVEL;
-            }
+            mainUpdate(elapsed, direction);
+            break;
         case STATE_GAME_LEVEL:
             GameLevelUpdate (FIXED_TIMESTEP);
-            state.Collision ();
-            if (keys [SDL_SCANCODE_R]) {
-                mode = STATE_MAIN_MENU;
-            }
+//            state.Collision ();
+//            if (keys [SDL_SCANCODE_R]) {
+//                mode = STATE_MAIN_MENU;
+//            }
             break;
         case STATE_GAME_OVER:
             if (keys [SDL_SCANCODE_R]) {

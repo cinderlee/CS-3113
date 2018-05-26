@@ -17,12 +17,21 @@
 GameState::GameState () {}
 
 // initializing player and enemies
-void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEnemy, const std::string fileName){
+void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEnemy){
     sprites = spriteTiles;
     spritePlayer = spritesterPlayer;
-    spriteEnemy =spritesterEnemy;
-    mappy.Load (fileName);
+    spriteEnemy = spritesterEnemy;
+    LoadLevel();
+}
 
+
+void GameState::LoadLevel () {
+    enemies.clear ();
+    std::stringstream stream;
+    stream << "NYUCodebase.app/Contents/Resources/Resources/FinalLevel" << level << ".txt";
+    std::cout << stream.str();
+    mappy.Load (stream.str());
+    
     for (size_t index = 0; index < mappy.entities.size (); index++ ){
         //create the player
         if (mappy.entities [index].type == "playerRed") {
@@ -33,10 +42,13 @@ void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEn
         // creating the enemies
         if (mappy.entities [index].type == "spider") {
             enemies.push_back (Entity (spritePlayer, (mappy.entities [index].x + 0.5) * TILE_SIZE, (mappy.entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 929, 949, 32, 44, TILE_SIZE));
-        
         }
     }
+}
 
+void GameState::UpdateLevel() {
+    level++;
+    LoadLevel();
 }
 
 // drawing game
