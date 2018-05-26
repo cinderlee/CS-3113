@@ -38,6 +38,6 @@ type=playerRed
 location=2,16,1,1
 
 [Object Layer]
-type=key
+type=keyRed
 location=38,15,1,1
 

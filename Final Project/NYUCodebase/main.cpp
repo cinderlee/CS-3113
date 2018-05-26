@@ -248,22 +248,6 @@ void GameLevelUpdate (float elapsed) {
     }
     
     // adjusting viewMatrix
-//    float translationX;
-//    viewMatrix.Identity();
-//    if (state.player.position.x - 5.25f <= 0) {
-//        translationX = 5.25f;
-//        viewMatrix.Translate(-1 * translationX, 3.0f, 0.0f);
-//    }
-//    else if (state.player.position.x + 5.25f >= MAP_WIDTH * TILE_SIZE) {
-//
-//        translationX = MAP_WIDTH * TILE_SIZE - 5.25f;
-//        viewMatrix.Translate(-1 * translationX, 3.0f, 0.0f);
-//    }
-//    else {
-//        viewMatrix.Translate(-1 * state.player.position.x, 3.0f, 0.0f);
-//    }
-//    program.SetViewMatrix(viewMatrix);
-    
     viewX = -state.player.position.x;
     viewY = -state.player.position.y;
     if (viewX >= -3.55) {
@@ -322,6 +306,19 @@ void gameRender () {
     viewMatrix.Identity();
     viewMatrix.SetPosition(viewX, viewY, 0.0f);
     program.SetViewMatrix(viewMatrix);
+    if (state.GetLevel() == 1) {
+        DrawTexture (backgroundOne, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
+        DrawTexture (tilesOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+        DrawTexture (hillsOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+    }
+    if (state.GetLevel() == 2) {
+        DrawTexture (backgroundTwo, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
+    }
+    if (state.GetLevel() == 3) {
+        DrawTexture (backgroundThree, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
+        DrawTexture (tilesThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+        DrawTexture (hillsThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+    }
     state.Draw (&program);
 }
 

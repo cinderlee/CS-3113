@@ -23,6 +23,7 @@ public:
     void LoadLevel ();
     void UpdateLevel ();
     void Update ();
+    int GetLevel ();
     void Draw (ShaderProgram* program);
     void Collision ();
     

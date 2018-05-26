@@ -64,6 +64,10 @@ void GameState::UpdateLevel() {
     LoadLevel();
 }
 
+int GameState::GetLevel(){
+    return level;
+}
+
 // drawing game
 void GameState::Draw (ShaderProgram* program) {
     mappy -> Draw (program, sprites);
