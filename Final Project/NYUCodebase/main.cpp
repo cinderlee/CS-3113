@@ -223,7 +223,7 @@ void GameLevelUpdate (float elapsed) {
     // "jumping"
     if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
         
-        state.player.velocity.y = 3.0f;
+        state.player.velocity.y = 5.0f;
         state.player.acceleration.y = 1.0f;
         
     }
@@ -234,19 +234,22 @@ void GameLevelUpdate (float elapsed) {
     // if moving past the left edge of game
     if (state.player.position.x - state.player.sizeEnt.x/2 <= 0.0f) {
         state.player.position.x = 0.0f + state.player.sizeEnt.x/2;
+        state.player.velocity.x = 0;
     }
     
     // if moving past the right edge of game
     if (state.player.position.x + state.player.sizeEnt.x/2 >= state.mappy -> mapWidth * 0.3) {
         state.player.position.x = state.mappy -> mapWidth * 0.3 - state.player.sizeEnt.x/2;
+        state.player.velocity.x = 0;
     }
     
     //if hitting the top of the window (can happen when trying to jump onto clouds)
     if (state.player.position.y + state.player.sizeEnt.y/2 >= 0) {
         state.player.position.y = 0 - state.player.sizeEnt.y/2;
+        state.player.velocity.y = 0;
     }
     
-
+    state.CollisionEntities();
     
     // adjusting viewMatrix
     viewX = -state.player.position.x;

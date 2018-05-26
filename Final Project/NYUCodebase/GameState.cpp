@@ -39,7 +39,13 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "playerRed") {
             
             player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850, 518, 39, 48, TILE_SIZE);
-            player.gravity.y = -1.5f;
+            player.gravity.y = -2.5f;
+        }
+        
+        if (mappy -> entities [index].type == "playerBlue") {
+            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762, 203, 45, 54, TILE_SIZE);
+            player.gravity.y = -2.5f;
+
         }
         
         // creating the enemies
@@ -59,6 +65,7 @@ void GameState::LoadLevel () {
 
 void GameState::UpdateLevel() {
     level++;
+    keyObtained = false;
     LoadLevel();
 }
 
@@ -77,7 +84,7 @@ void GameState::Draw (ShaderProgram* program) {
 }
 
 // checking for any collisions in game
-void GameState::Collision () {
+void GameState::CollisionEntities () {
     
 
     // if collision between enemy and player
@@ -89,83 +96,16 @@ void GameState::Collision () {
         }
     }
     
+    if (player.Collision (&key)) {
+        keyObtained = true;
+        key.position.x = -3.55;
+    }
+    
     int TileX;
     int TileY;
-    int TileLeftX;
-    int TileRightX;
-    int TileTopY;
-    int TileBottomY;
-    // calculate the above Tile values of center, left, right, top, bottom
     player.worldToTileCoordinates(player.position.x, player.position.y, &TileX, &TileY);
-    player.worldToTileCoordinates(player.position.x - player.sizeEnt.x/2, player.position.y - player.sizeEnt.y/2 , &TileLeftX, &TileBottomY);
-    player.worldToTileCoordinates(player.position.x + player.sizeEnt.x/2, player.position.y + player.sizeEnt.y/2, &TileRightX, &TileTopY);
-    
-    bool bottomTile = false;
-    bool topTile = false;
-    bool leftTile = false;
-    bool rightTile = false;
-    
-    for (int x: solidTiles) {
-        std::cout << mappy -> mapData [TileBottomY ][TileX] - 1 << std::endl;
-        if (x == mappy -> mapData[TileBottomY] [TileX] - 1) {
-            bottomTile = true;
-        }
-        if (x == mappy -> mapData [TileTopY][ TileX] - 1) {
-            topTile = true;
-        }
-        if (x == mappy -> mapData [TileY][TileRightX] - 1) {
-            rightTile = true;
-        }
-        if (x == mappy -> mapData [TileY][TileLeftX] - 1) {
-            leftTile = true;
-        }
-    }
-    
-    
-    std::cout << "Bottom Tile: " << bottomTile << std::endl;
-    // if tile below is solid, reset bottom to be on top
-    if (bottomTile) {
-        float worldBotY = -1 * TILE_SIZE * TileBottomY;
-        if (worldBotY > player.position.y - player.sizeEnt.y/2) {
-            player.acceleration.y = 0.0f;
-            player.velocity.y = 0.0f;
-            player.position.y += (worldBotY - player.position.y - player.sizeEnt.y/2) + TILE_SIZE;
-        }
-        player.collidedBottom = true;
-    }
-    
-    
-    // if tile above is solid
-    if (topTile) {
-        float worldTopY = -1 * TILE_SIZE * TileTopY;
-        if (worldTopY - TILE_SIZE < player.position.y + player.sizeEnt.y/2) {
-            player.acceleration.y = 0.0f;
-            player.velocity.y = 0.0f;
-            player.position.y -= (player.position.y + player.sizeEnt.y/2 - worldTopY) + TILE_SIZE;
-        }
-        player.collidedTop = true;
-    }
-    
-    // if right tile is solid
-    if (rightTile) {
-        float worldRightX = TILE_SIZE * TileRightX;
-        if (worldRightX < player.position.x + player.sizeEnt.x/2) {
-            player.acceleration.x = 0.0f;
-            player.velocity.x = 0.0f;
-            player.position.x -= (player.position.x + player.sizeEnt.x/2 - worldRightX) ;
-        }
-        player.collidedRight = true;
-    }
-    
-    // if left tile is solid
-    if (leftTile) {
-        float worldLeftX = TILE_SIZE * TileLeftX;
-        if (worldLeftX + TILE_SIZE > player.position.x - player.sizeEnt.x/2) {
-            player.acceleration.x = 0.0f;
-            player.velocity.x = 0.0f;
-            player.position.x += (worldLeftX - player.position.x - player.sizeEnt.x/2) + 2 * TILE_SIZE;
-        }
-        player.collidedLeft = true;
+    if (keyObtained && (mappy -> mapData [TileY] [TileX] - 1 == 152 || mappy -> mapData [TileY] [TileX] - 1 == 153)) {
+        UpdateLevel ();
     }
     
 }
