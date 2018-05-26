@@ -33,7 +33,7 @@ public:
     int sprites = 0;
     int spritePlayer = 0;
     int spriteEnemy = 0;
-    FlareMap mappy;
+    FlareMap* mappy;
     
 private:
     int level = 0;

@@ -26,24 +26,29 @@ void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEn
 
 
 void GameState::LoadLevel () {
+    if (mappy != nullptr) {
+        delete mappy;
+    }
+    mappy = new FlareMap();
     enemies.clear ();
     std::stringstream stream;
     stream << "NYUCodebase.app/Contents/Resources/Resources/FinalLevel" << level << ".txt";
-    std::cout << stream.str();
-    mappy.Load (stream.str());
-    
-    for (size_t index = 0; index < mappy.entities.size (); index++ ){
+    mappy -> Load (stream.str());
+    std::cout << mappy -> entities.size () << std::endl;
+    for (size_t index = 0; index < mappy -> entities.size (); index++ ){
         //create the player
-        if (mappy.entities [index].type == "playerRed") {
+        if (mappy -> entities [index].type == "playerRed") {
             
-            player = Entity (spritePlayer, (mappy.entities[index].x + 0.5f) * TILE_SIZE, (mappy.entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850, 518, 39, 48, TILE_SIZE);
+            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850, 518, 39, 48, TILE_SIZE);
         }
         
         // creating the enemies
-        if (mappy.entities [index].type == "spider") {
-            enemies.push_back (Entity (spritePlayer, (mappy.entities [index].x + 0.5) * TILE_SIZE, (mappy.entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 929, 949, 32, 44, TILE_SIZE));
+        if (mappy -> entities [index].type == "spider") {
+            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 929, 949, 32, 44, TILE_SIZE));
         }
     }
+    
+    std::cout << enemies.size () << std::endl;
 }
 
 void GameState::UpdateLevel() {
@@ -53,7 +58,7 @@ void GameState::UpdateLevel() {
 
 // drawing game
 void GameState::Draw (ShaderProgram* program) {
-    mappy.Draw (program, sprites);
+    mappy -> Draw (program, sprites);
     player.Draw (program);
     for (int i = 0; i < enemies.size (); i++){
         enemies[i].Draw (program);
@@ -85,14 +90,14 @@ void GameState::Collision () {
     player.worldToTileCoordinates(player.position.x + player.sizeEnt.x/2, player.position.y + player.sizeEnt.y/2, &TileRightX, &TileTopY);
     
     // if tile below is 0, free fall
-    if (mappy.mapData[TileBottomY] [TileX] == 0) {
+    if (mappy -> mapData[TileBottomY] [TileX] == 0) {
         player.gravity.y = -0.55f;
         player.velocity.y = -1.0f;
     }
     
     
     // if tile below is solid, reset bottom to be on top
-    else if (mappy.mapData [TileBottomY][ TileX] != 0) {
+    else if (mappy -> mapData [TileBottomY][ TileX] != 0) {
         float worldBotY = -1 * TILE_SIZE * TileBottomY;
         if (worldBotY > player.position.y - player.sizeEnt.y/2) {
             player.acceleration.y = 0.0f;
@@ -103,7 +108,7 @@ void GameState::Collision () {
     
     
     // if tile above is solid
-    if (mappy.mapData [TileTopY][ TileX] != 0) {
+    if (mappy -> mapData [TileTopY][ TileX] != 0) {
         float worldTopY = -1 * TILE_SIZE * TileTopY;
         if (worldTopY - TILE_SIZE < player.position.y + player.sizeEnt.y/2) {
             player.acceleration.y = 0.0f;
@@ -113,7 +118,7 @@ void GameState::Collision () {
     }
     
     // if right tile is solid
-    if (mappy.mapData [TileY][TileRightX] != 0) {
+    if (mappy -> mapData [TileY][TileRightX] != 0) {
         float worldRightX = TILE_SIZE * TileRightX;
         if (worldRightX < player.position.x + player.sizeEnt.x/2) {
             player.acceleration.x = 0.0f;
@@ -123,7 +128,7 @@ void GameState::Collision () {
     }
     
     // if left tile is solid
-    if (mappy.mapData [TileY][TileLeftX] != 0) {
+    if (mappy -> mapData [TileY][TileLeftX] != 0) {
         float worldLeftX = TILE_SIZE * TileLeftX;
         if (worldLeftX + TILE_SIZE > player.position.x - player.sizeEnt.x/2) {
             player.acceleration.x = 0.0f;

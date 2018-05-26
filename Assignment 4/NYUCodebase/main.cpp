@@ -104,11 +104,10 @@ int main(int argc, char *argv[])
             continue; }
         while(elapsed >= FIXED_TIMESTEP) {
             Update (FIXED_TIMESTEP);
-            Render ();
             elapsed -= FIXED_TIMESTEP;
         }
         accumulator = elapsed;
-    
+        Render ();
         
         SDL_GL_SwapWindow(displayWindow);
     }
@@ -231,8 +230,8 @@ void Update (float elapsed) {
     }
     
     //if hitting the top of the window (can happen when trying to jump onto clouds)
-    if (state.player.position.y + state.player.sizeEnt.y/2 >= 0.0f) {
-        state.player.position.y = 0.0f - state.player.sizeEnt.y/2;
+    if (state.player.position.y + state.player.sizeEnt.y/2 >= 0) {
+        state.player.position.y = 0 - state.player.sizeEnt.y/2;
     }
     
     

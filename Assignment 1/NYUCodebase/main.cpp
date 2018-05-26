@@ -154,9 +154,10 @@ int main(int argc, char *argv[])
         glBindTexture(GL_TEXTURE_2D, articuno);
         current_position += elapsed * direction;
         move = elapsed;
-        modelMatrix3.Translate(elapsed * direction, 0.0f, 0.0f);
+        modelMatrix3.SetPosition(current_position, 1.5f, 0.0f);
         // check for bounds
-        if (current_position <= -3.55 || current_position + 1 >= 3.55){
+        if (current_position <= -2.55 || current_position + 1 >= 3.55){
+            modelMatrix3.Scale(-1, 1.0, 1.0);
             direction *= -1;
         }
         

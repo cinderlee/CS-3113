@@ -168,8 +168,8 @@ void Setup () {
     projectionMatrix.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
     viewX = -3.55f;
     viewY = -1 * state.player.position.y;
-    if (viewY >= state.mappy.mapHeight * TILE_SIZE - 2.0) {
-        viewY = state.mappy.mapHeight * TILE_SIZE - 2.0;
+    if (viewY >= state.mappy -> mapHeight * TILE_SIZE - 2.0) {
+        viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
     }
     program.SetProjectionMatrix(projectionMatrix);
     
@@ -269,16 +269,15 @@ void GameLevelUpdate (float elapsed) {
     if (viewX >= -3.55) {
         viewX = -3.55;
     }
-    else if (-viewX >= state.mappy.mapWidth * TILE_SIZE - 3.55) {
-        viewX = -(state.mappy.mapWidth * TILE_SIZE - 3.55);
+    else if (-viewX >= state.mappy -> mapWidth * TILE_SIZE - 3.55) {
+        viewX = -(state.mappy -> mapWidth * TILE_SIZE - 3.55);
     }
-    if (viewY >= state.mappy.mapHeight * TILE_SIZE - 2.0) {
-        viewY = state.mappy.mapHeight * TILE_SIZE - 2.0;
+    if (viewY >= state.mappy -> mapHeight * TILE_SIZE - 2.0) {
+        viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
     }
     else if (viewY <= 2.0) {
         viewY = 2.0;
     }
-    std::cout << viewX << ", " << viewY << std::endl;
 }
 
 void mainRender () {
@@ -299,8 +298,8 @@ void mainRender () {
 }
 
 void mainUpdate (float elapsed, int& direction) {
-    if (-viewX >= state.mappy.mapWidth * TILE_SIZE - 3.55) {
-        viewX = -(state.mappy.mapWidth * TILE_SIZE - 3.55);
+    if (-viewX >= state.mappy -> mapWidth * TILE_SIZE - 3.55) {
+        viewX = -(state.mappy -> mapWidth * TILE_SIZE - 3.55);
         direction *= -1;
     }
     if (viewX >= -3.55) {
