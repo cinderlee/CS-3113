@@ -179,13 +179,13 @@ void Setup () {
 
 // processing events
 void ProcessEvents (SDL_Event& event, bool& done) {
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
-            done = true;
-        }
-    }
     switch (mode) {
         case STATE_MAIN_MENU:
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+                    done = true;
+                }
+            }
             if (keys [SDL_SCANCODE_SPACE] ){
                 mode = STATE_GAME_LEVEL;
                 state.UpdateLevel ();
@@ -197,38 +197,42 @@ void ProcessEvents (SDL_Event& event, bool& done) {
             state.player.acceleration.x = 0.0f;
             state.player.acceleration.y = 0.0f;
             
-            
-            if (keys [SDL_SCANCODE_UP] && keys [SDL_SCANCODE_A] && state.player.collidedRight){
-                
-                state.player.velocity.y = 4.0f;
-                state.player.acceleration.y = 1.0f;
-                state.player.velocity.x = -1.5f;
-                state.player.acceleration.x = -1.0f;
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+                    done = true;
+                }
+                else if (event.type == SDL_KEYDOWN) {
+                    if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
+                        if (state.player.collidedBottom) {
+                            state.player.velocity.y = 4.0f;
+                            state.player.acceleration.y = 1.0f;
+                        }
+                    }
+                    if (event.key.keysym.scancode == SDL_SCANCODE_A) {
+                        if (state.player.collidedLeft && !keys [SDL_SCANCODE_LEFT]) {
+                            state.player.velocity.y = 4.0f;
+                            state.player.acceleration.y = 1.0f;
+                            state.player.velocity.x = 1.5f;
+                            state.player.acceleration.x = 1.0f;
+                        }
+                        if (state.player.collidedRight && !keys[SDL_SCANCODE_RIGHT] ) {
+                            state.player.velocity.y = 4.0f;
+                            state.player.acceleration.y = 1.0f;
+                            state.player.velocity.x = -1.5f;
+                            state.player.acceleration.x = -1.0f;
+                        }
+                    }
+                }
             }
-            
-            else if (keys [SDL_SCANCODE_UP] && keys [SDL_SCANCODE_A] && state.player.collidedLeft){
-                
-                state.player.velocity.y = 4.0f;
-                state.player.acceleration.y = 1.0f;
-                state.player.velocity.x = 1.5f;
-                state.player.acceleration.x = 1.0f;
-            }
-            
-            else if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
-                
-                state.player.velocity.y = 4.0f;
-                state.player.acceleration.y = 1.0f;
-                
-            }
-            
+        
             //move left
-            else if (keys [SDL_SCANCODE_LEFT]){
+            if (keys [SDL_SCANCODE_LEFT]){
                 state.player.velocity.x = -1.5f;
                 state.player.acceleration.x = -1.0f;
             }
             
             // move right
-            else if (keys [SDL_SCANCODE_RIGHT]){
+            else if (keys [SDL_SCANCODE_RIGHT] && !state.player.collidedRight){
                 state.player.velocity.x = 1.5f;
                 state.player.acceleration.x = 1.0f;
             }
@@ -245,6 +249,11 @@ void ProcessEvents (SDL_Event& event, bool& done) {
             
             break;
         case STATE_GAME_OVER:
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+                    done = true;
+                }
+            }
             if (keys [SDL_SCANCODE_R]) {
                 mode = STATE_MAIN_MENU;
                 state.Reset();
@@ -332,12 +341,12 @@ void GameLevelUpdate (float elapsed) {
         viewY = 2.0;
     }
     
-//    keyOutline.position.x = - (viewX + 4.05 - 2 * TILE_SIZE) + 6 * 0.25;
-//    keyOutline.position.y = - (viewY - 2.5 + 3 * TILE_SIZE) ;
-//    if (state.keyObtained) {
-//        state.key.position.x = keyOutline.position.x;
-//        state.key.position.y = keyOutline.position.y;
-//    }
+    keyOutline.position.x = - (viewX + 4.05 - 2 * TILE_SIZE) + 6 * 0.25;
+    keyOutline.position.y = - (viewY - 2.5 + 3 * TILE_SIZE) ;
+    if (state.keyObtained) {
+        state.key.position.x = keyOutline.position.x;
+        state.key.position.y = keyOutline.position.y;
+    }
 }
 
 void Update (float elapsed, int& direction ){
