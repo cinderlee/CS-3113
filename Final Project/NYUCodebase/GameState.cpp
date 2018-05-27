@@ -64,7 +64,7 @@ void GameState::LoadLevel () {
 }
 
 void GameState::UpdateLevel() {
-    level++;
+    level ++;
     keyObtained = false;
     LoadLevel();
 }
@@ -138,8 +138,6 @@ void GameState::CollisionX () {
     if (rightTile) {
         float worldRightX = TILE_SIZE * TileRightX;
         if (worldRightX < player.position.x + player.sizeEnt.x/2) {
-            player.acceleration.x = 0.0f;
-            player.velocity.x = 0.0f;
             player.position.x -= (player.position.x + player.sizeEnt.x/2 - worldRightX) ;
         }
         player.collidedRight = true;
@@ -148,10 +146,10 @@ void GameState::CollisionX () {
     // if left tile is solid
     if (leftTile) {
         float worldLeftX = TILE_SIZE * TileLeftX;
+        std::cout << worldLeftX << std::endl;
+        std::cout << player.position.x - player.sizeEnt.x/2 << std::endl;
         if (worldLeftX + TILE_SIZE > player.position.x - player.sizeEnt.x/2) {
-            player.acceleration.x = 0.0f;
-            player.velocity.x = 0.0f;
-            player.position.x += (worldLeftX - player.position.x - player.sizeEnt.x/2) + 2 * TILE_SIZE;
+            player.position.x += worldLeftX + TILE_SIZE - (player.position.x - player.sizeEnt.x/2);
         }
         player.collidedLeft = true;
     }
@@ -187,8 +185,6 @@ void GameState::CollisionY () {
     if (bottomTile) {
         float worldBotY = -1 * TILE_SIZE * TileBottomY;
         if (worldBotY > player.position.y - player.sizeEnt.y/2) {
-            player.acceleration.y = 0.0f;
-            player.velocity.y = 0.0f;
             player.position.y += (worldBotY - player.position.y - player.sizeEnt.y/2) + TILE_SIZE;
         }
         player.collidedBottom = true;
@@ -199,8 +195,6 @@ void GameState::CollisionY () {
     if (topTile) {
         float worldTopY = -1 * TILE_SIZE * TileTopY;
         if (worldTopY - TILE_SIZE < player.position.y + player.sizeEnt.y/2) {
-            player.acceleration.y = 0.0f;
-            player.velocity.y = 0.0f;
             player.position.y -= (player.position.y + player.sizeEnt.y/2 - worldTopY) + TILE_SIZE;
         }
          player.collidedTop = true;

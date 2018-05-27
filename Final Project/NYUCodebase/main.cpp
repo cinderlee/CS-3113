@@ -182,6 +182,60 @@ void ProcessEvents (SDL_Event& event, bool& done) {
             done = true;
         }
     }
+    switch (mode) {
+        case STATE_MAIN_MENU:
+            if (keys [SDL_SCANCODE_SPACE] ){
+                mode = STATE_GAME_LEVEL;
+                state.UpdateLevel ();
+                viewX = 0.0f;
+                viewY= 0.0f;
+            }
+            break;
+        case STATE_GAME_LEVEL:
+            state.player.acceleration.x = 0.0f;
+            state.player.acceleration.y = 0.0f;
+            
+            if (keys [SDL_SCANCODE_UP] && keys [SDL_SCANCODE_A] && state.player.collidedRight){
+                
+                state.player.velocity.y = 3.0f;
+                state.player.acceleration.y = 1.0f;
+                state.player.velocity.x = -1.5f;
+                state.player.acceleration.x = -1.0f;
+            }
+            
+            if (keys [SDL_SCANCODE_UP] && keys [SDL_SCANCODE_A] && state.player.collidedLeft){
+                
+                state.player.velocity.y = 3.0f;
+                state.player.acceleration.y = 1.0f;
+                state.player.velocity.x = 1.5f;
+                state.player.acceleration.x = 1.0f;
+            }
+            
+            if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
+                
+                state.player.velocity.y = 3.0f;
+                state.player.acceleration.y = 1.0f;
+                
+            }
+            
+            //move left
+            if (keys [SDL_SCANCODE_LEFT]){
+                state.player.velocity.x = -0.5f;
+                state.player.acceleration.x = -1.0f;
+            }
+            
+            // move right
+            if (keys [SDL_SCANCODE_RIGHT]){
+                state.player.velocity.x = 0.5f;
+                state.player.acceleration.x = 1.0f;
+            }
+            
+            
+            break;
+        case STATE_GAME_OVER:
+            //gameOverRender();
+            break;
+    }
 }
 
 
@@ -190,29 +244,13 @@ void GameLevelUpdate (float elapsed) {
     
     state.player.collisionBools();
     
-    state.player.acceleration.x = 0.0f;
-    state.player.acceleration.y = 0.0f;
-    
-    //move left
-    if (keys [SDL_SCANCODE_LEFT]){
-        state.player.velocity.x = -0.5f;
-        state.player.acceleration.x = -1.0f;
-    }
-    
-    // move right
-    if (keys [SDL_SCANCODE_RIGHT]){
-        state.player.velocity.x = 0.5f;
-        state.player.acceleration.x = 1.0f;
-    }
     
     // applying friction
     state.player.velocity.x = lerp(state.player.velocity.x, 0.0f, elapsed * 1.5);
-    state.player.velocity.y = lerp(state.player.velocity.y, 0.0f, elapsed * 1.5);
+    state.player.velocity.y = lerp(state.player.velocity.y, 0.0f, elapsed * 2.0);
     
     // calculating x velocity
     state.player.velocity.x += state.player.acceleration.x * elapsed;
-    
-
     state.player.velocity.y += state.player.acceleration.y * elapsed;
     state.player.velocity.y += state.player.gravity.y * elapsed;
     
@@ -220,16 +258,12 @@ void GameLevelUpdate (float elapsed) {
     state.player.position.y += state.player.velocity.y * elapsed;
     state.CollisionY ();
     
-    // "jumping"
-    if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
-        
-        state.player.velocity.y = 5.0f;
-        state.player.acceleration.y = 1.0f;
-        
-    }
-    
     state.player.position.x += state.player.velocity.x * elapsed;
     state.CollisionX ();
+    
+
+    
+    
     
     // if moving past the left edge of game
     if (state.player.position.x - state.player.sizeEnt.x/2 <= 0.0f) {
@@ -298,12 +332,6 @@ void mainUpdate (float elapsed, int& direction) {
     viewX -= elapsed * direction;
     if (direction == -1) {
         viewX -= elapsed * 3 * direction;
-    }
-    if (keys [SDL_SCANCODE_SPACE] ){
-        mode = STATE_GAME_LEVEL;
-        state.UpdateLevel ();
-        viewX = 0.0f;
-        viewY= 0.0f;
     }
 }
 
