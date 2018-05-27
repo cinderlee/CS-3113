@@ -24,11 +24,12 @@ public:
     void UpdateLevel ();
     void Update ();
     int GetLevel ();
+    int GetLives ();
     void Draw (ShaderProgram* program);
     void CollisionEntities ();
     void CollisionX ();
     void CollisionY ();
-    
+    void Reset ();
     
     Entity player;
     Entity key;
@@ -42,7 +43,7 @@ private:
     int spriteEnemy = 0;
     int level = 0;
     int lives = 5;
-    std::vector <int> solidTiles = {0, 1, 2, 3, 5, 6, 7, 132, 133, 134, 135};
+    std::vector <int> solidTiles = {0, 1, 2, 3, 5, 6, 7, 132, 133, 134, 135, 198, 199, 200, 201};
 };
 
 

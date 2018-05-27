@@ -42,10 +42,24 @@ void GameState::LoadLevel () {
             player.gravity.y = -2.5f;
         }
         
-        if (mappy -> entities [index].type == "playerBlue") {
+        if (mappy -> entities [index].type == "playerBlue" ) {
             player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762, 203, 45, 54, TILE_SIZE);
             player.gravity.y = -2.5f;
-
+            
+        }
+        if (mappy -> entities [index].type == "playerGreen") {
+            if (lives != 0 ) {
+                if (level == 4) {
+                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 849, 429, 40 , 39, TILE_SIZE);
+                }
+                else {
+                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890, 0, 38, 50, TILE_SIZE);
+                    player.gravity.y = -2.5f;
+                }
+            }
+            else {
+                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890, 272, 38, 43, TILE_SIZE);
+            }
         }
         
         // creating the enemies
@@ -64,13 +78,22 @@ void GameState::LoadLevel () {
 }
 
 void GameState::UpdateLevel() {
-    level ++;
-    keyObtained = false;
+    if (lives == 0) {
+        level++;
+    }
+    else {
+        level += 4;
+        keyObtained = false;
+    } 
     LoadLevel();
 }
 
 int GameState::GetLevel(){
     return level;
+}
+
+int GameState::GetLives (){
+    return lives;
 }
 
 // drawing game
@@ -86,7 +109,6 @@ void GameState::Draw (ShaderProgram* program) {
 // checking for any collisions in game
 void GameState::CollisionEntities () {
     
-
     // if collision between enemy and player
     // reset player to start of the game
     for (int index = 0; index < enemies.size (); index++) {
@@ -141,6 +163,7 @@ void GameState::CollisionX () {
             player.position.x -= (player.position.x + player.sizeEnt.x/2 - worldRightX) ;
         }
         player.collidedRight = true;
+        player.velocity.x = 0.0f;
     }
     
     // if left tile is solid
@@ -152,6 +175,7 @@ void GameState::CollisionX () {
             player.position.x += worldLeftX + TILE_SIZE - (player.position.x - player.sizeEnt.x/2);
         }
         player.collidedLeft = true;
+        player.velocity.x = 0.0f;
     }
 }
 
@@ -188,6 +212,7 @@ void GameState::CollisionY () {
             player.position.y += (worldBotY - player.position.y - player.sizeEnt.y/2) + TILE_SIZE;
         }
         player.collidedBottom = true;
+        player.velocity.y = 0.0f;
     }
     
     
@@ -197,10 +222,16 @@ void GameState::CollisionY () {
         if (worldTopY - TILE_SIZE < player.position.y + player.sizeEnt.y/2) {
             player.position.y -= (player.position.y + player.sizeEnt.y/2 - worldTopY) + TILE_SIZE;
         }
-         player.collidedTop = true;
+        player.collidedTop = true;
+        player.velocity.y = 0.0f;
     }
   
 }
 
+void GameState::Reset () {
+    lives = 5;
+    level = 0;
+    LoadLevel();
+}
 
 

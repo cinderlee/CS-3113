@@ -197,47 +197,79 @@ void ProcessEvents (SDL_Event& event, bool& done) {
             
             if (keys [SDL_SCANCODE_UP] && keys [SDL_SCANCODE_A] && state.player.collidedRight){
                 
-                state.player.velocity.y = 3.0f;
+                state.player.velocity.y = 4.0f;
                 state.player.acceleration.y = 1.0f;
                 state.player.velocity.x = -1.5f;
                 state.player.acceleration.x = -1.0f;
             }
             
-            if (keys [SDL_SCANCODE_UP] && keys [SDL_SCANCODE_A] && state.player.collidedLeft){
+            else if (keys [SDL_SCANCODE_UP] && keys [SDL_SCANCODE_A] && state.player.collidedLeft){
                 
-                state.player.velocity.y = 3.0f;
+                state.player.velocity.y = 4.0f;
                 state.player.acceleration.y = 1.0f;
                 state.player.velocity.x = 1.5f;
                 state.player.acceleration.x = 1.0f;
             }
             
-            if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
+            else if (keys [SDL_SCANCODE_UP] && state.player.collidedBottom){
                 
-                state.player.velocity.y = 3.0f;
+                state.player.velocity.y = 4.0f;
                 state.player.acceleration.y = 1.0f;
                 
             }
             
             //move left
-            if (keys [SDL_SCANCODE_LEFT]){
-                state.player.velocity.x = -0.5f;
+            else if (keys [SDL_SCANCODE_LEFT]){
+                state.player.velocity.x = -1.5f;
                 state.player.acceleration.x = -1.0f;
             }
             
             // move right
-            if (keys [SDL_SCANCODE_RIGHT]){
-                state.player.velocity.x = 0.5f;
+            else if (keys [SDL_SCANCODE_RIGHT]){
+                state.player.velocity.x = 1.5f;
                 state.player.acceleration.x = 1.0f;
             }
             
+            if (keys [SDL_SCANCODE_R]) {
+                mode = STATE_MAIN_MENU;
+                state.Reset();
+                viewX = -3.55f;
+                viewY = -1 * state.player.position.y;
+                if (viewY >= state.mappy -> mapHeight * TILE_SIZE - 2.0) {
+                    viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
+                }
+            }
             
             break;
         case STATE_GAME_OVER:
-            //gameOverRender();
+            if (keys [SDL_SCANCODE_R]) {
+                mode = STATE_MAIN_MENU;
+                state.Reset();
+                viewX = -3.55f;
+                viewY = -1 * state.player.position.y;
+                if (viewY >= state.mappy -> mapHeight * TILE_SIZE - 2.0) {
+                    viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
+                }
+            }
             break;
     }
 }
 
+// updating title and game over screen
+void mainGameOverUpdate (float elapsed, int& direction) {
+    if (-viewX >= state.mappy -> mapWidth * TILE_SIZE - 3.55) {
+        viewX = -(state.mappy -> mapWidth * TILE_SIZE - 3.55);
+        direction *= -1;
+    }
+    if (viewX >= -3.55) {
+        direction *= -1;
+        viewX = -3.55;
+    }
+    viewX -= elapsed * direction;
+    if (direction == -1) {
+        viewX -= elapsed * 3 * direction;
+    }
+}
 
 //updating the game
 void GameLevelUpdate (float elapsed) {
@@ -260,10 +292,6 @@ void GameLevelUpdate (float elapsed) {
     
     state.player.position.x += state.player.velocity.x * elapsed;
     state.CollisionX ();
-    
-
-    
-    
     
     // if moving past the left edge of game
     if (state.player.position.x - state.player.sizeEnt.x/2 <= 0.0f) {
@@ -303,6 +331,25 @@ void GameLevelUpdate (float elapsed) {
     
 }
 
+void Update (float elapsed, int& direction ){
+    switch (mode) {
+        case STATE_MAIN_MENU:
+            mainGameOverUpdate(elapsed, direction);
+            break;
+        case STATE_GAME_LEVEL:
+            GameLevelUpdate (FIXED_TIMESTEP);
+            if (state.GetLevel() == 4) {
+                mode = STATE_GAME_OVER;
+                viewX = -3.55;
+                viewY = -state.player.position.y;
+            }
+            break;
+        case STATE_GAME_OVER:
+            mainGameOverUpdate (elapsed, direction);
+            break;
+    }
+}
+
 void mainRender () {
     viewMatrix.Identity();
     viewMatrix.SetPosition (viewX, viewY, 0.0f);
@@ -310,7 +357,7 @@ void mainRender () {
     DrawTexture (backgroundOne, MAP_WIDTH/6 *0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     DrawTexture (tilesOne, MAP_WIDTH/6 *0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     DrawTexture (hillsOne, MAP_WIDTH/6 *0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
-   
+    
     DrawTexture (backgroundTwo, MAP_WIDTH/6 *0.3 + (MAP_WIDTH/3 * 0.3), -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     DrawTexture (backgroundThree, MAP_WIDTH/6 *0.3 + 2 * (MAP_WIDTH/3) * 0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     DrawTexture (tilesThree, MAP_WIDTH/6 *0.3 + 2 * (MAP_WIDTH/3) * 0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
@@ -318,21 +365,6 @@ void mainRender () {
     state.Draw (&program);
     DrawWords (&program, textie, "Alien Invaders", 0.4, 0.0f, (viewX + (-0.5*0.4) + (14*0.4/2)), viewY - 0.5f);
     DrawWords (&program, textie, "Press Space to Start", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (20*0.25/2), viewY + 0.5f );
-}
-
-void mainUpdate (float elapsed, int& direction) {
-    if (-viewX >= state.mappy -> mapWidth * TILE_SIZE - 3.55) {
-        viewX = -(state.mappy -> mapWidth * TILE_SIZE - 3.55);
-        direction *= -1;
-    }
-    if (viewX >= -3.55) {
-        direction *= -1;
-        viewX = -3.55;
-    }
-    viewX -= elapsed * direction;
-    if (direction == -1) {
-        viewX -= elapsed * 3 * direction;
-    }
 }
 
 void gameRender () {
@@ -355,6 +387,36 @@ void gameRender () {
     state.Draw (&program);
 }
 
+void gameOverRender () {
+    viewMatrix.Identity();
+    viewMatrix.SetPosition(viewX, viewY, 0.0f);
+    program.SetViewMatrix(viewMatrix);
+    DrawTexture (backgroundOne, state.mappy -> mapWidth/6 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
+    DrawTexture (tilesOne, state.mappy -> mapWidth/6 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
+    DrawTexture (hillsOne, state.mappy -> mapWidth/6 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
+    
+    DrawTexture (backgroundTwo, state.mappy -> mapWidth/6 *0.3 + (state.mappy -> mapWidth/3 * 0.3), -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
+    DrawTexture (backgroundThree, state.mappy -> mapWidth/6 *0.3 + 2 * (state.mappy -> mapWidth/3) * 0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
+    DrawTexture (tilesThree, state.mappy -> mapWidth/6 *0.3 + 2 * (state.mappy -> mapWidth/3) * 0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
+    DrawTexture (hillsThree, state.mappy -> mapWidth/6 *0.3 + 2 * (state.mappy -> mapWidth/3) * 0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
+    state.Draw (&program);
+    Entity redPlayer = Entity (playerSheet, (6 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE, 0.0f, 650, 685, 56, 38, TILE_SIZE);
+    Entity bluePlayer = Entity (playerSheet, (26 + 0.5f) * TILE_SIZE, (15 + 0.5f) * -1 * TILE_SIZE, 0.0f, 758, 771, 46, 40, TILE_SIZE);
+    if (state.GetLives () == 0) {
+        redPlayer = Entity (playerSheet, (6 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE, 0.0f, 850, 297, 39, 46, TILE_SIZE);
+        bluePlayer = Entity (playerSheet, (26 + 0.5f) * TILE_SIZE, (15 + 0.5f) * -1 * TILE_SIZE, 0.0f, 762, 258, 45, 46, TILE_SIZE);
+    }
+    redPlayer.Draw (&program);
+    bluePlayer.Draw (&program);
+    if (state.GetLives() == 0) {
+        DrawWords (&program, textie, "YOU LOSE", 0.4, 0.0f, (viewX + (-0.5*0.4) + (8*0.4/2)), viewY - 0.5f);
+    }
+    else {
+        DrawWords (&program, textie, "YOU WIN", 0.4, 0.0f, (viewX + (-0.5*0.4) + (7*0.4/2)), viewY - 0.5f);
+    }
+    DrawWords (&program, textie, "Press R to Play Again", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (21*0.25/2), viewY + 0.5f );
+}
+
 // drawing game
 void Render () {
     
@@ -366,7 +428,7 @@ void Render () {
             gameRender();
             break;
         case STATE_GAME_OVER:
-            //gameOverRender();
+            gameOverRender();
             break;
     }
     
@@ -411,26 +473,6 @@ void DrawText(ShaderProgram *program, int fontTexture, std::string text, float s
     glDrawArrays(GL_TRIANGLES, 0, int (text.size()) * 6);
     glDisableVertexAttribArray(program->positionAttribute);
     glDisableVertexAttribArray(program->texCoordAttribute);
-}
-
-void Update (float elapsed, int& direction ){
-    switch (mode) {
-        case STATE_MAIN_MENU:
-            mainUpdate(elapsed, direction);
-            break;
-        case STATE_GAME_LEVEL:
-            GameLevelUpdate (FIXED_TIMESTEP);
-//            state.Collision ();
-//            if (keys [SDL_SCANCODE_R]) {
-//                mode = STATE_MAIN_MENU;
-//            }
-            break;
-        case STATE_GAME_OVER:
-            if (keys [SDL_SCANCODE_R]) {
-                mode = STATE_MAIN_MENU;
-            }
-            break;
-    }
 }
 
 
