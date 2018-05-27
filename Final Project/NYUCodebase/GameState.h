@@ -21,6 +21,7 @@ public:
     GameState ();
     void Initiate (int spriteTiles, int spritesterPlayer, int spritesterEnemy);
     void LoadLevel ();
+    void UpdateEnemyMovement (float elapsed);
     void UpdateLevel ();
     void Update ();
     int GetLevel ();
@@ -43,7 +44,7 @@ private:
     int spriteEnemy = 0;
     int level = 0;
     int lives = 5;
-    std::vector <int> solidTiles = {0, 1, 2, 3, 5, 6, 7, 132, 133, 134, 135, 198, 199, 200, 201};
+    std::vector <int> solidTiles = {0, 1, 2, 3, 5, 6, 7, 132, 133, 134, 135, 198, 199, 200, 201, 203, 204, 205, 227, 228};
 };
 
 

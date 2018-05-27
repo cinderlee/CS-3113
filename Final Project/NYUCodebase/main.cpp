@@ -281,10 +281,13 @@ void mainGameOverUpdate (float elapsed, int& direction) {
     if (direction == -1) {
         viewX -= elapsed * 3 * direction;
     }
+    state.UpdateEnemyMovement(elapsed);
 }
 
 //updating the game
 void GameLevelUpdate (float elapsed) {
+    
+    state.UpdateEnemyMovement(elapsed);
     
     state.player.collisionBools();
     

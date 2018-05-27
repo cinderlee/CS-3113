@@ -68,7 +68,7 @@ void GameState::LoadLevel () {
         // creating the enemies
         if (mappy -> entities [index].type == "spider") {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 929, 949, 32, 44, TILE_SIZE));
-            enemies [enemies.size () - 1].velocity.x = 1.0f;
+            enemies [enemies.size () - 1].velocity.x = 0.5f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
             enemies[enemies.size () - 1].type = "spider";
         }
@@ -81,6 +81,37 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "keyGreen") {
             key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961, 495, 29, 30, TILE_SIZE /2);
             key.type = "keyGreen";
+        }
+    }
+}
+
+void GameState::UpdateEnemyMovement(float elapsed) {
+    for (int index = 0; index < enemies.size (); index++) {
+        if (enemies [index].type == "spider") {
+            int TileY;
+            int TileLeftX;
+            int TileRightX;
+            int TileBottomY;
+            
+            bool right = false;
+            bool left = false;
+            
+            // calculate the above Tile values of center, left, right, top, bottom
+            enemies[index].worldToTileCoordinates(enemies[index].position.x + enemies[index].sizeEnt.x/2, enemies[index].position.y, &TileRightX, &TileY);
+            enemies[index].worldToTileCoordinates(enemies[index].position.x - enemies[index].sizeEnt.x/2, enemies[index].position.y - enemies[index].sizeEnt.y/2 , &TileLeftX, &TileBottomY);
+            
+            for (int x: solidTiles) {
+                if (x == mappy -> mapData [TileBottomY][TileRightX] - 1) {
+                    right = true;
+                }
+                if (x == mappy -> mapData [TileBottomY] [TileLeftX] - 1) {
+                    left = true;
+                }
+            }
+            if ( !left || !right ) {
+                enemies [index].velocity.x *= -1;
+            }
+            enemies[index].position.x += enemies[index].velocity.x * elapsed;
         }
     }
 }
@@ -128,6 +159,7 @@ void GameState::CollisionEntities () {
             LoadLevel();
         }
     }
+    
     
     if (player.Collision (&key)) {
         keyObtained = true; 
@@ -177,7 +209,6 @@ void GameState::CollisionX () {
     
     // if left tile is solid
     if (leftTile) {
-        std::cout << "YOOOO" << std::endl;
         float worldLeftX = TILE_SIZE * TileLeftX;
         if (worldLeftX + TILE_SIZE > player.position.x - player.sizeEnt.x/2) {
             player.position.x += worldLeftX + TILE_SIZE - (player.position.x - player.sizeEnt.x/2);
