@@ -406,6 +406,7 @@ void gameRender () {
     
     DrawWords (&program, textie, "Level" + std::to_string (state.GetLevel()), 0.25 , 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 2 * TILE_SIZE );
     DrawWords (&program, textie, "Items:", 0.25, 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 3 * TILE_SIZE);
+    DrawWords (&program, textie, "Lives:" + std::to_string (state.GetLives()), 0.25, 0.0f, viewX - 1.9, viewY - 2.5 + 2 * TILE_SIZE );
     if (!state.keyObtained) {
         keyOutline.Draw (&program);
     }

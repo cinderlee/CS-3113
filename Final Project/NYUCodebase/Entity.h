@@ -37,6 +37,7 @@ public:
     bool collidedLeft = false;
     bool collidedRight = false;
     Matrix modelMatrix;
+    std::string type = ""; 
 };
 
 

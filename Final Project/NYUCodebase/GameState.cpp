@@ -40,11 +40,13 @@ void GameState::LoadLevel () {
             
             player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850, 518, 39, 48, TILE_SIZE);
             player.gravity.y = -2.5f;
+            player.type = "playerRed";
         }
         
         if (mappy -> entities [index].type == "playerBlue" ) {
             player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762, 203, 45, 54, TILE_SIZE);
             player.gravity.y = -2.5f;
+            player.type = "playerBlue";
             
         }
         if (mappy -> entities [index].type == "playerGreen") {
@@ -60,31 +62,34 @@ void GameState::LoadLevel () {
             else {
                 player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890, 272, 38, 43, TILE_SIZE);
             }
+            player.type = "playerGreen";
         }
         
         // creating the enemies
         if (mappy -> entities [index].type == "spider") {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 929, 949, 32, 44, TILE_SIZE));
+            enemies [enemies.size () - 1].velocity.x = 1.0f;
+            enemies [enemies.size () - 1].gravity.y = -1.0f;
+            enemies[enemies.size () - 1].type = "spider";
         }
         
         if (mappy -> entities [index].type == "keyRed") {
             key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 962, 252, 29, 30, TILE_SIZE /2 );
+            key.type = "keyRed";
         }
         
         if (mappy -> entities [index].type == "keyGreen") {
             key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961, 495, 29, 30, TILE_SIZE /2);
+            key.type = "keyGreen";
         }
     }
 }
 
 void GameState::UpdateLevel() {
-    if (lives == 0) {
-        level = 4;
-    }
-    else {
-        level += 2;
-        keyObtained = false;
-    } 
+    
+    level += 1;
+    keyObtained = false;
+    
     LoadLevel();
 }
 
@@ -113,8 +118,14 @@ void GameState::CollisionEntities () {
     // reset player to start of the game
     for (int index = 0; index < enemies.size (); index++) {
         if (player.Collision(&enemies[index]) ) {
-            player.position.x = 1 * TILE_SIZE;
-            player.position.y = 19.5 * -1 * TILE_SIZE;
+            lives--;
+            if (!lives ) {
+                level = 4;
+            }
+            else {
+                level = 1;
+            }
+            LoadLevel();
         }
     }
     

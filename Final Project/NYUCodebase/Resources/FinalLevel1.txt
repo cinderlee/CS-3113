@@ -41,3 +41,11 @@ location=2,16,1,1
 type=keyRed
 location=38,15,1,1
 
+[Object Layer]
+type=spider
+location=8,14,1,1
+
+[Object Layer]
+type=spider
+location=34,12,1,1
+
