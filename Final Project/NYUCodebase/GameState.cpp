@@ -79,10 +79,10 @@ void GameState::LoadLevel () {
 
 void GameState::UpdateLevel() {
     if (lives == 0) {
-        level++;
+        level = 4;
     }
     else {
-        level += 4;
+        level += 2;
         keyObtained = false;
     } 
     LoadLevel();
@@ -119,8 +119,7 @@ void GameState::CollisionEntities () {
     }
     
     if (player.Collision (&key)) {
-        keyObtained = true;
-        key.position.x = -3.55;
+        keyObtained = true; 
     }
     
     int TileX;
@@ -163,19 +162,16 @@ void GameState::CollisionX () {
             player.position.x -= (player.position.x + player.sizeEnt.x/2 - worldRightX) ;
         }
         player.collidedRight = true;
-        player.velocity.x = 0.0f;
     }
     
     // if left tile is solid
     if (leftTile) {
+        std::cout << "YOOOO" << std::endl;
         float worldLeftX = TILE_SIZE * TileLeftX;
-        std::cout << worldLeftX << std::endl;
-        std::cout << player.position.x - player.sizeEnt.x/2 << std::endl;
         if (worldLeftX + TILE_SIZE > player.position.x - player.sizeEnt.x/2) {
             player.position.x += worldLeftX + TILE_SIZE - (player.position.x - player.sizeEnt.x/2);
         }
         player.collidedLeft = true;
-        player.velocity.x = 0.0f;
     }
 }
 
@@ -199,7 +195,7 @@ void GameState::CollisionY () {
         if (x == mappy -> mapData[TileBottomY] [TileX] - 1) {
             bottomTile = true;
         }
-        if (x == mappy -> mapData [TileTopY][ TileX] - 1) {
+        if (x == mappy -> mapData [TileTopY][TileX] - 1) {
             topTile = true;
         }
     }

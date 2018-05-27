@@ -36,6 +36,7 @@ int tilesOne;
 int tilesThree;
 int hillsOne;
 int hillsThree;
+Entity keyOutline;
 
 bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
@@ -173,6 +174,7 @@ void Setup () {
     }
     program.SetProjectionMatrix(projectionMatrix);
     
+    keyOutline = Entity (playerSheet, 0.0f, 0.0f, 0.0f, 927, 624, 36, 36, TILE_SIZE / 2);
 }
 
 // processing events
@@ -194,6 +196,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
         case STATE_GAME_LEVEL:
             state.player.acceleration.x = 0.0f;
             state.player.acceleration.y = 0.0f;
+            
             
             if (keys [SDL_SCANCODE_UP] && keys [SDL_SCANCODE_A] && state.player.collidedRight){
                 
@@ -329,6 +332,12 @@ void GameLevelUpdate (float elapsed) {
         viewY = 2.0;
     }
     
+//    keyOutline.position.x = - (viewX + 4.05 - 2 * TILE_SIZE) + 6 * 0.25;
+//    keyOutline.position.y = - (viewY - 2.5 + 3 * TILE_SIZE) ;
+//    if (state.keyObtained) {
+//        state.key.position.x = keyOutline.position.x;
+//        state.key.position.y = keyOutline.position.y;
+//    }
 }
 
 void Update (float elapsed, int& direction ){
@@ -385,6 +394,12 @@ void gameRender () {
         DrawTexture (hillsThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
     }
     state.Draw (&program);
+    
+    DrawWords (&program, textie, "Level" + std::to_string (state.GetLevel()), 0.25 , 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 2 * TILE_SIZE );
+    DrawWords (&program, textie, "Items:", 0.25, 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 3 * TILE_SIZE);
+    if (!state.keyObtained) {
+        keyOutline.Draw (&program);
+    }
 }
 
 void gameOverRender () {
