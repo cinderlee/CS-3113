@@ -39,7 +39,7 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "playerRed") {
             
             player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE, TILE_SIZE);
-            player.gravity.y = -1.5f;
+            player.gravity.y = -2.5f;
             player.type = "playerRed";
         }
         
@@ -87,7 +87,7 @@ void GameState::LoadLevel () {
         // flying enemy - enemyAir
         if (mappy -> entities [index].type == "enemyFlying") {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 706.0f/1024.0f, 839/1024.0f, 52/1024.0f, 36/1024.0f, TILE_SIZE, TILE_SIZE));
-            enemies [enemies.size () - 1].velocity.x = 0.5f;
+            enemies [enemies.size () - 1].velocity.x = 0.1f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
             enemies[enemies.size () - 1].type = "enemyAir";
         }
@@ -95,7 +95,7 @@ void GameState::LoadLevel () {
         // ghost enemy - enemyAir
         if (mappy -> entities [index].type == "ghost") {
             enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 528.0f/1024.0f, 147/512.0f, 51/1024.0f, 73/512.0f, 2* TILE_SIZE, TILE_SIZE));
-            enemies [enemies.size () - 1].velocity.x = 0.5f;
+            enemies [enemies.size () - 1].velocity.x = 0.1f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
             enemies[enemies.size () - 1].type = "enemyAir";
         }
@@ -151,15 +151,29 @@ void GameState::UpdateEnemyMovement(float elapsed) {
             if (enemies [index].DistanceTo(&player) <= 1.0f) {
                 float x = enemies [index].DistanceToX (&player);
                 float y = enemies [index].DistanceToY (&player);
+                
+                //adjust velocities based on value of distances
                 if ( x < 0 ) {
-                    enemies [index].velocity.x = 1.0f;
-                    enemies [index].velocity.y = y / x;
+                    enemies [index].velocity.x = 0.5f;
+                }
+                else if (x > 0){
+                    enemies [index].velocity.x = -0.5f;
                 }
                 else {
-                    enemies [index].velocity.x = -1.0f;
-                    enemies [index].velocity.y = y / -x;
+                    enemies [index].velocity.x = 0.0f;
+                }
+                if ( y < 0 ) {
+                    enemies [index].velocity.y = 0.5f;
+                }
+                else if ( y > 0) {
+                    enemies [index].velocity.y = -0.5f;
+                }
+                else {
+                    enemies [index].velocity.y = 0.0f;
                 }
             }
+            
+            // if player not in range, don't move
             else {
                 enemies [index].velocity.x = 0.0f;
                 enemies [index].velocity.y = 0.0f;

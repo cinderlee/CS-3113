@@ -111,3 +111,7 @@ location=30,25,1,1
 type=ghost
 location=52,46,1,1
 
+[Object Layer]
+type=ghost
+location=24,38,1,1
+
