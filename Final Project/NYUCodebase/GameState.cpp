@@ -38,48 +38,56 @@ void GameState::LoadLevel () {
         //create the player
         if (mappy -> entities [index].type == "playerRed") {
             
-            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850, 518, 39, 48, TILE_SIZE);
-            player.gravity.y = -2.5f;
+            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE);
+            player.gravity.y = -3.5f;
             player.type = "playerRed";
         }
         
         if (mappy -> entities [index].type == "playerBlue" ) {
-            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762, 203, 45, 54, TILE_SIZE);
-            player.gravity.y = -2.5f;
+            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE);
+            player.gravity.y = -3.5f;
             player.type = "playerBlue";
             
         }
         if (mappy -> entities [index].type == "playerGreen") {
             if (lives != 0 ) {
                 if (level == 4) {
-                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 849, 429, 40 , 39, TILE_SIZE);
+                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 849/1024.0f, 429/1024.0f, 40/1024.0f , 39/1024.0f, TILE_SIZE);
                 }
                 else {
-                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890, 0, 38, 50, TILE_SIZE);
-                    player.gravity.y = -2.5f;
+                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 0/1024.0f, 38/1024.0f, 50/1024.0f, TILE_SIZE);
+                    player.gravity.y = -3.5f;
                 }
             }
             else {
-                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890, 272, 38, 43, TILE_SIZE);
+                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 272/1024.0f, 38/1024.0f, 43/1024.0f, TILE_SIZE);
             }
             player.type = "playerGreen";
         }
         
         // creating the enemies
-        if (mappy -> entities [index].type == "spider") {
-            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 929, 949, 32, 44, TILE_SIZE));
+        if (mappy -> entities [index].type == "enemyWalking") {
+            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 928.0f/1024.0f, 949/1024.0f, 32/1024.0f, 44/1024.0f, TILE_SIZE));
+            //928"    y="949"    width="32"    height="44
             enemies [enemies.size () - 1].velocity.x = 0.5f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
-            enemies[enemies.size () - 1].type = "spider";
+            enemies[enemies.size () - 1].type = "enemyGround";
+        }
+        
+        if (mappy -> entities [index].type == "spider") {
+            enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 0.0f, 326/512.0f, 71/1024.0f, 45/512.0f, TILE_SIZE));
+            enemies [enemies.size () - 1].velocity.x = 0.5f;
+            enemies [enemies.size () - 1].gravity.y = -1.0f;
+            enemies[enemies.size () - 1].type = "enemyGround";
         }
         
         if (mappy -> entities [index].type == "keyRed") {
-            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 962, 252, 29, 30, TILE_SIZE /2 );
+            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 962/1024.0f, 252/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2 );
             key.type = "keyRed";
         }
         
         if (mappy -> entities [index].type == "keyGreen") {
-            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961, 495, 29, 30, TILE_SIZE /2);
+            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 495/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2);
             key.type = "keyGreen";
         }
     }
@@ -87,7 +95,7 @@ void GameState::LoadLevel () {
 
 void GameState::UpdateEnemyMovement(float elapsed) {
     for (int index = 0; index < enemies.size (); index++) {
-        if (enemies [index].type == "spider") {
+        if (enemies [index].type == "enemyGround") {
             int TileY;
             int TileLeftX;
             int TileRightX;

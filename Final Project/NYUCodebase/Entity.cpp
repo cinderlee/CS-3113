@@ -18,7 +18,7 @@ Entity::Entity (int sprites, int index, float x, float y, float z, float size) :
 }
 
 Entity::Entity (int sprites, float x, float y, float z, float spriteX, float spriteY, float width, float height, float size) : position (Vector3 (x,y,z)), sizeEnt (Vector3 (size * width/height , size, 0.0f)) {
-    sprite = SheetSprite (sprites, spriteX/1024.0f, spriteY/1024.0f, width/1024.0f, height/1024.0f, size);
+    sprite = SheetSprite (sprites, spriteX, spriteY, width, height, size);
 }
 // drawing an entity
 void Entity::Draw(ShaderProgram *program ) {

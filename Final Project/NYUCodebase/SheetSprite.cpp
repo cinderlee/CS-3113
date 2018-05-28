@@ -32,11 +32,11 @@ void SheetSprite::Draw(ShaderProgram *program) {
     
     float aspect = width/height;
     float vertices[] = {
-        -0.5f * size * aspect , -0.5f * size,
+        -0.5f * size * aspect, -0.5f * size,
         0.5f * size * aspect, 0.5f * size,
         -0.5f * size * aspect , 0.5f * size,
-        0.5f * size * aspect, 0.5f * size,
-        -0.5f * size* aspect, -0.5f * size ,
+        0.5f * size * aspect , 0.5f * size,
+        -0.5f * size * aspect,  -0.5f * size ,
         0.5f * size * aspect, -0.5f * size};
     
     
