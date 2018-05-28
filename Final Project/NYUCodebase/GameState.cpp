@@ -24,7 +24,7 @@ void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEn
     LoadLevel();
 }
 
-
+// load map and entities of the map
 void GameState::LoadLevel () {
     if (mappy != nullptr) {
         delete mappy;
@@ -65,7 +65,9 @@ void GameState::LoadLevel () {
             player.type = "playerGreen";
         }
         
-        // creating the enemies
+        // creating the enemies - categorized into enemyGround, enemyAir, enemyShooter
+        
+        // walking enemy - enemyGround
         if (mappy -> entities [index].type == "enemyWalking") {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 928.0f/1024.0f, 949/1024.0f, 32/1024.0f, 44/1024.0f, TILE_SIZE, TILE_SIZE));
             //928"    y="949"    width="32"    height="44
@@ -74,6 +76,7 @@ void GameState::LoadLevel () {
             enemies[enemies.size () - 1].type = "enemyGround";
         }
         
+        // spider enemy - enemyGround
         if (mappy -> entities [index].type == "spider") {
             enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 0.0f, 326/512.0f, 71/1024.0f, 45/512.0f, TILE_SIZE * 2, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.5f;
@@ -81,6 +84,7 @@ void GameState::LoadLevel () {
             enemies[enemies.size () - 1].type = "enemyGround";
         }
         
+        // flying enemy - enemyAir
         if (mappy -> entities [index].type == "enemyFlying") {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 706.0f/1024.0f, 839/1024.0f, 52/1024.0f, 36/1024.0f, TILE_SIZE, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.5f;
@@ -88,6 +92,7 @@ void GameState::LoadLevel () {
             enemies[enemies.size () - 1].type = "enemyAir";
         }
         
+        // ghost enemy - enemyAir
         if (mappy -> entities [index].type == "ghost") {
             enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 528.0f/1024.0f, 147/512.0f, 51/1024.0f, 73/512.0f, 2* TILE_SIZE, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.5f;
@@ -95,6 +100,8 @@ void GameState::LoadLevel () {
             enemies[enemies.size () - 1].type = "enemyAir";
         }
         
+        
+        // keys, needed to unlock next level 
         if (mappy -> entities [index].type == "keyRed") {
             key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 962/1024.0f, 252/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2, TILE_SIZE/2 );
             key.type = "keyRed";
@@ -107,8 +114,11 @@ void GameState::LoadLevel () {
     }
 }
 
+// update enemy movements
 void GameState::UpdateEnemyMovement(float elapsed) {
     for (int index = 0; index < enemies.size (); index++) {
+        
+        // Ground AIs
         if (enemies [index].type == "enemyGround") {
             int TileY;
             int TileLeftX;
@@ -136,6 +146,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
             enemies[index].position.x += enemies[index].velocity.x * elapsed;
         }
         
+        // Air AIs
         if (enemies [index].type == "enemyAir") {
             if (enemies [index].DistanceTo(&player) <= 1.0f) {
                 float x = enemies [index].DistanceToX (&player);
@@ -158,6 +169,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
         }
     }
     
+    // check for collision between enemy entities
     for (int index = 0; index < enemies.size (); index++) {
         for (int index2 = 0; index2 < enemies.size (); index2++ ){
             if (index != index2) {
@@ -170,6 +182,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
     }
 }
 
+// update when player can move on to next level
 void GameState::UpdateLevel() {
     
     level += 2;
@@ -178,10 +191,13 @@ void GameState::UpdateLevel() {
     LoadLevel();
 }
 
+
+// return the game level
 int GameState::GetLevel(){
     return level;
 }
 
+// return the number of lives left
 int GameState::GetLives (){
     return lives;
 }
@@ -190,13 +206,13 @@ int GameState::GetLives (){
 void GameState::Draw (ShaderProgram* program) {
     mappy -> Draw (program, sprites);
     player.Draw (program);
+    key.Draw (program);
     for (int i = 0; i < enemies.size (); i++){
         enemies[i].Draw (program);
     }
-    key.Draw (program);
 }
 
-// checking for any collisions in game
+// checking for any collisions in game between entities
 void GameState::CollisionEntities () {
     
     // if collision between enemy and player
@@ -214,11 +230,11 @@ void GameState::CollisionEntities () {
         }
     }
     
-    
     if (player.Collision (&key)) {
         keyObtained = true; 
     }
     
+    // move on to next level if at the door with key
     int TileX;
     int TileY;
     player.worldToTileCoordinates(player.position.x, player.position.y, &TileX, &TileY);
@@ -228,6 +244,7 @@ void GameState::CollisionEntities () {
     
 }
 
+// check and resolve horizontal collision
 void GameState::CollisionX () {
     int TileX;
     int TileY;
@@ -271,6 +288,7 @@ void GameState::CollisionX () {
     }
 }
 
+// check and adjust vertical collision
 void GameState::CollisionY () {
     
     int TileX;
@@ -320,6 +338,7 @@ void GameState::CollisionY () {
   
 }
 
+// reset game state
 void GameState::Reset () {
     lives = 5;
     level = 0;

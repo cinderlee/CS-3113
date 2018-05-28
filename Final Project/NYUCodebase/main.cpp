@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+// load all textures for use 
 void LoadingTextures () {
     tilesheet = LoadTexture(RESOURCE_FOLDER"Resources/tilesheet_complete.png");
     playerSheet = LoadTexture(RESOURCE_FOLDER"Resources/spritesheet_complete.png");
@@ -186,6 +187,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                     done = true;
                 }
             }
+            // start the game
             if (keys [SDL_SCANCODE_SPACE] ){
                 mode = STATE_GAME_LEVEL;
                 state.UpdateLevel ();
@@ -202,12 +204,16 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                     done = true;
                 }
                 else if (event.type == SDL_KEYDOWN) {
+                    
+                    // simple jumping
                     if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
                         if (state.player.collidedBottom) {
                             state.player.velocity.y = 4.0f;
                             state.player.acceleration.y = 1.0f;
                         }
                     }
+                    
+                    // bounce off walls but can't combine with left and right keys
                     if (event.key.keysym.scancode == SDL_SCANCODE_A) {
                         if (state.player.collidedLeft && !keys [SDL_SCANCODE_LEFT]) {
                             state.player.velocity.y = 4.0f;
@@ -237,6 +243,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 state.player.acceleration.x = 1.0f;
             }
             
+            // reset the game
             if (keys [SDL_SCANCODE_R]) {
                 mode = STATE_MAIN_MENU;
                 state.Reset();
@@ -254,6 +261,8 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                     done = true;
                 }
             }
+            
+            // reset the game
             if (keys [SDL_SCANCODE_R]) {
                 mode = STATE_MAIN_MENU;
                 state.Reset();
@@ -281,6 +290,7 @@ void mainGameOverUpdate (float elapsed, int& direction) {
     if (direction == -1) {
         viewX -= elapsed * 3 * direction;
     }
+    // enemies move on title page and game over page
     state.UpdateEnemyMovement(elapsed);
 }
 
@@ -326,6 +336,7 @@ void GameLevelUpdate (float elapsed) {
         state.player.velocity.y = 0;
     }
     
+    // check for player collisions with enemies
     state.CollisionEntities();
     
     // adjusting viewMatrix
@@ -344,6 +355,7 @@ void GameLevelUpdate (float elapsed) {
         viewY = 2.0;
     }
     
+    // if obtained key, replace keyOutline with key
     keyOutline.position.x = - (viewX + 4.05 - 2 * TILE_SIZE) + 6 * 0.25;
     keyOutline.position.y = - (viewY - 2.5 + 3 * TILE_SIZE) ;
     if (state.keyObtained) {
@@ -504,7 +516,7 @@ void DrawText(ShaderProgram *program, int fontTexture, std::string text, float s
 }
 
 
-//drawing words - needed for winning moment
+// drawing words - needed for title and game over page
 void DrawWords (ShaderProgram* program, int fontTexture, std::string text, float size, float spacing, float x, float y) {
     Matrix modelMatrix;
     modelMatrix.SetPosition(-x, -y, 0.0f);
@@ -514,7 +526,7 @@ void DrawWords (ShaderProgram* program, int fontTexture, std::string text, float
     DrawText(program, fontTexture, text, size, spacing);
 }
 
-
+// drawing textures - needed for drawing backgrounds
 void DrawTexture (int textureID, float x, float y, float width, float height) {
     Matrix modelMatrix;
     modelMatrix.Scale (width, height, 1.0f);
