@@ -39,7 +39,7 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "playerRed") {
             
             player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE);
-            player.gravity.y = -3.5f;
+            player.gravity.y = -1.5f;
             player.type = "playerRed";
         }
         
@@ -81,6 +81,13 @@ void GameState::LoadLevel () {
             enemies[enemies.size () - 1].type = "enemyGround";
         }
         
+        if (mappy -> entities [index].type == "enemyFlying") {
+            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 706.0f/1024.0f, 839/1024.0f, 52/1024.0f, 36/1024.0f, TILE_SIZE));
+            enemies [enemies.size () - 1].velocity.x = 0.5f;
+            enemies [enemies.size () - 1].gravity.y = -1.0f;
+            enemies[enemies.size () - 1].type = "enemyAir";
+        }
+        
         if (mappy -> entities [index].type == "keyRed") {
             key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 962/1024.0f, 252/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2 );
             key.type = "keyRed";
@@ -120,6 +127,29 @@ void GameState::UpdateEnemyMovement(float elapsed) {
                 enemies [index].velocity.x *= -1;
             }
             enemies[index].position.x += enemies[index].velocity.x * elapsed;
+        }
+        
+        if (enemies [index].type == "enemyAir") {
+            if (enemies [index].DistanceTo(&player) <= 1.0f) {
+                float x = enemies [index].DistanceToX (&player);
+                float y = enemies [index].DistanceToY (&player);
+                if ( x < 0 ) {
+                    std:: cout <<  "Testing Flying AI: " << x << ", " << y << std::endl;
+                    enemies [index].velocity.x = 1.0f;
+                    enemies [index].velocity.y = y / x;
+                }
+                else {
+                    std:: cout <<  "Testing Flying AI2: " << x << ", " << y << std::endl;
+                    enemies [index].velocity.x = -1.0f;
+                    enemies [index].velocity.y = y / -x;
+                }
+            }
+            else {
+                enemies [index].velocity.x = 0.0f;
+                enemies [index].velocity.y = 0.0f;
+            }
+            enemies [index].position.x += enemies [index].velocity.x * elapsed;
+            enemies [index].position.y += enemies [index].velocity.y * elapsed;
         }
     }
 }

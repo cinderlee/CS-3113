@@ -20,6 +20,9 @@ public:
     Entity (int sprites, int index, float x, float y, float z, float size);
     void Draw(ShaderProgram* program);
     void Update(float elapsed);
+    float DistanceToX (Entity* other);
+    float DistanceToY (Entity* other); 
+    float DistanceTo (Entity* other);
     bool Collision (Entity* other);
     void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
     void collisionBools ();

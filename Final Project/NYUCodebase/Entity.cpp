@@ -9,6 +9,7 @@
 #include "Entity.h"
 #include "ShaderProgram.h"
 #include "SheetSprite.h"
+#include <math.h> 
 
 Entity::Entity () {}
 
@@ -26,6 +27,22 @@ void Entity::Draw(ShaderProgram *program ) {
         modelMatrix.SetPosition(position.x, position.y, position.z);
         program -> SetModelMatrix(modelMatrix);
         sprite.Draw (program);
+}
+
+float Entity::DistanceToX (Entity* other) {
+    return position.x - other -> position.x;
+}
+
+float Entity::DistanceToY (Entity* other) {
+    return position.y - other -> position.y;
+}
+
+float Entity::DistanceTo (Entity* other) {
+    float distancex = DistanceToX(other);
+    float distancey = DistanceToY (other);
+    distancex *= distancex;
+    distancey *= distancey;
+    return sqrt (distancex + distancey);
 }
 
 //checking for entity collision
