@@ -38,13 +38,13 @@ void GameState::LoadLevel () {
         //create the player
         if (mappy -> entities [index].type == "playerRed") {
             
-            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE);
+            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE, TILE_SIZE);
             player.gravity.y = -1.5f;
             player.type = "playerRed";
         }
         
         if (mappy -> entities [index].type == "playerBlue" ) {
-            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE);
+            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE, TILE_SIZE);
             player.gravity.y = -3.5f;
             player.type = "playerBlue";
             
@@ -52,22 +52,22 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "playerGreen") {
             if (lives != 0 ) {
                 if (level == 4) {
-                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 849/1024.0f, 429/1024.0f, 40/1024.0f , 39/1024.0f, TILE_SIZE);
+                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 849/1024.0f, 429/1024.0f, 40/1024.0f , 39/1024.0f, TILE_SIZE, TILE_SIZE);
                 }
                 else {
-                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 0/1024.0f, 38/1024.0f, 50/1024.0f, TILE_SIZE);
+                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 0/1024.0f, 38/1024.0f, 50/1024.0f, TILE_SIZE, TILE_SIZE);
                     player.gravity.y = -3.5f;
                 }
             }
             else {
-                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 272/1024.0f, 38/1024.0f, 43/1024.0f, TILE_SIZE);
+                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 272/1024.0f, 38/1024.0f, 43/1024.0f, TILE_SIZE, TILE_SIZE);
             }
             player.type = "playerGreen";
         }
         
         // creating the enemies
         if (mappy -> entities [index].type == "enemyWalking") {
-            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 928.0f/1024.0f, 949/1024.0f, 32/1024.0f, 44/1024.0f, TILE_SIZE));
+            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 928.0f/1024.0f, 949/1024.0f, 32/1024.0f, 44/1024.0f, TILE_SIZE, TILE_SIZE));
             //928"    y="949"    width="32"    height="44
             enemies [enemies.size () - 1].velocity.x = 0.5f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
@@ -75,26 +75,33 @@ void GameState::LoadLevel () {
         }
         
         if (mappy -> entities [index].type == "spider") {
-            enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 0.0f, 326/512.0f, 71/1024.0f, 45/512.0f, TILE_SIZE));
+            enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 0.0f, 326/512.0f, 71/1024.0f, 45/512.0f, TILE_SIZE * 2, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.5f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
             enemies[enemies.size () - 1].type = "enemyGround";
         }
         
         if (mappy -> entities [index].type == "enemyFlying") {
-            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 706.0f/1024.0f, 839/1024.0f, 52/1024.0f, 36/1024.0f, TILE_SIZE));
+            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 706.0f/1024.0f, 839/1024.0f, 52/1024.0f, 36/1024.0f, TILE_SIZE, TILE_SIZE));
+            enemies [enemies.size () - 1].velocity.x = 0.5f;
+            enemies [enemies.size () - 1].gravity.y = -1.0f;
+            enemies[enemies.size () - 1].type = "enemyAir";
+        }
+        
+        if (mappy -> entities [index].type == "ghost") {
+            enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 528.0f/1024.0f, 147/512.0f, 51/1024.0f, 73/512.0f, 2* TILE_SIZE, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.5f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
             enemies[enemies.size () - 1].type = "enemyAir";
         }
         
         if (mappy -> entities [index].type == "keyRed") {
-            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 962/1024.0f, 252/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2 );
+            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 962/1024.0f, 252/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2, TILE_SIZE/2 );
             key.type = "keyRed";
         }
         
         if (mappy -> entities [index].type == "keyGreen") {
-            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 495/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2);
+            key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 495/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2, TILE_SIZE/2);
             key.type = "keyGreen";
         }
     }
@@ -134,12 +141,10 @@ void GameState::UpdateEnemyMovement(float elapsed) {
                 float x = enemies [index].DistanceToX (&player);
                 float y = enemies [index].DistanceToY (&player);
                 if ( x < 0 ) {
-                    std:: cout <<  "Testing Flying AI: " << x << ", " << y << std::endl;
                     enemies [index].velocity.x = 1.0f;
                     enemies [index].velocity.y = y / x;
                 }
                 else {
-                    std:: cout <<  "Testing Flying AI2: " << x << ", " << y << std::endl;
                     enemies [index].velocity.x = -1.0f;
                     enemies [index].velocity.y = y / -x;
                 }
@@ -152,11 +157,22 @@ void GameState::UpdateEnemyMovement(float elapsed) {
             enemies [index].position.y += enemies [index].velocity.y * elapsed;
         }
     }
+    
+    for (int index = 0; index < enemies.size (); index++) {
+        for (int index2 = 0; index2 < enemies.size (); index2++ ){
+            if (index != index2) {
+                if (enemies [index].Collision (&enemies[index2])) {
+                    enemies [index].velocity.x *= -1;
+                }
+            }
+        }
+    
+    }
 }
 
 void GameState::UpdateLevel() {
     
-    level += 1;
+    level += 2;
     keyObtained = false;
     
     LoadLevel();

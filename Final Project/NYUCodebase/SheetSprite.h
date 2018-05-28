@@ -15,11 +15,12 @@
 class SheetSprite {
 public:
     SheetSprite();
-    SheetSprite(int index, unsigned int textureID, float size);
-    SheetSprite(unsigned int textureID, float u, float v, float width, float height, float size);
+    SheetSprite(int index, unsigned int textureID, float sizeX, float sizeY);
+    SheetSprite(unsigned int textureID, float u, float v, float width, float height, float sizeX, float sizeY);
     
     void Draw(ShaderProgram *program);
-    float size;
+    float sizeX;
+    float sizeY;
     unsigned int textureID;
     int index = 0;
     int spriteCountX = 10;

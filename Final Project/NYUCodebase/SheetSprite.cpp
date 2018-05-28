@@ -12,10 +12,10 @@
 SheetSprite::SheetSprite() {};
 
 // creating a sprite
-SheetSprite::SheetSprite(int index, unsigned int textureID, float size): index (index),
-                        textureID(textureID), size(size) {};
+SheetSprite::SheetSprite(int index, unsigned int textureID, float sizeX, float sizeY): index (index),
+                        textureID(textureID), sizeX(sizeX), sizeY (sizeY) {};
 
-SheetSprite::SheetSprite(unsigned int textureID, float u, float v, float width, float height, float size): textureID(textureID), u(u), v(v), width(width), height (height), size(size) {};
+SheetSprite::SheetSprite(unsigned int textureID, float u, float v, float width, float height, float sizeX, float sizeY): textureID(textureID), u(u), v(v), width(width), height (height), sizeX(sizeX), sizeY (sizeY) {};
 // drawing the sprite
 
 void SheetSprite::Draw(ShaderProgram *program) {
@@ -32,12 +32,12 @@ void SheetSprite::Draw(ShaderProgram *program) {
     
     float aspect = width/height;
     float vertices[] = {
-        -0.5f * size * aspect, -0.5f * size,
-        0.5f * size * aspect, 0.5f * size,
-        -0.5f * size * aspect , 0.5f * size,
-        0.5f * size * aspect , 0.5f * size,
-        -0.5f * size * aspect,  -0.5f * size ,
-        0.5f * size * aspect, -0.5f * size};
+        -0.5f * sizeX * aspect, -0.5f * sizeY,
+        0.5f * sizeX * aspect, 0.5f * sizeY,
+        -0.5f * sizeX * aspect , 0.5f * sizeY,
+        0.5f * sizeX * aspect , 0.5f * sizeY,
+        -0.5f * sizeX * aspect,  -0.5f * sizeY ,
+        0.5f * sizeX * aspect, -0.5f * sizeY};
     
     
     glVertexAttribPointer(program -> positionAttribute, 2, GL_FLOAT, false, 0, vertices);

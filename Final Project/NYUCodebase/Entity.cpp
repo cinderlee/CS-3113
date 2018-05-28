@@ -14,12 +14,12 @@
 Entity::Entity () {}
 
 // creating an entity
-Entity::Entity (int sprites, int index, float x, float y, float z, float size) : position (Vector3 (x,y,z)), sizeEnt (Vector3 (size, size, 0.0f)) {
-    sprite = SheetSprite (index, sprites, size ); 
+Entity::Entity (int sprites, int index, float x, float y, float z, float sizeX, float sizeY) : position (Vector3 (x,y,z)), sizeEnt (Vector3 (sizeX, sizeY, 0.0f)) {
+    sprite = SheetSprite (index, sprites, sizeX, sizeY );
 }
 
-Entity::Entity (int sprites, float x, float y, float z, float spriteX, float spriteY, float width, float height, float size) : position (Vector3 (x,y,z)), sizeEnt (Vector3 (size * width/height , size, 0.0f)) {
-    sprite = SheetSprite (sprites, spriteX, spriteY, width, height, size);
+Entity::Entity (int sprites, float x, float y, float z, float spriteX, float spriteY, float width, float height, float sizeX, float sizeY) : position (Vector3 (x,y,z)), sizeEnt (Vector3 (sizeX * width/height , sizeY, 0.0f)) {
+    sprite = SheetSprite (sprites, spriteX, spriteY, width, height, sizeX, sizeY);
 }
 // drawing an entity
 void Entity::Draw(ShaderProgram *program ) {
@@ -29,14 +29,17 @@ void Entity::Draw(ShaderProgram *program ) {
         sprite.Draw (program);
 }
 
+// calculating distance horizontally to another entity
 float Entity::DistanceToX (Entity* other) {
     return position.x - other -> position.x;
 }
 
+// calculating distance vertically to another entity
 float Entity::DistanceToY (Entity* other) {
     return position.y - other -> position.y;
 }
 
+// calculating distance to another entity 
 float Entity::DistanceTo (Entity* other) {
     float distancex = DistanceToX(other);
     float distancey = DistanceToY (other);

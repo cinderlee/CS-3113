@@ -41,7 +41,11 @@ location=3,17,1,1
 
 [Object Layer]
 type=enemyWalking
-location=18,17,1,1
+location=19,17,1,1
+
+[Object Layer]
+type=spider
+location=17,17,1,1
 
 [Object Layer]
 type=enemyWalking

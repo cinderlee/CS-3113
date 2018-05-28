@@ -16,8 +16,8 @@
 class Entity {
 public:
     Entity ();
-    Entity (int sprites, float x, float y, float z, float spriteX, float spriteY, float width, float height, float size);
-    Entity (int sprites, int index, float x, float y, float z, float size);
+    Entity (int sprites, float x, float y, float z, float spriteX, float spriteY, float width, float height, float sizeX, float sizeY);
+    Entity (int sprites, int index, float x, float y, float z, float sizeX, float sizeY);
     void Draw(ShaderProgram* program);
     void Update(float elapsed);
     float DistanceToX (Entity* other);
