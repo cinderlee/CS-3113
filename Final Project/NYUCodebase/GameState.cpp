@@ -199,7 +199,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level += 2;
+    level+= 2;
     keyObtained = false;
     
     LoadLevel();
@@ -290,6 +290,8 @@ void GameState::CollisionX () {
             player.position.x -= (player.position.x + player.sizeEnt.x/2 - worldRightX) ;
         }
         player.collidedRight = true;
+        
+        
     }
     
     // if left tile is solid

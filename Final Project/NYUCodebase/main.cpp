@@ -14,6 +14,7 @@
 #include "SheetSprite.h"
 #include "FlareMap.h"
 #include "GameState.h"
+#include <SDL_mixer.h>
 
 // In this platform, if you hit an enemy or spikes you return back to the beginning
 // In order to win, you must reach the end of the game and receive the key
@@ -37,6 +38,8 @@ int tilesThree;
 int hillsOne;
 int hillsThree;
 Entity keyOutline;
+Mix_Music *mainMusic;
+Mix_Music *gameMusic;
 
 bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
@@ -97,7 +100,8 @@ int main(int argc, char *argv[])
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    
+    Mix_VolumeMusic(25);
+    Mix_PlayMusic (mainMusic, -1);
     float lastFrameTicks = 0.0f;
     float elapsed = 0.0f;
     float accumulator = 0.0f;
@@ -160,7 +164,12 @@ void Setup () {
     glViewport(0, 0, 1280, 720);
     
     program.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
+    
     LoadingTextures();
+    
+    Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 );
+    mainMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
+    gameMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/gameMusic.wav");
     
     state.Initiate (tilesheet, playerSheet, enemySheet);
     
@@ -190,6 +199,12 @@ void ProcessEvents (SDL_Event& event, bool& done) {
             // start the game
             if (keys [SDL_SCANCODE_SPACE] ){
                 mode = STATE_GAME_LEVEL;
+                Mix_HaltMusic();
+                
+                mainMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/gameMusic.wav");
+                Mix_VolumeMusic(25);
+                Mix_PlayMusic (mainMusic, -1);
+                
                 state.UpdateLevel ();
                 viewX = 0.0f;
                 viewY= 0.0f;
@@ -252,6 +267,12 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 if (viewY >= state.mappy -> mapHeight * TILE_SIZE - 2.0) {
                     viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
                 }
+                
+                Mix_HaltMusic();
+                
+                mainMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
+                Mix_VolumeMusic(25);
+                Mix_PlayMusic (mainMusic, -1);
             }
             
             break;
@@ -271,6 +292,10 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 if (viewY >= state.mappy -> mapHeight * TILE_SIZE - 2.0) {
                     viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
                 }
+                Mix_HaltMusic();
+                mainMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
+                Mix_VolumeMusic(25);
+                Mix_PlayMusic (mainMusic, -1);
             }
             break;
     }
