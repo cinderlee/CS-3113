@@ -15,13 +15,14 @@
 #include "FlareMap.h"
 #include "GameState.h"
 #include <SDL_mixer.h>
-
+#include "ParticleEmitter.h"
 // In this platform, if you hit an enemy or spikes you return back to the beginning
 // In order to win, you must reach the end of the game and receive the key
 
 ShaderProgram program;
 Matrix viewMatrix;
 Matrix projectionMatrix;
+Matrix modelMatrix;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 GameState state;
 float viewX = 0.0f;
@@ -37,9 +38,10 @@ int tilesOne;
 int tilesThree;
 int hillsOne;
 int hillsThree;
+int star;
 Entity keyOutline;
-Mix_Music *mainMusic;
-Mix_Music *gameMusic;
+Mix_Music *music;
+ParticleEmitter party;
 
 bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
@@ -101,17 +103,17 @@ int main(int argc, char *argv[])
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     Mix_VolumeMusic(25);
-    Mix_PlayMusic (mainMusic, -1);
+    Mix_PlayMusic (music, -1);
     float lastFrameTicks = 0.0f;
     float elapsed = 0.0f;
     float accumulator = 0.0f;
-    
+
     int direction = 1;
     
     while (!done) {
         ProcessEvents (event, done);
-        
-        glClearColor(135.0f / 255.0f, 206.0f/ 255.0f, 250.0f/255.0f, 1.0f);
+        //glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+        //glClearColor(135.0f / 255.0f, 206.0f/ 255.0f, 250.0f/255.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
         float ticks = (float)SDL_GetTicks()/1000.0f;
@@ -131,7 +133,7 @@ int main(int argc, char *argv[])
         
         SDL_GL_SwapWindow(displayWindow);
     }
-    
+    Mix_FreeMusic(music);
     SDL_Quit();
     return 0;
 }
@@ -149,6 +151,7 @@ void LoadingTextures () {
     hillsThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_hills.png");
     tilesOne = LoadTexture(RESOURCE_FOLDER"Resources/set1_tiles.png");
     tilesThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_tiles.png");
+    star = LoadTexture(RESOURCE_FOLDER"Resources/flare_0.png");
 }
 
 // setting up game
@@ -168,13 +171,11 @@ void Setup () {
     LoadingTextures();
     
     Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 );
-    mainMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
-    gameMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/gameMusic.wav");
+    music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
     
-    state.Initiate (tilesheet, playerSheet, enemySheet);
+    state.Initiate (tilesheet, playerSheet, enemySheet, star);
     
     glUseProgram(program.programID);
-    
     // set view and projection matrices
     projectionMatrix.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
     viewX = -3.55f;
@@ -185,6 +186,8 @@ void Setup () {
     program.SetProjectionMatrix(projectionMatrix);
     
     keyOutline = Entity (playerSheet, 0.0f, 0.0f, 0.0f, 927/1024.0f, 624/1024.0f, 36/1024.0f, 36/1024.0f, TILE_SIZE / 2, TILE_SIZE/2);
+    
+    //state.partSystem = ParticleEmitter (star, 50, 0.0, 0.0);
 }
 
 // processing events
@@ -201,9 +204,9 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 mode = STATE_GAME_LEVEL;
                 Mix_HaltMusic();
                 
-                mainMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/gameMusic.wav");
+                music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/gameMusic.wav");
                 Mix_VolumeMusic(25);
-                Mix_PlayMusic (mainMusic, -1);
+                Mix_PlayMusic (music, -1);
                 
                 state.UpdateLevel ();
                 viewX = 0.0f;
@@ -219,43 +222,46 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                     done = true;
                 }
                 else if (event.type == SDL_KEYDOWN) {
-                    
-                    // simple jumping
-                    if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
-                        if (state.player.collidedBottom) {
-                            state.player.velocity.y = 4.0f;
-                            state.player.acceleration.y = 1.0f;
+                    if (state.player.active) {
+                        // simple jumping
+                        if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
+                            if (state.player.collidedBottom) {
+                                state.player.velocity.y = 4.0f;
+                                state.player.acceleration.y = 1.0f;
+                            }
                         }
-                    }
-                    
-                    // bounce off walls but can't combine with left and right keys
-                    if (event.key.keysym.scancode == SDL_SCANCODE_A) {
-                        if (state.player.collidedLeft && !keys [SDL_SCANCODE_LEFT]) {
-                            state.player.velocity.y = 4.0f;
-                            state.player.acceleration.y = 1.0f;
-                            state.player.velocity.x = 1.5f;
-                            state.player.acceleration.x = 1.0f;
-                        }
-                        if (state.player.collidedRight && !keys[SDL_SCANCODE_RIGHT] ) {
-                            state.player.velocity.y = 4.0f;
-                            state.player.acceleration.y = 1.0f;
-                            state.player.velocity.x = -1.5f;
-                            state.player.acceleration.x = -1.0f;
+                        
+                        // bounce off walls but can't combine with left and right keys
+                        if (event.key.keysym.scancode == SDL_SCANCODE_A) {
+                            if (state.player.collidedLeft && !keys [SDL_SCANCODE_LEFT]) {
+                                state.player.velocity.y = 4.0f;
+                                state.player.acceleration.y = 1.0f;
+                                state.player.velocity.x = 1.5f;
+                                state.player.acceleration.x = 1.0f;
+                            }
+                            if (state.player.collidedRight && !keys[SDL_SCANCODE_RIGHT] ) {
+                                state.player.velocity.y = 4.0f;
+                                state.player.acceleration.y = 1.0f;
+                                state.player.velocity.x = -1.5f;
+                                state.player.acceleration.x = -1.0f;
+                            }
                         }
                     }
                 }
             }
-        
-            //move left
-            if (keys [SDL_SCANCODE_LEFT]){
-                state.player.velocity.x = -1.5f;
-                state.player.acceleration.x = -1.0f;
-            }
             
-            // move right
-            else if (keys [SDL_SCANCODE_RIGHT] && !state.player.collidedRight){
-                state.player.velocity.x = 1.5f;
-                state.player.acceleration.x = 1.0f;
+            if (state.player.active) {
+                //move left
+                if (keys [SDL_SCANCODE_LEFT]){
+                    state.player.velocity.x = -1.5f;
+                    state.player.acceleration.x = -1.0f;
+                }
+                
+                // move right
+                else if (keys [SDL_SCANCODE_RIGHT] && !state.player.collidedRight){
+                    state.player.velocity.x = 1.5f;
+                    state.player.acceleration.x = 1.0f;
+                }
             }
             
             // reset the game
@@ -270,9 +276,9 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 
                 Mix_HaltMusic();
                 
-                mainMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
+                music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
                 Mix_VolumeMusic(25);
-                Mix_PlayMusic (mainMusic, -1);
+                Mix_PlayMusic (music, -1);
             }
             
             break;
@@ -293,9 +299,9 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                     viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
                 }
                 Mix_HaltMusic();
-                mainMusic = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
+                music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
                 Mix_VolumeMusic(25);
-                Mix_PlayMusic (mainMusic, -1);
+                Mix_PlayMusic (music, -1);
             }
             break;
     }
@@ -325,7 +331,6 @@ void GameLevelUpdate (float elapsed) {
     state.UpdateEnemyMovement(elapsed);
     
     state.player.collisionBools();
-    
     
     // applying friction
     state.player.velocity.x = lerp(state.player.velocity.x, 0.0f, elapsed * 1.5);
@@ -387,6 +392,10 @@ void GameLevelUpdate (float elapsed) {
         state.key.position.x = keyOutline.position.x;
         state.key.position.y = keyOutline.position.y;
     }
+    
+    if (state.powerUpObtained && state.powerUp.DistanceToY(&state.player) < 0.6f) {
+        state.powerUp.position.y += 0.5 * elapsed;
+    }
 }
 
 void Update (float elapsed, int& direction ){
@@ -395,7 +404,9 @@ void Update (float elapsed, int& direction ){
             mainGameOverUpdate(elapsed, direction);
             break;
         case STATE_GAME_LEVEL:
-            GameLevelUpdate (FIXED_TIMESTEP);
+            //GameLevelUpdate (FIXED_TIMESTEP);
+            //state.partSystem.Update(elapsed);
+            state.partSystem.Update(elapsed);
             if (state.GetLevel() == 4) {
                 mode = STATE_GAME_OVER;
                 viewX = -3.55;
@@ -426,30 +437,35 @@ void mainRender () {
 }
 
 void gameRender () {
+//    viewMatrix.Identity();
+//    viewMatrix.SetPosition(viewX, viewY, 0.0f);
+//    program.SetViewMatrix(viewMatrix);
+//    if (state.GetLevel() == 1) {
+//        DrawTexture (backgroundOne, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3); 
+//        DrawTexture (tilesOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+//        DrawTexture (hillsOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+//    }
+//    if (state.GetLevel() == 2) {
+//        DrawTexture (backgroundTwo, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
+//    }
+//    if (state.GetLevel() == 3) {
+//        DrawTexture (backgroundThree, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
+//        DrawTexture (tilesThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+//        DrawTexture (hillsThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+//    }
+//    state.Draw (&program);
+//
+//    DrawWords (&program, textie, "Level" + std::to_string (state.GetLevel()), 0.25 , 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 2 * TILE_SIZE );
+//    DrawWords (&program, textie, "Items:", 0.25, 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 3 * TILE_SIZE);
+//    DrawWords (&program, textie, "Lives:" + std::to_string (state.GetLives()), 0.25, 0.0f, viewX - 1.9, viewY - 2.5 + 2 * TILE_SIZE );
+//    if (!state.keyObtained) {
+//        keyOutline.Draw (&program);
+//    }
     viewMatrix.Identity();
-    viewMatrix.SetPosition(viewX, viewY, 0.0f);
     program.SetViewMatrix(viewMatrix);
-    if (state.GetLevel() == 1) {
-        DrawTexture (backgroundOne, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
-        DrawTexture (tilesOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
-        DrawTexture (hillsOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
-    }
-    if (state.GetLevel() == 2) {
-        DrawTexture (backgroundTwo, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
-    }
-    if (state.GetLevel() == 3) {
-        DrawTexture (backgroundThree, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
-        DrawTexture (tilesThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
-        DrawTexture (hillsThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
-    }
-    state.Draw (&program);
-    
-    DrawWords (&program, textie, "Level" + std::to_string (state.GetLevel()), 0.25 , 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 2 * TILE_SIZE );
-    DrawWords (&program, textie, "Items:", 0.25, 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 3 * TILE_SIZE);
-    DrawWords (&program, textie, "Lives:" + std::to_string (state.GetLives()), 0.25, 0.0f, viewX - 1.9, viewY - 2.5 + 2 * TILE_SIZE );
-    if (!state.keyObtained) {
-        keyOutline.Draw (&program);
-    }
+    modelMatrix.Identity ();
+    program.SetModelMatrix(modelMatrix);
+    state.partSystem.Render(&program);
 }
 
 void gameOverRender () {

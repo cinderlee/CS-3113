@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00320E4020BDD7C10015BAF9 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00320E3F20BDD7C10015BAF9 /* SDL2_mixer.framework */; };
 		0050F79120B8E5D800C828E6 /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = 0050F79020B8E5D800C828E6 /* Resources */; };
+		0065B44A20BE49FA00083D83 /* ParticleEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0065B44820BE49FA00083D83 /* ParticleEmitter.cpp */; };
 		00C581B4206964710035AC0C /* FlareMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C581B1206964700035AC0C /* FlareMap.cpp */; };
 		00C581BA206964A90035AC0C /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C581B6206964A80035AC0C /* Entity.cpp */; };
 		00C581BB206964A90035AC0C /* SheetSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C581B9206964A90035AC0C /* SheetSprite.cpp */; };
@@ -33,6 +34,8 @@
 /* Begin PBXFileReference section */
 		00320E3F20BDD7C10015BAF9 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_mixer.framework; sourceTree = "<group>"; };
 		0050F79020B8E5D800C828E6 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		0065B44820BE49FA00083D83 /* ParticleEmitter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitter.cpp; sourceTree = "<group>"; };
+		0065B44920BE49FA00083D83 /* ParticleEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleEmitter.h; sourceTree = "<group>"; };
 		00C581AF206964700035AC0C /* FlareMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlareMap.h; sourceTree = "<group>"; };
 		00C581B1206964700035AC0C /* FlareMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FlareMap.cpp; sourceTree = "<group>"; };
 		00C581B6206964A80035AC0C /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
@@ -178,6 +181,8 @@
 				6DEF23C01B96CC2600BCE792 /* vertex.glsl */,
 				00C581B6206964A80035AC0C /* Entity.cpp */,
 				00C581B8206964A90035AC0C /* Entity.h */,
+				0065B44820BE49FA00083D83 /* ParticleEmitter.cpp */,
+				0065B44920BE49FA00083D83 /* ParticleEmitter.h */,
 				00C581C12069E7FC0035AC0C /* GameState.cpp */,
 				00C581C22069E7FC0035AC0C /* GameState.h */,
 				00C581B9206964A90035AC0C /* SheetSprite.cpp */,
@@ -267,6 +272,7 @@
 				00C581BA206964A90035AC0C /* Entity.cpp in Sources */,
 				00C581BE206966280035AC0C /* Vector3.cpp in Sources */,
 				00C581BB206964A90035AC0C /* SheetSprite.cpp in Sources */,
+				0065B44A20BE49FA00083D83 /* ParticleEmitter.cpp in Sources */,
 				6D5A86BA19AE5C710066C1FD /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

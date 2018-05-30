@@ -6,10 +6,12 @@
 //  Copyright © 2018 Ivan Safrin. All rights reserved.
 //
 
+
 #include "GameState.h"
 #include "Entity.h"
 #include "SheetSprite.h"
 #include "FlareMap.h"
+#include "ShaderProgram.h"
 #include <vector>
 #include <string>
 #define TILE_SIZE 0.3f
@@ -17,10 +19,12 @@
 GameState::GameState () {}
 
 // initializing player and enemies
-void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEnemy){
+void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEnemy, int textureID){
     sprites = spriteTiles;
     spritePlayer = spritesterPlayer;
     spriteEnemy = spritesterEnemy;
+    partTexture = textureID;
+    partSystem = ParticleEmitter (partTexture, 100, 0.0f, 0.0f );
     LoadLevel();
 }
 
@@ -111,13 +115,20 @@ void GameState::LoadLevel () {
             key = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 495/1024.0f, 29/1024.0f, 30/1024.0f, TILE_SIZE /2, TILE_SIZE/2);
             key.type = "keyGreen";
         }
+        
+        if (mappy -> entities [index].type == "flower") {
+            powerUp = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 949/1024.0f, 29/1024.0f, 55/1024.0f, TILE_SIZE, TILE_SIZE);
+            powerUp.type = "powerUp";
+            //partSystem = ParticleEmitter (partTexture, 10, powerUp.position.x, powerUp.position.y );
+        
+        }
     }
 }
 
 // update enemy movements
 void GameState::UpdateEnemyMovement(float elapsed) {
     for (int index = 0; index < enemies.size (); index++) {
-        
+    
         // Ground AIs
         if (enemies [index].type == "enemyGround") {
             int TileY;
@@ -186,7 +197,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
     // check for collision between enemy entities
     for (int index = 0; index < enemies.size (); index++) {
         for (int index2 = 0; index2 < enemies.size (); index2++ ){
-            if (index != index2) {
+            if (index != index2 && enemies [index].active && enemies [index2].active) {
                 if (enemies [index].Collision (&enemies[index2])) {
                     enemies [index].velocity.x *= -1;
                 }
@@ -199,7 +210,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level+= 2;
+    level++;
     keyObtained = false;
     
     LoadLevel();
@@ -221,9 +232,13 @@ void GameState::Draw (ShaderProgram* program) {
     mappy -> Draw (program, sprites);
     player.Draw (program);
     key.Draw (program);
+    powerUp.Draw (program);
     for (int i = 0; i < enemies.size (); i++){
-        enemies[i].Draw (program);
+        if (enemies [i].active) {
+            enemies[i].Draw (program);
+        }
     }
+    partSystem.Render(program);
 }
 
 // checking for any collisions in game between entities
@@ -232,7 +247,7 @@ void GameState::CollisionEntities () {
     // if collision between enemy and player
     // reset player to start of the game
     for (int index = 0; index < enemies.size (); index++) {
-        if (player.Collision(&enemies[index]) ) {
+        if (enemies [index].active && player.Collision(&enemies[index]) ) {
             lives--;
             if (!lives ) {
                 level = 4;
@@ -246,6 +261,12 @@ void GameState::CollisionEntities () {
     
     if (player.Collision (&key)) {
         keyObtained = true; 
+    }
+    
+    if (player.Collision (&powerUp)) {
+        powerUpObtained = true;
+        player.active = false;
+        player.velocity.x = 0.0;
     }
     
     // move on to next level if at the door with key

@@ -14,12 +14,13 @@
 #include "Entity.h"
 #include "SheetSprite.h"
 #include "FlareMap.h"
-
+#include "ShaderProgram.h"
+#include "ParticleEmitter.h"
 
 class GameState {
 public:
     GameState ();
-    void Initiate (int spriteTiles, int spritesterPlayer, int spritesterEnemy);
+    void Initiate (int spriteTiles, int spritesterPlayer, int spritesterEnemy, int textureID);
     void LoadLevel ();
     void UpdateEnemyMovement (float elapsed);
     void UpdateLevel ();
@@ -34,9 +35,14 @@ public:
     
     Entity player;
     Entity key;
+    Entity powerUp; 
     std::vector <Entity> enemies;
     FlareMap* mappy;
     bool keyObtained = false;
+    bool powerUpObtained = false;
+    ParticleEmitter partSystem;
+    int partTexture;
+   
     
 private:
     int sprites = 0;

@@ -39,6 +39,7 @@ public:
     bool collidedBottom = false;
     bool collidedLeft = false;
     bool collidedRight = false;
+    float active = true;
     Matrix modelMatrix;
     std::string type = ""; 
 };
