@@ -30,6 +30,7 @@ public:
     ParticleEmitter();
     ~ParticleEmitter();
     
+    void ResetLocations (float x, float y); 
     float lerp(float v0, float v1, float t);
     void Update(float elapsed);
     void Render(ShaderProgram* program);
@@ -37,8 +38,8 @@ public:
     Vector3 gravity = Vector3 (0.0, -8.0, 0.0);
     float maxLifetime;
     std::vector <Particle> particles;
-    Vector3 velocity = Vector3 (2.0, -1.0, 0.0);
-    Vector3 deviation = Vector3 (2.0, 5.0, 0.0);
+    Vector3 velocity = Vector3 (-0.3, -1.0, 0.0);
+    Vector3 deviation = Vector3 (0.3, 3.0, 0.0);
     
     int textureID;
     float startSize = 0.25f;

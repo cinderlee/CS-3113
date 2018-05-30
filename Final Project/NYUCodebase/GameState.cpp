@@ -24,7 +24,7 @@ void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEn
     spritePlayer = spritesterPlayer;
     spriteEnemy = spritesterEnemy;
     partTexture = textureID;
-    partSystem = ParticleEmitter (partTexture, 100, 0.0f, 0.0f );
+    partSystem = ParticleEmitter (partTexture, 30, 0.0f, 0.0f );
     LoadLevel();
 }
 
@@ -119,8 +119,7 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "flower") {
             powerUp = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 949/1024.0f, 29/1024.0f, 55/1024.0f, TILE_SIZE, TILE_SIZE);
             powerUp.type = "powerUp";
-            //partSystem = ParticleEmitter (partTexture, 10, powerUp.position.x, powerUp.position.y );
-        
+            partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
         }
     }
 }
@@ -238,7 +237,6 @@ void GameState::Draw (ShaderProgram* program) {
             enemies[i].Draw (program);
         }
     }
-    partSystem.Render(program);
 }
 
 // checking for any collisions in game between entities
@@ -265,8 +263,6 @@ void GameState::CollisionEntities () {
     
     if (player.Collision (&powerUp)) {
         powerUpObtained = true;
-        player.active = false;
-        player.velocity.x = 0.0;
     }
     
     // move on to next level if at the door with key

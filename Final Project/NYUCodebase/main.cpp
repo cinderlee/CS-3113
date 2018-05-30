@@ -41,7 +41,7 @@ int hillsThree;
 int star;
 Entity keyOutline;
 Mix_Music *music;
-ParticleEmitter party;
+float timer = 0.0f;
 
 bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
@@ -186,8 +186,7 @@ void Setup () {
     program.SetProjectionMatrix(projectionMatrix);
     
     keyOutline = Entity (playerSheet, 0.0f, 0.0f, 0.0f, 927/1024.0f, 624/1024.0f, 36/1024.0f, 36/1024.0f, TILE_SIZE / 2, TILE_SIZE/2);
-    
-    //state.partSystem = ParticleEmitter (star, 50, 0.0, 0.0);
+
 }
 
 // processing events
@@ -341,6 +340,9 @@ void GameLevelUpdate (float elapsed) {
     state.player.velocity.y += state.player.acceleration.y * elapsed;
     state.player.velocity.y += state.player.gravity.y * elapsed;
     
+    if (state.powerUpObtained) {
+        state.player.velocity.x = 0.0f;
+    }
     // calculating positions
     state.player.position.y += state.player.velocity.y * elapsed;
     state.CollisionY ();
@@ -396,6 +398,35 @@ void GameLevelUpdate (float elapsed) {
     if (state.powerUpObtained && state.powerUp.DistanceToY(&state.player) < 0.6f) {
         state.powerUp.position.y += 0.5 * elapsed;
     }
+    
+    if (state.powerUpObtained && state.powerUp.DistanceToY(&state.player) >= 0.6f && state.player.active) {
+        state.player.active = false;
+        state.partSystem.ResetLocations(state.powerUp.position.x, state.powerUp.position.y);
+        if (state.powerUp.DistanceToX(&state.player) > 0 && state.partSystem.velocity.x > 0) {
+            std::cout << "YO" << std::endl;
+            state.partSystem.velocity.x *= -1;
+        }
+        if (state.powerUp.DistanceToX(&state.player) < 0 && state.partSystem.velocity.x < 0) {
+            state.partSystem.velocity.x *= -1;
+            std::cout << "YOMAMA" << std::endl;
+        }
+    }
+    
+    if (!state.player.active) {
+        state.partSystem.Update(elapsed);
+        timer += elapsed;
+    }
+    
+    if (timer > 5.0f){
+        timer = 0.0f;
+        state.player.active = true;
+        state.powerUpObtained = false;
+        state.powerUp.position.x = -5.0f;
+        if (state.player.type == "playerRed") {
+            state.player = Entity (playerSheet, state.player.position.x, state.player.position.y, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE, TILE_SIZE);
+            state.player.gravity.y = -3.5f;
+        }
+    }
 }
 
 void Update (float elapsed, int& direction ){
@@ -404,9 +435,7 @@ void Update (float elapsed, int& direction ){
             mainGameOverUpdate(elapsed, direction);
             break;
         case STATE_GAME_LEVEL:
-            //GameLevelUpdate (FIXED_TIMESTEP);
-            //state.partSystem.Update(elapsed);
-            state.partSystem.Update(elapsed);
+            GameLevelUpdate (FIXED_TIMESTEP);
             if (state.GetLevel() == 4) {
                 mode = STATE_GAME_OVER;
                 viewX = -3.55;
@@ -437,35 +466,35 @@ void mainRender () {
 }
 
 void gameRender () {
-//    viewMatrix.Identity();
-//    viewMatrix.SetPosition(viewX, viewY, 0.0f);
-//    program.SetViewMatrix(viewMatrix);
-//    if (state.GetLevel() == 1) {
-//        DrawTexture (backgroundOne, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3); 
-//        DrawTexture (tilesOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
-//        DrawTexture (hillsOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
-//    }
-//    if (state.GetLevel() == 2) {
-//        DrawTexture (backgroundTwo, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
-//    }
-//    if (state.GetLevel() == 3) {
-//        DrawTexture (backgroundThree, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
-//        DrawTexture (tilesThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
-//        DrawTexture (hillsThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
-//    }
-//    state.Draw (&program);
-//
-//    DrawWords (&program, textie, "Level" + std::to_string (state.GetLevel()), 0.25 , 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 2 * TILE_SIZE );
-//    DrawWords (&program, textie, "Items:", 0.25, 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 3 * TILE_SIZE);
-//    DrawWords (&program, textie, "Lives:" + std::to_string (state.GetLives()), 0.25, 0.0f, viewX - 1.9, viewY - 2.5 + 2 * TILE_SIZE );
-//    if (!state.keyObtained) {
-//        keyOutline.Draw (&program);
-//    }
     viewMatrix.Identity();
+    viewMatrix.SetPosition(viewX, viewY, 0.0f);
     program.SetViewMatrix(viewMatrix);
-    modelMatrix.Identity ();
-    program.SetModelMatrix(modelMatrix);
-    state.partSystem.Render(&program);
+    if (state.GetLevel() == 1) {
+        DrawTexture (backgroundOne, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
+        DrawTexture (tilesOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+        DrawTexture (hillsOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+    }
+    if (state.GetLevel() == 2) {
+        DrawTexture (backgroundTwo, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
+    }
+    if (state.GetLevel() == 3) {
+        DrawTexture (backgroundThree, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
+        DrawTexture (tilesThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+        DrawTexture (hillsThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
+    }
+    state.Draw (&program);
+
+    DrawWords (&program, textie, "Level" + std::to_string (state.GetLevel()), 0.25 , 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 2 * TILE_SIZE );
+    DrawWords (&program, textie, "Items:", 0.25, 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 3 * TILE_SIZE);
+    DrawWords (&program, textie, "Lives:" + std::to_string (state.GetLives()), 0.25, 0.0f, viewX - 1.9, viewY - 2.5 + 2 * TILE_SIZE );
+    if (!state.keyObtained) {
+        keyOutline.Draw (&program);
+    }
+    if (!state.player.active) {
+        modelMatrix.Identity();
+        program.SetModelMatrix(modelMatrix);
+        state.partSystem.Render(&program);
+    }
 }
 
 void gameOverRender () {

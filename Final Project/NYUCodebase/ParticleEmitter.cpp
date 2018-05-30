@@ -36,6 +36,16 @@ ParticleEmitter:: ~ParticleEmitter() {
 
 }
 
+void ParticleEmitter::ResetLocations (float x, float y) {
+    position.x = x;
+    position.y = y;
+    for (int i = 0; i < particles.size(); i++) {
+        particles [i].position.x = x;
+        particles [i].position.y = y;
+        particles [i].velocity = Vector3 (0.0f, 0.0f, 0.0f);
+    }
+}
+
 void ParticleEmitter::Update(float elapsed) {
     for (int i = 0; i < particles.size(); i++ ) {
         particles [i].velocity.y += gravity.y * elapsed;
@@ -50,8 +60,12 @@ void ParticleEmitter::Update(float elapsed) {
             particles [i].position.x = position.x;
             particles [i].position.y = position.y;
             
-            
-            particles [i].velocity.x += ( (float) rand () / (float) RAND_MAX ) * deviation.x;
+            if (velocity.x > 0) {
+                particles [i].velocity.x += ( (float) rand () / (float) RAND_MAX ) * deviation.x;
+            }
+            else {
+                particles [i].velocity.x += ( (float) rand () / (float) RAND_MAX ) * deviation.x * -1;
+            }
             particles [i].velocity.y += ( (float) rand () / (float) RAND_MAX ) * deviation.y;
         }
         
@@ -95,18 +109,6 @@ void ParticleEmitter::Render(ShaderProgram* program) {
     glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords.data());
     glEnableVertexAttribArray(program->texCoordAttribute);
     glDrawArrays(GL_TRIANGLES, 0, vertices.size()/2);
-//    glUseProgram(program -> programID);
-//
-//    std::vector<float> vertices;
-//    //std::cout << particles.size () << std::endl;
-//    for(int i=0; i < particles.size(); i++) {
-//        vertices.push_back(particles[i].position.x);
-//        vertices.push_back(particles[i].position.y);
-//         std::cout << i << ", " << particles [i].position.x << ", " << particles [i].position.y << std::endl;
-//    }
-//    glVertexAttribPointer(program -> positionAttribute, 2, GL_FLOAT, false, 0, vertices.data());
-//    glEnableVertexAttribArray(program->positionAttribute);
-//    glDrawArrays(GL_POINTS, 0, vertices.size()/2);
     
 }
 
