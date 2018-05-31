@@ -42,7 +42,7 @@ public:
     bool powerUpObtained = false;
     ParticleEmitter partSystem;
     int partTexture;
-   
+    bool nextLevel = false;
     
 private:
     int sprites = 0;

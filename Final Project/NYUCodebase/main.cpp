@@ -425,6 +425,8 @@ void GameLevelUpdate (float elapsed) {
             state.player.gravity.y = -3.5f;
         }
     }
+    
+    nextState = state.nextLevel;
 }
 
 void Update (float elapsed, int& direction ){
@@ -435,7 +437,8 @@ void Update (float elapsed, int& direction ){
                 alpha = lerp(alpha, 1.0f, FIXED_TIMESTEP );
             }
             
-            if ( alpha >= 0.95 ) {
+            if ( alpha >= 0.995 && nextState) {
+                alpha = 1.0;
                 nextState = false;
                 nextStateEnd = true;
                 mode = STATE_GAME_LEVEL;
@@ -450,24 +453,78 @@ void Update (float elapsed, int& direction ){
                 viewY= 0.0f;
             }
             
-            break;
-        case STATE_GAME_LEVEL:
             if (nextStateEnd) {
                 alpha = lerp(alpha, 0.0f, FIXED_TIMESTEP);
+                std::cout << alpha << std::endl;
             }
-            
-            if (alpha < 0.005 && nextStateEnd) {
+            if (alpha <= 0.005 && nextStateEnd) {
                 nextStateEnd = false;
                 alpha = 0.0f;
+                state.nextLevel = false;
             }
-            GameLevelUpdate (FIXED_TIMESTEP);
+            
+            
+            break;
+        case STATE_GAME_LEVEL:
+            
+            if (nextState) {
+                alpha = lerp(alpha, 1.0f, FIXED_TIMESTEP );
+            }
+            
+            if ( alpha >= 0.995 && nextState ) {
+                alpha = 1.0;
+                nextState = false;
+                nextStateEnd = true;
+                state.nextLevel = false;
+                state.UpdateLevel ();
+                viewX = 0.0f;
+                viewY= 0.0f;
+            }
+            
             if (state.GetLevel() == 4) {
                 mode = STATE_GAME_OVER;
                 viewX = -3.55;
                 viewY = -state.player.position.y;
+                std::cout << "ALPHA" << alpha << std::endl;
             }
+            
+            if (nextStateEnd) {
+                alpha = lerp(alpha, 0.0f, FIXED_TIMESTEP);
+                std::cout << alpha << std::endl;
+            }
+            
+            if (alpha <= 0.005 && nextStateEnd) {
+                nextStateEnd = false;
+                alpha = 0.0f;
+                state.nextLevel = false;
+            }
+            
+            GameLevelUpdate (FIXED_TIMESTEP);
+        
             break;
         case STATE_GAME_OVER:
+            if (nextState) {
+                alpha = lerp(alpha, 1.0f, FIXED_TIMESTEP );
+            }
+            
+            if ( alpha >= 0.995 && nextState ) {
+                alpha = 1.0;
+                nextState = false;
+                nextStateEnd = true;
+                mode = STATE_MAIN_MENU;
+                viewX = 0.0f;
+                viewY= 0.0f;
+            }
+            
+            if (nextStateEnd) {
+                alpha = lerp(alpha, 0.0f, FIXED_TIMESTEP);
+                std::cout << "ALPHA" << alpha << std::endl;
+            }
+            if (alpha <= 0.005 && nextStateEnd) {
+                nextStateEnd = false;
+                alpha = 0.0f;
+                state.nextLevel = false;
+            }
             mainGameOverUpdate (elapsed, direction);
             break;
     }
@@ -528,7 +585,7 @@ void gameRender () {
         state.partSystem.Render(&program);
     }
     
-    if (nextStateEnd) {
+    if (nextState || nextStateEnd) {
         DrawUnTexture(alpha);
     }
 }
@@ -561,6 +618,10 @@ void gameOverRender () {
         DrawWords (&program, textie, "YOU WIN", 0.4, 0.0f, (viewX + (-0.5*0.4) + (7*0.4/2)), viewY - 0.5f);
     }
     DrawWords (&program, textie, "Press R to Play Again", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (21*0.25/2), viewY + 0.5f );
+    
+    if (nextState || nextStateEnd) {
+        DrawUnTexture(alpha);
+    }
 }
 
 // drawing game

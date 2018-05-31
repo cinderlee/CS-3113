@@ -49,7 +49,7 @@ void GameState::LoadLevel () {
         
         if (mappy -> entities [index].type == "playerBlue" ) {
             player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE, TILE_SIZE);
-            player.gravity.y = -3.5f;
+            player.gravity.y = -1.5f;
             player.type = "playerBlue";
             
         }
@@ -209,7 +209,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level++;
+    level += 2;
     keyObtained = false;
     
     LoadLevel();
@@ -253,6 +253,7 @@ void GameState::CollisionEntities () {
             else {
                 level = 1;
             }
+            nextLevel = true;
             LoadLevel();
         }
     }
@@ -270,7 +271,8 @@ void GameState::CollisionEntities () {
     int TileY;
     player.worldToTileCoordinates(player.position.x, player.position.y, &TileX, &TileY);
     if (keyObtained && (mappy -> mapData [TileY] [TileX] - 1 == 152 || mappy -> mapData [TileY] [TileX] - 1 == 153)) {
-        UpdateLevel ();
+        //UpdateLevel ();
+        nextLevel = true;
     }
     
 }
