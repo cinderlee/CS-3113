@@ -20,6 +20,7 @@
 // In order to win, you must reach the end of the game and receive the key
 
 ShaderProgram program;
+ShaderProgram unTextProgram;
 Matrix viewMatrix;
 Matrix projectionMatrix;
 Matrix modelMatrix;
@@ -42,6 +43,9 @@ int star;
 Entity keyOutline;
 Mix_Music *music;
 float timer = 0.0f;
+float alpha = 0.0f;
+bool nextState = false;
+bool nextStateEnd = false;
 
 bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
@@ -52,6 +56,7 @@ void Setup();
 void ProcessEvents (SDL_Event& event, bool& done);
 void Update (float elapsed, int& direction);
 void Render ();
+void DrawUnTexture (float alpha );
 void DrawText(ShaderProgram *program, int fontTexture, std::string text, float size, float spacing);
 void DrawWords (ShaderProgram* program, int fontTexture, std::string text, float size, float spacing, float x, float y);
 void DrawTexture (int textureID, float x, float y, float width, float height);
@@ -113,7 +118,7 @@ int main(int argc, char *argv[])
     while (!done) {
         ProcessEvents (event, done);
         //glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
-        //glClearColor(135.0f / 255.0f, 206.0f/ 255.0f, 250.0f/255.0f, 1.0f);
+        glClearColor(135.0f / 255.0f, 206.0f/ 255.0f, 250.0f/255.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
         float ticks = (float)SDL_GetTicks()/1000.0f;
@@ -151,7 +156,7 @@ void LoadingTextures () {
     hillsThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_hills.png");
     tilesOne = LoadTexture(RESOURCE_FOLDER"Resources/set1_tiles.png");
     tilesThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_tiles.png");
-    star = LoadTexture(RESOURCE_FOLDER"Resources/flare_0.png");
+    star = LoadTexture(RESOURCE_FOLDER"Resources/greenstar.png");
 }
 
 // setting up game
@@ -167,6 +172,7 @@ void Setup () {
     glViewport(0, 0, 1280, 720);
     
     program.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
+    unTextProgram.Load (RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
     
     LoadingTextures();
     
@@ -176,6 +182,8 @@ void Setup () {
     state.Initiate (tilesheet, playerSheet, enemySheet, star);
     
     glUseProgram(program.programID);
+    glUseProgram(unTextProgram.programID);
+    
     // set view and projection matrices
     projectionMatrix.SetOrthoProjection(-3.55, 3.55, -2.0f, 2.0f, -1.0f, 1.0f);
     viewX = -3.55f;
@@ -184,6 +192,7 @@ void Setup () {
         viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
     }
     program.SetProjectionMatrix(projectionMatrix);
+    unTextProgram.SetProjectionMatrix(projectionMatrix);
     
     keyOutline = Entity (playerSheet, 0.0f, 0.0f, 0.0f, 927/1024.0f, 624/1024.0f, 36/1024.0f, 36/1024.0f, TILE_SIZE / 2, TILE_SIZE/2);
 
@@ -200,16 +209,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
             }
             // start the game
             if (keys [SDL_SCANCODE_SPACE] ){
-                mode = STATE_GAME_LEVEL;
-                Mix_HaltMusic();
-                
-                music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/gameMusic.wav");
-                Mix_VolumeMusic(25);
-                Mix_PlayMusic (music, -1);
-                
-                state.UpdateLevel ();
-                viewX = 0.0f;
-                viewY= 0.0f;
+                nextState = true;
             }
             break;
         case STATE_GAME_LEVEL:
@@ -403,12 +403,10 @@ void GameLevelUpdate (float elapsed) {
         state.player.active = false;
         state.partSystem.ResetLocations(state.powerUp.position.x, state.powerUp.position.y);
         if (state.powerUp.DistanceToX(&state.player) > 0 && state.partSystem.velocity.x > 0) {
-            std::cout << "YO" << std::endl;
             state.partSystem.velocity.x *= -1;
         }
         if (state.powerUp.DistanceToX(&state.player) < 0 && state.partSystem.velocity.x < 0) {
             state.partSystem.velocity.x *= -1;
-            std::cout << "YOMAMA" << std::endl;
         }
     }
     
@@ -417,7 +415,7 @@ void GameLevelUpdate (float elapsed) {
         timer += elapsed;
     }
     
-    if (timer > 5.0f){
+    if (timer > 4.0f){
         timer = 0.0f;
         state.player.active = true;
         state.powerUpObtained = false;
@@ -433,8 +431,35 @@ void Update (float elapsed, int& direction ){
     switch (mode) {
         case STATE_MAIN_MENU:
             mainGameOverUpdate(elapsed, direction);
+            if (nextState) {
+                alpha = lerp(alpha, 1.0f, FIXED_TIMESTEP );
+            }
+            
+            if ( alpha >= 0.95 ) {
+                nextState = false;
+                nextStateEnd = true;
+                mode = STATE_GAME_LEVEL;
+                Mix_HaltMusic();
+                
+                music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/gameMusic.wav");
+                Mix_VolumeMusic(25);
+                Mix_PlayMusic (music, -1);
+                
+                state.UpdateLevel ();
+                viewX = 0.0f;
+                viewY= 0.0f;
+            }
+            
             break;
         case STATE_GAME_LEVEL:
+            if (nextStateEnd) {
+                alpha = lerp(alpha, 0.0f, FIXED_TIMESTEP);
+            }
+            
+            if (alpha < 0.005 && nextStateEnd) {
+                nextStateEnd = false;
+                alpha = 0.0f;
+            }
             GameLevelUpdate (FIXED_TIMESTEP);
             if (state.GetLevel() == 4) {
                 mode = STATE_GAME_OVER;
@@ -449,13 +474,15 @@ void Update (float elapsed, int& direction ){
 }
 
 void mainRender () {
+    
     viewMatrix.Identity();
     viewMatrix.SetPosition (viewX, viewY, 0.0f);
     program.SetViewMatrix(viewMatrix);
+    unTextProgram.SetViewMatrix(viewMatrix);
     DrawTexture (backgroundOne, MAP_WIDTH/6 *0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     DrawTexture (tilesOne, MAP_WIDTH/6 *0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     DrawTexture (hillsOne, MAP_WIDTH/6 *0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
-    
+
     DrawTexture (backgroundTwo, MAP_WIDTH/6 *0.3 + (MAP_WIDTH/3 * 0.3), -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     DrawTexture (backgroundThree, MAP_WIDTH/6 *0.3 + 2 * (MAP_WIDTH/3) * 0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     DrawTexture (tilesThree, MAP_WIDTH/6 *0.3 + 2 * (MAP_WIDTH/3) * 0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
@@ -463,12 +490,17 @@ void mainRender () {
     state.Draw (&program);
     DrawWords (&program, textie, "Alien Invaders", 0.4, 0.0f, (viewX + (-0.5*0.4) + (14*0.4/2)), viewY - 0.5f);
     DrawWords (&program, textie, "Press Space to Start", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (20*0.25/2), viewY + 0.5f );
+    
+    if (nextState) {
+        DrawUnTexture(alpha);
+    }
 }
 
 void gameRender () {
     viewMatrix.Identity();
     viewMatrix.SetPosition(viewX, viewY, 0.0f);
     program.SetViewMatrix(viewMatrix);
+    unTextProgram.SetViewMatrix(viewMatrix);
     if (state.GetLevel() == 1) {
         DrawTexture (backgroundOne, state.mappy -> mapWidth/2 *0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth * 0.3, state.mappy -> mapHeight * 0.3);
         DrawTexture (tilesOne, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
@@ -483,7 +515,7 @@ void gameRender () {
         DrawTexture (hillsThree, -viewX, -viewY, 3.55 * 2 , 2.0 * 2);
     }
     state.Draw (&program);
-
+    
     DrawWords (&program, textie, "Level" + std::to_string (state.GetLevel()), 0.25 , 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 2 * TILE_SIZE );
     DrawWords (&program, textie, "Items:", 0.25, 0.0f, viewX + 4.05 - 2 * TILE_SIZE, viewY - 2.5 + 3 * TILE_SIZE);
     DrawWords (&program, textie, "Lives:" + std::to_string (state.GetLives()), 0.25, 0.0f, viewX - 1.9, viewY - 2.5 + 2 * TILE_SIZE );
@@ -494,6 +526,10 @@ void gameRender () {
         modelMatrix.Identity();
         program.SetModelMatrix(modelMatrix);
         state.partSystem.Render(&program);
+    }
+    
+    if (nextStateEnd) {
+        DrawUnTexture(alpha);
     }
 }
 
@@ -611,4 +647,17 @@ void DrawTexture (int textureID, float x, float y, float width, float height) {
     glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
     glEnableVertexAttribArray(program.texCoordAttribute);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void DrawUnTexture (float alpha) {
+    unTextProgram.SetColor (0.0, 0.0, 0.0, 0.0);
+    unTextProgram.SetAlpha (alpha);
+    Matrix modelMatrix;
+    modelMatrix.Scale(state.mappy ->mapWidth, state.mappy -> mapHeight, 1.0f);
+    unTextProgram.SetModelMatrix(modelMatrix);
+    float verticesUntextured[] = {-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5};
+    glVertexAttribPointer(unTextProgram.positionAttribute, 2, GL_FLOAT, false, 0, verticesUntextured);
+    glEnableVertexAttribArray(unTextProgram.positionAttribute);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisableVertexAttribArray(unTextProgram.positionAttribute);
 }

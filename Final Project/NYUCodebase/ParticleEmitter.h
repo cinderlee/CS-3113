@@ -39,11 +39,11 @@ public:
     float maxLifetime;
     std::vector <Particle> particles;
     Vector3 velocity = Vector3 (-0.3, -1.0, 0.0);
-    Vector3 deviation = Vector3 (0.3, 3.0, 0.0);
+    Vector3 deviation = Vector3 (0.3, 2.0, 0.0);
     
     int textureID;
-    float startSize = 0.25f;
-    float endSize = 0.0f;
+    float startSize = 0.15f;
+    float endSize = 0.05f;
 };
 
 #endif /* ParticleEmitter_hpp */

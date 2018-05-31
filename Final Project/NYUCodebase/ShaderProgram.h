@@ -21,6 +21,7 @@ class ShaderProgram {
 	
 		void SetColor(float r, float g, float b, float a);
 	
+        void SetAlpha (float a);
         GLuint LoadShaderFromString(const std::string &shaderContents, GLenum type);
         GLuint LoadShaderFromFile(const std::string &shaderFile, GLenum type);
     
@@ -30,7 +31,8 @@ class ShaderProgram {
         GLuint modelMatrixUniform;
         GLuint viewMatrixUniform;
 		GLuint colorUniform;
-	
+        GLuint alphaUniform;
+    
         GLuint positionAttribute;
         GLuint texCoordAttribute;
     

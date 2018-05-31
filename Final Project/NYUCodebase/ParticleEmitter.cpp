@@ -18,7 +18,7 @@
 
 ParticleEmitter::ParticleEmitter(int textureID, unsigned int particleCount, float x, float y): textureID(textureID), position (Vector3 (x, y, 0.0f)){
     
-    maxLifetime = 1.0f;
+    maxLifetime = 0.5f;
     srand (time (NULL));
     
     particles.resize (particleCount);
