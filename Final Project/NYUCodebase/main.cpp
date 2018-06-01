@@ -39,13 +39,18 @@ int tilesOne;
 int tilesThree;
 int hillsOne;
 int hillsThree;
-int star;
+int blueStar;
+int redStar;
+int greenStar;
 Entity keyOutline;
 Mix_Music *music;
 float timer = 0.0f;
 float alpha = 0.0f;
 bool nextState = false;
 bool nextStateEnd = false;
+ParticleEmitter gameOverRed;
+ParticleEmitter gameOverBlue;
+ParticleEmitter gameOverGreen;
 
 bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
@@ -156,7 +161,9 @@ void LoadingTextures () {
     hillsThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_hills.png");
     tilesOne = LoadTexture(RESOURCE_FOLDER"Resources/set1_tiles.png");
     tilesThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_tiles.png");
-    star = LoadTexture(RESOURCE_FOLDER"Resources/greenstar.png");
+    blueStar = LoadTexture(RESOURCE_FOLDER"Resources/bluestar.png");
+    redStar = LoadTexture(RESOURCE_FOLDER"Resources/redStar.png");
+    greenStar = LoadTexture(RESOURCE_FOLDER"Resources/greenstar.png");
 }
 
 // setting up game
@@ -179,7 +186,7 @@ void Setup () {
     Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 );
     music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
     
-    state.Initiate (tilesheet, playerSheet, enemySheet, star);
+    state.Initiate (tilesheet, playerSheet, enemySheet, blueStar);
     
     glUseProgram(program.programID);
     glUseProgram(unTextProgram.programID);
@@ -195,6 +202,19 @@ void Setup () {
     unTextProgram.SetProjectionMatrix(projectionMatrix);
     
     keyOutline = Entity (playerSheet, 0.0f, 0.0f, 0.0f, 927/1024.0f, 624/1024.0f, 36/1024.0f, 36/1024.0f, TILE_SIZE / 2, TILE_SIZE/2);
+    
+    // prepare the fireworks for winning page
+    gameOverRed = ParticleEmitter (redStar, 40, (6 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 2.0f);
+    gameOverBlue = ParticleEmitter (blueStar, 40, (26 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 2.0f);
+    gameOverGreen = ParticleEmitter (greenStar, 40, (42 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 2.0f );
+    
+    gameOverRed.velocity = Vector3 (1.0, 1.0, 0.0);
+    gameOverBlue.velocity = Vector3 (1.0, 1.0, 0.0);
+    gameOverGreen.velocity = Vector3 (1.0, 1.0, 0.0);
+    
+    gameOverRed.deviation = Vector3 (1.0, 1.0, 0.0);
+    gameOverBlue.deviation = Vector3 (1.0, 1.0, 0.0);
+    gameOverGreen.deviation = Vector3 (1.0, 1.0, 0.0);
 
 }
 
@@ -526,6 +546,9 @@ void Update (float elapsed, int& direction ){
                 state.nextLevel = false;
             }
             mainGameOverUpdate (elapsed, direction);
+            gameOverRed.UpdateFireworks (elapsed);
+            gameOverBlue.UpdateFireworks (elapsed);
+            gameOverGreen.UpdateFireworks (elapsed);
             break;
     }
 }
@@ -619,9 +642,24 @@ void gameOverRender () {
     }
     DrawWords (&program, textie, "Press R to Play Again", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (21*0.25/2), viewY + 0.5f );
     
+    if (state.GetLives()) {
+        modelMatrix.Identity();
+        program.SetModelMatrix(modelMatrix);
+        gameOverRed.Render (&program);
+        
+        modelMatrix.Identity();
+        program.SetModelMatrix(modelMatrix);
+        gameOverBlue.Render (&program);
+        
+        modelMatrix.Identity();
+        program.SetModelMatrix(modelMatrix);
+        gameOverGreen.Render (&program);
+    }
     if (nextState || nextStateEnd) {
         DrawUnTexture(alpha);
     }
+    
+    
 }
 
 // drawing game

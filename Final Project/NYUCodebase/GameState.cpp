@@ -209,7 +209,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level += 2;
+    level += 4;
     keyObtained = false;
     
     LoadLevel();

@@ -46,6 +46,13 @@ void ParticleEmitter::ResetLocations (float x, float y) {
     }
 }
 
+void ParticleEmitter::ResetLife (float maxLife) {
+    maxLifetime = maxLife;
+    for (int i = 0; i < particles.size(); i++) {
+        particles [i].lifetime = ((float)rand () / (float) RAND_MAX) * maxLifetime;
+    }
+}
+
 void ParticleEmitter::Update(float elapsed) {
     for (int i = 0; i < particles.size(); i++ ) {
         particles [i].velocity.y += gravity.y * elapsed;
@@ -67,6 +74,28 @@ void ParticleEmitter::Update(float elapsed) {
                 particles [i].velocity.x += ( (float) rand () / (float) RAND_MAX ) * deviation.x * -1;
             }
             particles [i].velocity.y += ( (float) rand () / (float) RAND_MAX ) * deviation.y;
+        }
+        
+    }
+}
+
+void ParticleEmitter::UpdateFireworks(float elapsed) {
+    for (int i = 0; i < particles.size(); i++ ) {
+        particles [i].position.x += particles [i].velocity.x * elapsed;
+        particles [i].position.y += particles [i].velocity.y * elapsed;
+        particles [i].lifetime += elapsed;
+        
+        if (particles [i].lifetime >= maxLifetime) {
+            particles [i].lifetime -= maxLifetime;
+            particles [i].velocity.x = cos (((float) rand() / (2 * M_PI) )) * velocity.x;
+            particles [i].velocity.y = sin (((float) rand() / (2 * M_PI) )) * velocity.y;
+            particles [i].position.x = position.x;
+            particles [i].position.y = position.y;
+            
+            
+            particles [i].velocity.x += cos (((float) rand() / (2 * M_PI) )) * deviation.x;
+
+            particles [i].velocity.y += sin (((float) rand() / (2 * M_PI) )) * deviation.y;
         }
         
     }

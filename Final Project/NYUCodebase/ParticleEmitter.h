@@ -30,9 +30,13 @@ public:
     ParticleEmitter();
     ~ParticleEmitter();
     
-    void ResetLocations (float x, float y); 
+    void ResetLocations (float x, float y);
+    void ResetLife (float maxLife);
     float lerp(float v0, float v1, float t);
     void Update(float elapsed);
+    
+    void UpdateFireworks (float elapsed);
+    
     void Render(ShaderProgram* program);
     Vector3 position;
     Vector3 gravity = Vector3 (0.0, -8.0, 0.0);
