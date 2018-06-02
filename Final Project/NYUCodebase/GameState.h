@@ -32,11 +32,13 @@ public:
     void CollisionX ();
     void CollisionY ();
     void Reset ();
+    float lerp(float v0, float v1, float t);
     
     Entity player;
     Entity key;
     Entity powerUp; 
     std::vector <Entity> enemies;
+    std::vector <Entity> platforms;
     FlareMap* mappy;
     bool keyObtained = false;
     bool powerUpObtained = false;
@@ -50,7 +52,7 @@ private:
     int spriteEnemy = 0;
     int level = 0;
     int lives = 5;
-    std::vector <int> solidTiles = {0, 1, 2, 3, 5, 6, 7, 132, 133, 134, 135, 198, 199, 200, 201, 203, 204, 205, 227, 228};
+    std::vector <int> solidTiles = {0, 1, 2, 3, 5, 6, 7, 132, 133, 134, 135, 198, 199, 200, 201, 202, 203, 204, 205, 227, 228};
 };
 
 

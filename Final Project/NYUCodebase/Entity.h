@@ -24,6 +24,8 @@ public:
     float DistanceToY (Entity* other); 
     float DistanceTo (Entity* other);
     bool Collision (Entity* other);
+    bool CollisionPlatformX (Entity* other);
+    bool CollisionPlatformY (Entity* other);
     void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
     void collisionBools ();
     
@@ -34,11 +36,13 @@ public:
     Vector3 gravity = Vector3 (0.0f, 0.0f, 0.0f);
     
     float rotation;
+    float distance = 1.0f;
     SheetSprite sprite;
     bool collidedTop = false;
     bool collidedBottom = false;
     bool collidedLeft = false;
     bool collidedRight = false;
+    bool collidedPlatform = false;
     bool active = true;
     Matrix modelMatrix;
     std::string type = ""; 

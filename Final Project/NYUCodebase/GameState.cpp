@@ -18,6 +18,10 @@
 
 GameState::GameState () {}
 
+float GameState::lerp(float v0, float v1, float t) {
+    return (1.0-t)*v0 + t*v1;
+}
+
 // initializing player and enemies
 void GameState::Initiate(int spriteTiles, int spritesterPlayer, int spritesterEnemy, int textureID){
     sprites = spriteTiles;
@@ -35,6 +39,7 @@ void GameState::LoadLevel () {
     }
     mappy = new FlareMap();
     enemies.clear ();
+    platforms.clear ();
     std::stringstream stream;
     stream << "NYUCodebase.app/Contents/Resources/Resources/FinalLevel" << level << ".txt";
     mappy -> Load (stream.str());
@@ -93,7 +98,7 @@ void GameState::LoadLevel () {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 706.0f/1024.0f, 839/1024.0f, 52/1024.0f, 36/1024.0f, TILE_SIZE, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.1f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
-            enemies[enemies.size () - 1].type = "enemyAir";
+            enemies [enemies.size () - 1].type = "enemyAir";
         }
         
         // ghost enemy - enemyAir
@@ -120,6 +125,18 @@ void GameState::LoadLevel () {
             powerUp = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 949/1024.0f, 29/1024.0f, 55/1024.0f, TILE_SIZE, TILE_SIZE);
             powerUp.type = "powerUp";
             partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
+        }
+        
+        if (mappy -> entities [index].type == "platform") {
+            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 5, TILE_SIZE));
+            platforms [platforms.size () - 1].velocity = Vector3 ( 1.0f, 0.0f, 0.0f);
+            platforms [platforms.size () - 1].type = "platformH";
+            //platforms [platforms.size () - 1].direction = -1;
+        }
+        if (mappy -> entities [index].type == "platformV") {
+            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 5, TILE_SIZE));
+            platforms [platforms.size () - 1].velocity = Vector3 ( 0.0f, 1.0f, 0.0f);
+            platforms [platforms.size () - 1].type = "platformV";
         }
     }
 }
@@ -193,6 +210,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
         }
     }
     
+    
     // check for collision between enemy entities
     for (int index = 0; index < enemies.size (); index++) {
         for (int index2 = 0; index2 < enemies.size (); index2++ ){
@@ -204,12 +222,40 @@ void GameState::UpdateEnemyMovement(float elapsed) {
         }
     
     }
+    
+    
+    
+    for (int index= 0 ; index < platforms.size () ; index ++ ) {
+        
+        if (player.CollisionPlatformY(&platforms [index])
+            //&& player.position.y - player.sizeEnt.y/2 == platforms[index].position.y + platforms[index].sizeEnt.y / 2
+            ) {
+            player.position.x += platforms[index].velocity.x * elapsed;
+            player.position.y += platforms[index].velocity.y * elapsed;
+            //player.collidedPlatform = false;
+        }
+        
+        platforms [index].position.x += platforms[index].velocity.x * elapsed;
+        platforms [index].position.y += platforms[index].velocity.y * elapsed;
+        if (platforms [index].velocity.x < 0 || platforms [index].velocity.y < 0 ) {
+            platforms [index].distance += -platforms [index].velocity.x * elapsed + -platforms [index].velocity.y * elapsed;
+        }
+        else {
+            platforms [index].distance += platforms [index].velocity.x * elapsed + platforms [index].velocity.y * elapsed;
+        }
+        
+        if (platforms [index].distance >= 3.0) {
+            platforms [index].distance = 0.0f;
+            platforms [index].velocity.x *= -1;
+            platforms [index].velocity.y *= -1;
+        }
+    }
 }
 
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level += 4;
+    level += 3;
     keyObtained = false;
     
     LoadLevel();
@@ -232,6 +278,9 @@ void GameState::Draw (ShaderProgram* program) {
     player.Draw (program);
     key.Draw (program);
     powerUp.Draw (program);
+    for (int i = 0; i < platforms.size (); i++) {
+        platforms [i].Draw (program);
+    }
     for (int i = 0; i < enemies.size (); i++){
         if (enemies [i].active) {
             enemies[i].Draw (program);
@@ -274,7 +323,9 @@ void GameState::CollisionEntities () {
         //UpdateLevel ();
         nextLevel = true;
     }
-    
+//    for (int i = 0; i < platforms.size (); i++ ) {
+//        player.CollisionPlatformY(&platforms [i]) ;
+//    }
 }
 
 // check and resolve horizontal collision
@@ -309,8 +360,6 @@ void GameState::CollisionX () {
             player.position.x -= (player.position.x + player.sizeEnt.x/2 - worldRightX) ;
         }
         player.collidedRight = true;
-        
-        
     }
     
     // if left tile is solid
@@ -321,6 +370,12 @@ void GameState::CollisionX () {
         }
         player.collidedLeft = true;
     }
+    
+//    for (int i = 0; i < platforms.size (); i++ ) {
+//        player.CollisionPlatformX (&platforms[i]);
+//    }
+    
+    
 }
 
 // check and adjust vertical collision
@@ -349,7 +404,7 @@ void GameState::CollisionY () {
         }
     }
     
- 
+
     // if tile below is solid, reset bottom to be on top
     if (bottomTile) {
         float worldBotY = -1 * TILE_SIZE * TileBottomY;
@@ -370,7 +425,24 @@ void GameState::CollisionY () {
         player.collidedTop = true;
         player.velocity.y = 0.0f;
     }
-  
+    
+    for (int i =0 ; i < platforms.size (); i++ ) {
+        if (player.CollisionPlatformY(&platforms[i])) {
+            if (player.position.y - player.sizeEnt.y/2 <= platforms[i].position.y + platforms[i].sizeEnt.y / 2 &&
+                player.position.y + player.sizeEnt.y/2 > platforms[i].position.y + platforms[i].sizeEnt.y/2 ) {
+                player.position.y = platforms[i].position.y + platforms[i].sizeEnt.y/2 + player.sizeEnt.y/2;
+                player.collidedBottom = true;
+                player.collidedPlatform = true;
+                
+                player.velocity.y = 0.0f;
+            }
+            if (player.position.y + player.sizeEnt.y/2 >= platforms[i].position.y - platforms[i].sizeEnt.y/2 &&  player.position.y != platforms[i].position.y + platforms[i].sizeEnt.y/2 + player.sizeEnt.y/2) {
+                player.position.y = platforms[i].position.y - platforms[i].sizeEnt.y/2 - player.sizeEnt.y/2 ;
+                player.collidedTop = true;
+                player.velocity.y = -1.0f;
+            }
+        }
+    }
 }
 
 // reset game state

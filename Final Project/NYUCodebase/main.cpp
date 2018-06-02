@@ -475,7 +475,6 @@ void Update (float elapsed, int& direction ){
             
             if (nextStateEnd) {
                 alpha = lerp(alpha, 0.0f, FIXED_TIMESTEP);
-                std::cout << alpha << std::endl;
             }
             if (alpha <= 0.005 && nextStateEnd) {
                 nextStateEnd = false;
@@ -505,12 +504,10 @@ void Update (float elapsed, int& direction ){
                 mode = STATE_GAME_OVER;
                 viewX = -3.55;
                 viewY = -state.player.position.y;
-                std::cout << "ALPHA" << alpha << std::endl;
             }
             
             if (nextStateEnd) {
                 alpha = lerp(alpha, 0.0f, FIXED_TIMESTEP);
-                std::cout << alpha << std::endl;
             }
             
             if (alpha <= 0.005 && nextStateEnd) {
@@ -538,7 +535,7 @@ void Update (float elapsed, int& direction ){
             
             if (nextStateEnd) {
                 alpha = lerp(alpha, 0.0f, FIXED_TIMESTEP);
-                std::cout << "ALPHA" << alpha << std::endl;
+
             }
             if (alpha <= 0.005 && nextStateEnd) {
                 nextStateEnd = false;

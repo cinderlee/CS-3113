@@ -59,6 +59,38 @@ bool Entity::Collision (Entity* other){
     return false;
 }
 
+bool Entity::CollisionPlatformX (Entity* other){
+    if (Collision (other)) {
+        if ( (position.x - sizeEnt.x/2 < other->position.x + other->sizeEnt.x / 2 ) &&
+             !(position.x > other->position.x - other->sizeEnt.x/2 ) ) {
+            position.x = other -> position.x + other -> sizeEnt.x/2  + this -> sizeEnt.x/2;
+            collidedLeft = true;
+            std:: cout << "HAPPENED2" << std::endl;
+            return true;
+        }
+        else if ( (position.x + sizeEnt.x/2 > other -> position.x - other -> sizeEnt.x/2) &&
+                 !( position.x  < other->position.x + other->sizeEnt.x/2 ) ) {
+            position.x = other -> position.x - other -> sizeEnt.x/2 - this -> sizeEnt.x/2;
+            collidedRight = true;
+            std:: cout << "HAPPENED" << std::endl;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Entity::CollisionPlatformY (Entity* other) {
+    if (Collision (other)) {
+        if (position.y - sizeEnt.y/2 <= other->position.y + other->sizeEnt.y / 2) {
+            return true;
+        }
+        else if (position.y + sizeEnt.y/2 >= other -> position.y - other -> sizeEnt.y/2) {
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 //converting to Tile coordinates
 void Entity::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
@@ -71,5 +103,6 @@ void Entity::collisionBools () {
     collidedRight = false;
     collidedTop = false;
     collidedBottom = false;
+    collidedPlatform = false;
 }
 
