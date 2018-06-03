@@ -42,6 +42,7 @@ int hillsThree;
 int blueStar;
 int redStar;
 int greenStar;
+int powerStar;
 Entity keyOutline;
 Mix_Music *music;
 float timer = 0.0f;
@@ -161,6 +162,7 @@ void LoadingTextures () {
     hillsThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_hills.png");
     tilesOne = LoadTexture(RESOURCE_FOLDER"Resources/set1_tiles.png");
     tilesThree = LoadTexture(RESOURCE_FOLDER"Resources/set3_tiles.png");
+    powerStar = LoadTexture(RESOURCE_FOLDER"Resources/flare_0.png");
     blueStar = LoadTexture(RESOURCE_FOLDER"Resources/bluestar.png");
     redStar = LoadTexture(RESOURCE_FOLDER"Resources/redStar.png");
     greenStar = LoadTexture(RESOURCE_FOLDER"Resources/greenstar.png");
@@ -186,7 +188,7 @@ void Setup () {
     Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 );
     music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
     
-    state.Initiate (tilesheet, playerSheet, enemySheet, blueStar);
+    state.Initiate (tilesheet, playerSheet, enemySheet, powerStar);
     
     glUseProgram(program.programID);
     glUseProgram(unTextProgram.programID);
@@ -351,6 +353,11 @@ void GameLevelUpdate (float elapsed) {
     
     state.player.collisionBools();
     
+    if (state.powerUpObtained) {
+        state.player.velocity.x =0.0f;
+    }
+    
+    
     // applying friction
     state.player.velocity.x = lerp(state.player.velocity.x, 0.0f, elapsed * 1.5);
     state.player.velocity.y = lerp(state.player.velocity.y, 0.0f, elapsed * 2.0);
@@ -360,9 +367,6 @@ void GameLevelUpdate (float elapsed) {
     state.player.velocity.y += state.player.acceleration.y * elapsed;
     state.player.velocity.y += state.player.gravity.y * elapsed;
     
-    if (state.powerUpObtained) {
-        state.player.velocity.x = 0.0f;
-    }
     // calculating positions
     state.player.position.y += state.player.velocity.y * elapsed;
     state.CollisionY ();
@@ -415,20 +419,6 @@ void GameLevelUpdate (float elapsed) {
         state.key.position.y = keyOutline.position.y;
     }
     
-    if (state.powerUpObtained && state.powerUp.DistanceToY(&state.player) < 0.6f) {
-        state.powerUp.position.y += 0.5 * elapsed;
-    }
-    
-    if (state.powerUpObtained && state.powerUp.DistanceToY(&state.player) >= 0.6f && state.player.active) {
-        state.player.active = false;
-        state.partSystem.ResetLocations(state.powerUp.position.x, state.powerUp.position.y);
-        if (state.powerUp.DistanceToX(&state.player) > 0 && state.partSystem.velocity.x > 0) {
-            state.partSystem.velocity.x *= -1;
-        }
-        if (state.powerUp.DistanceToX(&state.player) < 0 && state.partSystem.velocity.x < 0) {
-            state.partSystem.velocity.x *= -1;
-        }
-    }
     
     if (!state.player.active) {
         state.partSystem.Update(elapsed);
@@ -439,11 +429,7 @@ void GameLevelUpdate (float elapsed) {
         timer = 0.0f;
         state.player.active = true;
         state.powerUpObtained = false;
-        state.powerUp.position.x = -5.0f;
-        if (state.player.type == "playerRed") {
-            state.player = Entity (playerSheet, state.player.position.x, state.player.position.y, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE, TILE_SIZE);
-            state.player.gravity.y = -3.5f;
-        }
+        //state.powerUp.position.x = -5.0f;
     }
     
     nextState = state.nextLevel;

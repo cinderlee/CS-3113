@@ -36,7 +36,7 @@ public:
     
     Entity player;
     Entity key;
-    Entity powerUp; 
+    std::vector <Entity> powerUp;
     std::vector <Entity> enemies;
     std::vector <Entity> platforms;
     FlareMap* mappy;

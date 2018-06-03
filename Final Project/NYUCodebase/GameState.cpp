@@ -40,6 +40,7 @@ void GameState::LoadLevel () {
     mappy = new FlareMap();
     enemies.clear ();
     platforms.clear ();
+    powerUp.clear ();
     std::stringstream stream;
     stream << "NYUCodebase.app/Contents/Resources/Resources/FinalLevel" << level << ".txt";
     mappy -> Load (stream.str());
@@ -121,19 +122,38 @@ void GameState::LoadLevel () {
             key.type = "keyGreen";
         }
         
-        if (mappy -> entities [index].type == "flower") {
-            powerUp = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 949/1024.0f, 29/1024.0f, 55/1024.0f, TILE_SIZE, TILE_SIZE);
-            powerUp.type = "powerUp";
-            partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
+        if (mappy -> entities [index].type == "plantRed") {
+            powerUp.push_back (Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 949/1024.0f, 29/1024.0f, 55/1024.0f, TILE_SIZE, TILE_SIZE));
+            powerUp [powerUp.size () - 1].type = "plantRed";
+            //partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
         }
         
-        if (mappy -> entities [index].type == "platform") {
-            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 5, TILE_SIZE));
+        if (mappy -> entities [index].type == "plantBlue") {
+            powerUp.push_back (Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 949/1024.0f, 29/1024.0f, 55/1024.0f, TILE_SIZE, TILE_SIZE));
+            powerUp [powerUp.size () - 1].type = "plantBlue";
+            //partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
+        }
+        
+        if (mappy -> entities [index].type == "plantGreen") {
+            powerUp.push_back (Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 963/1024.0f, 194/1024.0f, 26/1024.0f, 50/1024.0f, TILE_SIZE, TILE_SIZE));
+            //963"    y="194"    width="26"    height="50
+            powerUp[powerUp.size () - 1].type = "plantGreen";
+            //partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
+        }
+        
+        if (mappy -> entities [index].type == "platformH") {
+//            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE - 3.0 * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 130/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE, TILE_SIZE));
+//            platforms [platforms.size () - 1].velocity = Vector3 ( 1.0f, 0.0f, 0.0f);
+//            platforms [platforms.size () - 1].type = "platformHEnd";
+            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 6.5, TILE_SIZE));
             platforms [platforms.size () - 1].velocity = Vector3 ( 1.0f, 0.0f, 0.0f);
             platforms [platforms.size () - 1].type = "platformH";
             //platforms [platforms.size () - 1].direction = -1;
         }
         if (mappy -> entities [index].type == "platformV") {
+//            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE - 3.5 * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 130/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE, TILE_SIZE));
+//            platforms [platforms.size () - 1].velocity = Vector3 ( 0.0f, 1.0f, 0.0f);
+//            platforms [platforms.size () - 1].type = "platformV";
             platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 5, TILE_SIZE));
             platforms [platforms.size () - 1].velocity = Vector3 ( 0.0f, 1.0f, 0.0f);
             platforms [platforms.size () - 1].type = "platformV";
@@ -250,12 +270,56 @@ void GameState::UpdateEnemyMovement(float elapsed) {
             platforms [index].velocity.y *= -1;
         }
     }
+    
+    for (int i = 0; i < powerUp.size (); i++) {
+        if (powerUpObtained && powerUp[i].type == "plantObtained" && powerUp[i].DistanceToY(&player) < 0.6f) {
+            powerUp [i].position.y += 0.5 * elapsed;
+        }
+        if (powerUpObtained && powerUp [i].DistanceToY(&player) >= 0.6f && player.active && powerUp [i].type == "plantObtained") {
+            player.active = false;
+            partSystem.ResetLocations(powerUp [i].position.x, powerUp [i].position.y);
+            if (powerUp [i].DistanceToX(&player) > 0 && partSystem.velocity.x > 0) {
+                partSystem.velocity.x *= -1;
+            }
+            if (powerUp [i].DistanceToX(&player) < 0 && partSystem.velocity.x < 0) {
+                partSystem.velocity.x *= -1;
+            }
+        }
+        
+        if (!powerUpObtained && powerUp [i].type == "plantObtained") {
+            if (player.type == "playerRed") {
+                player = Entity (spritePlayer, player.position.x, player.position.y, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE, TILE_SIZE);
+                player.type = "playerBlue";
+                player.gravity.y = -3.5f;
+                powerUp [i].type = "plantDead";
+                break;
+            }
+            
+            if (player.type == "playerBlue") {
+                player = Entity (spritePlayer, player.position.x, player.position.y, 0.0f, 890/1024.0f, 0/1024.0f, 38/1024.0f, 50/1024.0f, TILE_SIZE, TILE_SIZE);
+                player.type = "playerGreen";
+                player.gravity.y = -3.5f;
+                powerUp [i].type = "plantDead";
+                break;
+            }
+            
+            if (player.type == "playerGreen") {
+                player = Entity (spritePlayer, player.position.x, player.position.y, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE, TILE_SIZE);
+                player.gravity.y = -3.5f;
+                player.type = "playerRed";
+                powerUp [i].type = "plantDead";
+                break;
+            }
+        }
+    }
+    
+    
 }
 
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level += 3;
+    level ++;
     keyObtained = false;
     
     LoadLevel();
@@ -277,7 +341,11 @@ void GameState::Draw (ShaderProgram* program) {
     mappy -> Draw (program, sprites);
     player.Draw (program);
     key.Draw (program);
-    powerUp.Draw (program);
+    for (int i = 0; i < powerUp.size (); i++) {
+        if (powerUp[i].type != "plantDead") {
+            powerUp [i].Draw (program);
+        }
+    }
     for (int i = 0; i < platforms.size (); i++) {
         platforms [i].Draw (program);
     }
@@ -311,10 +379,16 @@ void GameState::CollisionEntities () {
         keyObtained = true; 
     }
     
-    if (player.Collision (&powerUp)) {
-        powerUpObtained = true;
+    for (int i = 0; i < powerUp.size (); i++) {
+        if (player.Collision (&powerUp [i]) && powerUp[i].type != "plantDead" &&
+            ((player.type == "playerRed" && powerUp[i].type != "plantRed") ||
+             (player.type == "playerBlue" && powerUp [i].type != "plantBlue") ||
+             (player.type == "playerGreen" && powerUp [i].type != "plantGreen"))) {
+                powerUpObtained = true;
+                powerUp [i].type = "plantObtained";
+                break;
+        }
     }
-    
     // move on to next level if at the door with key
     int TileX;
     int TileY;
@@ -326,6 +400,13 @@ void GameState::CollisionEntities () {
 //    for (int i = 0; i < platforms.size (); i++ ) {
 //        player.CollisionPlatformY(&platforms [i]) ;
 //    }
+    
+    int TileBottom;
+    player.worldToTileCoordinates(player.position.x, player.position.y - player.sizeEnt.y/2, &TileX, &TileBottom);
+    if (mappy -> mapData [TileBottom] [TileX] - 1 == 234 || mappy -> mapData [TileBottom] [TileX] - 1 == 233) {
+        level = 1;
+        LoadLevel();
+    }
 }
 
 // check and resolve horizontal collision
