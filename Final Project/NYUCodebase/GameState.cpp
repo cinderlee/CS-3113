@@ -377,12 +377,11 @@ void GameState::CollisionEntities () {
             keyObtained = false;
             if (!lives ) {
                 level = 4;
-                nextLevel = true;
             }
             else {
                 level = 1;
-                LoadLevel();
             }
+            LoadLevel();
         }
     }
     

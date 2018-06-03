@@ -480,29 +480,7 @@ void Update (float elapsed, int& direction ){
             
             break;
         case STATE_GAME_LEVEL:
-            
-            if (nextState) {
-                alpha = lerp(alpha, 1.0f, FIXED_TIMESTEP );
-            }
-            
-            if ( alpha >= 0.995 && nextState ) {
-                alpha = 1.0;
-                nextState = false;
-                nextStateEnd = true;
-                state.nextLevel = false;
-                state.UpdateLevel ();
-                viewX = 0.0f;
-                viewY= 0.0f;
-            }
-            
-            if (state.GetLevel() == 4) {
-                nextState = true;
-                mode = STATE_GAME_OVER;
-                state.LoadLevel ();
-                viewX = -3.55;
-                viewY = -state.player.position.y;
-            }
-            
+        
             if (nextStateEnd) {
                 alpha = lerp(alpha, 0.0f, FIXED_TIMESTEP);
             }
@@ -514,6 +492,32 @@ void Update (float elapsed, int& direction ){
             }
             
             GameLevelUpdate (FIXED_TIMESTEP);
+            
+            if (nextState) {
+                alpha = lerp(alpha, 1.0f, FIXED_TIMESTEP );
+            }
+            
+            if ( alpha >= 0.995 && nextState && state.GetLevel () != 4) {
+                alpha = 1.0;
+                nextState = false;
+                nextStateEnd = true;
+                state.nextLevel = false;
+                state.UpdateLevel ();
+                viewX = 0.0f;
+                viewY= 0.0f;
+            }
+            
+            if (state.GetLevel () == 4) {
+                std::cout << alpha << std::endl;
+                state.nextLevel = false;
+                nextState = false;
+                nextStateEnd = true;
+                alpha = 1.0f;
+                mode = STATE_GAME_OVER;
+                viewX = -3.55;
+                viewY = -state.player.position.y;
+            }
+            
         
             break;
         case STATE_GAME_OVER:
@@ -525,7 +529,6 @@ void Update (float elapsed, int& direction ){
                 alpha = 1.0;
                 nextState = false;
                 nextStateEnd = true;
-                //mode = STATE_MAIN_MENU;
                 viewX = -3.55;
                 viewY = -state.player.position.y;
             }
