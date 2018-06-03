@@ -104,7 +104,7 @@ void GameState::LoadLevel () {
             enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 528.0f/1024.0f, 147/512.0f, 51/1024.0f, 73/512.0f, 2* TILE_SIZE, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.1f;
             enemies [enemies.size () - 1].gravity.y = -1.0f;
-            enemies[enemies.size () - 1].type = "enemyAir";
+            enemies[enemies.size () - 1].type = "ghost";
         }
         
         
@@ -191,7 +191,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
         }
         
         // Air AIs
-        if (enemies [index].type == "enemyAir") {
+        if (enemies [index].type == "enemyAir" || enemies [index].type == "ghost" ) {
             if (enemies [index].DistanceTo(&player) <= 1.0f) {
                 float x = enemies [index].DistanceToX (&player);
                 float y = enemies [index].DistanceToY (&player);
@@ -390,7 +390,7 @@ void GameState::CollisionEntities () {
         for (int enemy = 0; enemy < enemies.size (); enemy++) {
             
             // collision between enemy and player bullet
-            if ( (level == 1 && player.type == "playerBlue") || (level == 2 && player.type == "playerGreen") || (level == 3 && player.type == "playerRed") ) {
+            if ( enemies [enemy].type != "ghost" && (level == 1 && player.type == "playerBlue") || (level == 2 && player.type == "playerGreen") || (level == 3 && player.type == "playerRed") ) {
                 if (playerBullets [index].Collision(& (enemies[enemy])) && enemies[enemy].active && enemies [enemy].active && playerBullets[index].active) {
                     enemies[enemy].active = false;
                     
