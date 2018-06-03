@@ -374,6 +374,7 @@ void GameState::CollisionEntities () {
     for (int index = 0; index < enemies.size (); index++) {
         if (enemies [index].active && player.Collision(&enemies[index]) ) {
             lives--;
+            keyObtained = false;
             if (!lives ) {
                 level = 4;
                 nextLevel = true;
@@ -435,6 +436,7 @@ void GameState::CollisionEntities () {
     player.worldToTileCoordinates(player.position.x, player.position.y - player.sizeEnt.y/2, &TileX, &TileBottom);
     if (mappy -> mapData [TileBottom] [TileX] - 1 == 234 || mappy -> mapData [TileBottom] [TileX] - 1 == 232) {
         lives --;
+        keyObtained = false;
         if (!lives) {
             level = 4;
             nextLevel = true;
