@@ -33,12 +33,15 @@ public:
     void CollisionY ();
     void Reset ();
     float lerp(float v0, float v1, float t);
+    bool static shouldRemoveBullet (Entity thing);
+    void shootPlayerBullet(int sprites);
     
     Entity player;
     Entity key;
     std::vector <Entity> powerUp;
     std::vector <Entity> enemies;
     std::vector <Entity> platforms;
+    std::vector <Entity> playerBullets;
     FlareMap* mappy;
     bool keyObtained = false;
     bool powerUpObtained = false;

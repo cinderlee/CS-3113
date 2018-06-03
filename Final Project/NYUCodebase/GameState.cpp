@@ -14,6 +14,7 @@
 #include "ShaderProgram.h"
 #include <vector>
 #include <string>
+#include <math.h>
 #define TILE_SIZE 0.3f
 
 GameState::GameState () {}
@@ -239,6 +240,11 @@ void GameState::UpdateEnemyMovement(float elapsed) {
     
     }
     
+    for (int i = 0; i < playerBullets.size (); i++) {
+        playerBullets[i].position.x += playerBullets [i].velocity.x * elapsed;
+        playerBullets[i].distance += playerBullets [i].velocity.x * elapsed;
+    }
+    
     
     
     for (int index= 0 ; index < platforms.size () ; index ++ ) {
@@ -315,7 +321,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level += 4;
+    level ++;
     keyObtained = false;
     
     LoadLevel();
@@ -350,6 +356,14 @@ void GameState::Draw (ShaderProgram* program) {
             enemies[i].Draw (program);
         }
     }
+    for (int i = 0; i < playerBullets.size() ; i++ ) {
+        playerBullets [i].Draw (program);
+    }
+}
+
+
+bool GameState::shouldRemoveBullet (Entity thing) {
+    return (! (thing.active)  || thing.distance >= 1.0f );
 }
 
 // checking for any collisions in game between entities
@@ -366,10 +380,29 @@ void GameState::CollisionEntities () {
             }
             else {
                 level = 1;
+                LoadLevel();
             }
-            LoadLevel();
         }
     }
+    
+    for (size_t index = 0 ; index < playerBullets.size () ; index++) {
+        for (int enemy = 0; enemy < enemies.size (); enemy++) {
+            
+            // collision between enemy and player bullet
+            if ( (level == 1 && player.type == "playerBlue") || (level == 2 && player.type == "playerGreen") || (level == 3 && player.type == "playerRed") ) {
+                if (playerBullets [index].Collision(& (enemies[enemy])) && enemies[enemy].active && enemies [enemy].active && playerBullets[index].active) {
+                    enemies[enemy].active = false;
+                    
+                    playerBullets [index].active = false;
+                    break;
+                }
+            }
+        }
+    }
+    
+    // removing bullets from vector
+    playerBullets.erase(std::remove_if(playerBullets.begin(), playerBullets.end(), &GameState::shouldRemoveBullet), playerBullets.end());
+            
     
     if (player.Collision (&key)) {
         keyObtained = true; 
@@ -385,6 +418,7 @@ void GameState::CollisionEntities () {
                 break;
         }
     }
+    
     // move on to next level if at the door with key
     int TileX;
     int TileY;
@@ -528,6 +562,24 @@ void GameState::CollisionY () {
             }
         }
     }
+}
+
+// shooting a bullet from player
+void GameState::shootPlayerBullet(int sprites) {
+    Entity playerBullet = Entity (sprites, 0.0f, -1.5f, 0.0f, 858.0f/1024.0f, 230.0f/1024.0f, 9.0f/1024.0f, 54.0f/1024.0f, 0.3f, 0.3f);
+    if (player.type == "playerBlue") {
+        playerBullet = Entity (sprites, 0.0f, -1.5f, 0.0f, 856.0f/1024.0f, 421.0f/1024.0f, 9.0f/1024.0f, 54.0f/1024.0f, 0.3f, 0.3f);
+    }
+    if (player.type == "playerGreen") {
+        playerBullet = Entity (sprites, 0.0f, -1.5f, 0.0f, 849/1024.0f, 310/1024.0f, 9.0f/1024.0f, 54.0f/1024.0f, 0.3f, 0.3f);
+    }
+    playerBullet.active = true;
+    playerBullet.position.x = player.position.x + player.sizeEnt.x;
+    playerBullet.position.y = player.position.y;
+    playerBullet.velocity.x = 1.0f;
+    playerBullet.distance = 0.0f;
+    playerBullet.rotation = M_PI/2;
+    playerBullets.push_back(playerBullet);
 }
 
 // reset game state

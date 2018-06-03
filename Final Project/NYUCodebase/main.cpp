@@ -32,6 +32,7 @@ int textie;
 int tilesheet;
 int playerSheet;
 int enemySheet;
+int bulletSheet;
 int backgroundOne;
 int backgroundTwo;
 int backgroundThree;
@@ -47,6 +48,7 @@ Entity keyOutline;
 Mix_Music *music;
 float timer = 0.0f;
 float alpha = 0.0f;
+float coolDown = 0.0f;
 bool nextState = false;
 bool nextStateEnd = false;
 ParticleEmitter gameOverRed;
@@ -136,6 +138,7 @@ int main(int argc, char *argv[])
             accumulator = elapsed;
             continue; }
         while(elapsed >= FIXED_TIMESTEP) {
+            coolDown += FIXED_TIMESTEP;
             Update (FIXED_TIMESTEP, direction);
             elapsed -= FIXED_TIMESTEP;
         }
@@ -154,6 +157,7 @@ void LoadingTextures () {
     tilesheet = LoadTexture(RESOURCE_FOLDER"Resources/tilesheet_complete.png");
     playerSheet = LoadTexture(RESOURCE_FOLDER"Resources/spritesheet_complete.png");
     enemySheet = LoadTexture(RESOURCE_FOLDER"Resources/enemies.png");
+    bulletSheet = LoadTexture (RESOURCE_FOLDER"Resources/sheet.png");
     textie = LoadTexture(RESOURCE_FOLDER "Resources/font1.png");
     backgroundOne = LoadTexture(RESOURCE_FOLDER"Resources/set1_background.png");
     backgroundTwo = LoadTexture(RESOURCE_FOLDER"Resources/bg_castle.png");
@@ -282,6 +286,10 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 else if (keys [SDL_SCANCODE_RIGHT] && !state.player.collidedRight){
                     state.player.velocity.x = 1.5f;
                     state.player.acceleration.x = 1.0f;
+                }
+                if (keys [SDL_SCANCODE_B] && coolDown >= 0.75f) {
+                    state.shootPlayerBullet(bulletSheet);
+                    coolDown = 0.0f;
                 }
             }
             
@@ -488,9 +496,11 @@ void Update (float elapsed, int& direction ){
             }
             
             if (state.GetLevel() == 4) {
+                nextState = true;
                 mode = STATE_GAME_OVER;
+                state.LoadLevel ();
                 viewX = -3.55;
-                viewY = -state.player.position.y - 2.0f;
+                viewY = -state.player.position.y;
             }
             
             if (nextStateEnd) {
@@ -516,8 +526,8 @@ void Update (float elapsed, int& direction ){
                 nextState = false;
                 nextStateEnd = true;
                 //mode = STATE_MAIN_MENU;
-                viewX = 0.0f;
-                viewY= 0.0f;
+                viewX = -3.55;
+                viewY = -state.player.position.y;
             }
             
             if (nextStateEnd) {
@@ -598,6 +608,7 @@ void gameRender () {
 }
 
 void gameOverRender () {
+    
     viewMatrix.Identity();
     viewMatrix.SetPosition(viewX, viewY, 0.0f);
     program.SetViewMatrix(viewMatrix);
@@ -639,11 +650,10 @@ void gameOverRender () {
         program.SetModelMatrix(modelMatrix);
         gameOverGreen.Render (&program);
     }
+    
     if (nextState || nextStateEnd) {
         DrawUnTexture(alpha);
     }
-    
-    
 }
 
 // drawing game

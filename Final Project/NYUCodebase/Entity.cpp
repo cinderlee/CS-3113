@@ -24,6 +24,9 @@ Entity::Entity (int sprites, float x, float y, float z, float spriteX, float spr
 // drawing an entity
 void Entity::Draw(ShaderProgram *program ) {
         modelMatrix.Identity();
+    if (rotation != 0.0f) {
+        modelMatrix.Rotate(rotation);
+    }
         modelMatrix.SetPosition(position.x, position.y, position.z);
         program -> SetModelMatrix(modelMatrix);
         sprite.Draw (program);
