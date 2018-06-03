@@ -315,7 +315,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level += 3;
+    level += 4;
     keyObtained = false;
     
     LoadLevel();
@@ -362,11 +362,11 @@ void GameState::CollisionEntities () {
             lives--;
             if (!lives ) {
                 level = 4;
+                nextLevel = true;
             }
             else {
                 level = 1;
             }
-            nextLevel = true;
             LoadLevel();
         }
     }

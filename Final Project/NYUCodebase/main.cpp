@@ -206,9 +206,9 @@ void Setup () {
     keyOutline = Entity (playerSheet, 0.0f, 0.0f, 0.0f, 927/1024.0f, 624/1024.0f, 36/1024.0f, 36/1024.0f, TILE_SIZE / 2, TILE_SIZE/2);
     
     // prepare the fireworks for winning page
-    gameOverRed = ParticleEmitter (redStar, 40, (6 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 2.0f);
-    gameOverBlue = ParticleEmitter (blueStar, 40, (26 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 2.0f);
-    gameOverGreen = ParticleEmitter (greenStar, 40, (42 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 2.0f );
+    gameOverRed = ParticleEmitter (redStar, 40, (6 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 1.5f);
+    gameOverBlue = ParticleEmitter (blueStar, 40, (26 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 1.5f);
+    gameOverGreen = ParticleEmitter (greenStar, 40, (42 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE + 1.5f );
     
     gameOverRed.velocity = Vector3 (1.0, 1.0, 0.0);
     gameOverBlue.velocity = Vector3 (1.0, 1.0, 0.0);
@@ -312,6 +312,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
             
             // reset the game
             if (keys [SDL_SCANCODE_R]) {
+
                 mode = STATE_MAIN_MENU;
                 state.Reset();
                 viewX = -3.55f;
@@ -489,7 +490,7 @@ void Update (float elapsed, int& direction ){
             if (state.GetLevel() == 4) {
                 mode = STATE_GAME_OVER;
                 viewX = -3.55;
-                viewY = -state.player.position.y;
+                viewY = -state.player.position.y - 2.0f;
             }
             
             if (nextStateEnd) {
@@ -735,7 +736,7 @@ void DrawUnTexture (float alpha) {
     unTextProgram.SetColor (0.0, 0.0, 0.0, 0.0);
     unTextProgram.SetAlpha (alpha);
     Matrix modelMatrix;
-    modelMatrix.Scale(state.mappy ->mapWidth, state.mappy -> mapHeight, 1.0f);
+    modelMatrix.Scale(state.mappy ->mapWidth * 2 , state.mappy -> mapHeight * 2 , 1.0f);
     unTextProgram.SetModelMatrix(modelMatrix);
     float verticesUntextured[] = {-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5};
     glVertexAttribPointer(unTextProgram.positionAttribute, 2, GL_FLOAT, false, 0, verticesUntextured);
