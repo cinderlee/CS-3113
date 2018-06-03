@@ -46,33 +46,29 @@ void GameState::LoadLevel () {
     mappy -> Load (stream.str());
     for (size_t index = 0; index < mappy -> entities.size (); index++ ){
         //create the player
-        if (mappy -> entities [index].type == "playerRed") {
-            
-            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE, TILE_SIZE);
-            player.gravity.y = -2.5f;
-            player.type = "playerRed";
-        }
+        if (mappy -> entities [index].type == "playerRed" && ( level == 0 || level == 1 || level == 4) ){
         
-        if (mappy -> entities [index].type == "playerBlue" ) {
-            player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE, TILE_SIZE);
-            player.gravity.y = -1.5f;
-            player.type = "playerBlue";
-            
-        }
-        if (mappy -> entities [index].type == "playerGreen") {
-            if (lives != 0 ) {
-                if (level == 4) {
-                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 849/1024.0f, 429/1024.0f, 40/1024.0f , 39/1024.0f, TILE_SIZE, TILE_SIZE);
-                }
-                else {
-                    player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 0/1024.0f, 38/1024.0f, 50/1024.0f, TILE_SIZE, TILE_SIZE);
-                    player.gravity.y = -3.5f;
-                }
+            if (level == 4  && lives == 0) {
+                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 297/1024.0f, 39/1024.0f, 46/1024.0f, TILE_SIZE, TILE_SIZE);
+            }
+            if (level == 4 && lives != 0) {
+                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 650/1024.0f, 685/1024.0f, 56/1024.0f, 38/1024.0f, TILE_SIZE, TILE_SIZE);
             }
             else {
-                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 272/1024.0f, 38/1024.0f, 43/1024.0f, TILE_SIZE, TILE_SIZE);
+                player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE, TILE_SIZE);
+                player.gravity.y = -2.5f;
+                player.type = "playerRed";
             }
-            player.type = "playerGreen";
+        }
+        
+        if (level != 1) {
+            if (mappy -> entities [index].type == "playerBlue" ) {
+                player.position = Vector3 ((mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f);
+            }
+            if (mappy -> entities [index].type == "playerGreen") {
+                player.position = Vector3((mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f);
+                player.gravity.y = -3.5f;
+            }
         }
         
         // creating the enemies - categorized into enemyGround, enemyAir, enemyShooter
@@ -319,7 +315,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level ++;
+    level += 3;
     keyObtained = false;
     
     LoadLevel();
@@ -403,8 +399,16 @@ void GameState::CollisionEntities () {
     
     int TileBottom;
     player.worldToTileCoordinates(player.position.x, player.position.y - player.sizeEnt.y/2, &TileX, &TileBottom);
-    if (mappy -> mapData [TileBottom] [TileX] - 1 == 234 || mappy -> mapData [TileBottom] [TileX] - 1 == 233) {
-        level = 1;
+    if (mappy -> mapData [TileBottom] [TileX] - 1 == 234 || mappy -> mapData [TileBottom] [TileX] - 1 == 232) {
+        lives --;
+        if (!lives) {
+            level = 4;
+            nextLevel = true;
+        }
+        else {
+            level = 1;
+        }
+        //nextLevel = true;
         LoadLevel();
     }
 }

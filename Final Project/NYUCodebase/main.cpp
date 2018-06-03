@@ -514,7 +514,7 @@ void Update (float elapsed, int& direction ){
                 alpha = 1.0;
                 nextState = false;
                 nextStateEnd = true;
-                mode = STATE_MAIN_MENU;
+                //mode = STATE_MAIN_MENU;
                 viewX = 0.0f;
                 viewY= 0.0f;
             }
@@ -609,13 +609,13 @@ void gameOverRender () {
     DrawTexture (tilesThree, state.mappy -> mapWidth/6 *0.3 + 2 * (state.mappy -> mapWidth/3) * 0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
     DrawTexture (hillsThree, state.mappy -> mapWidth/6 *0.3 + 2 * (state.mappy -> mapWidth/3) * 0.3, -state.mappy -> mapHeight/2 * 0.3, state.mappy -> mapWidth/3 * 0.3, state.mappy -> mapHeight * 0.3);
     state.Draw (&program);
-    Entity redPlayer = Entity (playerSheet, (6 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE, 0.0f, 650/1024.0f, 685/1024.0f, 56/1024.0f, 38/1024.0f, TILE_SIZE, TILE_SIZE);
+    Entity greenPlayer = Entity (playerSheet, (42 + 0.5f) * TILE_SIZE, (10 + 0.5f) * -1 * TILE_SIZE, 0.0f, 849/1024.0f, 429/1024.0f, 40/1024.0f , 39/1024.0f, TILE_SIZE, TILE_SIZE);
     Entity bluePlayer = Entity (playerSheet, (26 + 0.5f) * TILE_SIZE, (15 + 0.5f) * -1 * TILE_SIZE, 0.0f, 758/1024.0f, 771/1024.0f, 46/1024.0f, 40/1024.0f, TILE_SIZE, TILE_SIZE);
     if (state.GetLives () == 0) {
-        redPlayer = Entity (playerSheet, (6 + 0.5f) * TILE_SIZE, (13 + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 297/1024.0f, 39/1024.0f, 46/1024.0f, TILE_SIZE, TILE_SIZE);
+        greenPlayer = Entity (playerSheet, (42 + 0.5f) * TILE_SIZE, (10 + 0.5f) * -1 * TILE_SIZE, 0.0f, 890/1024.0f, 272/1024.0f, 38/1024.0f, 43/1024.0f, TILE_SIZE, TILE_SIZE);
         bluePlayer = Entity (playerSheet, (26 + 0.5f) * TILE_SIZE, (15 + 0.5f) * -1 * TILE_SIZE, 0.0f, 762/1024.0f, 258/1024.0f, 45/1024.0f, 46/1024.0f, TILE_SIZE, TILE_SIZE);
     }
-    redPlayer.Draw (&program);
+    greenPlayer.Draw (&program);
     bluePlayer.Draw (&program);
     if (state.GetLives() == 0) {
         DrawWords (&program, textie, "YOU LOSE", 0.4, 0.0f, (viewX + (-0.5*0.4) + (8*0.4/2)), viewY - 0.5f);

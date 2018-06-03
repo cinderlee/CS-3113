@@ -38,14 +38,6 @@ type=playerRed
 location=6,13,1,1
 
 [Object Layer]
-type=playerBlue
-location=26,15,1,1
-
-[Object Layer]
-type=playerGreen
-location=42,10,1,1
-
-[Object Layer]
 type=keyGreen
 location=28,9,1,1
 

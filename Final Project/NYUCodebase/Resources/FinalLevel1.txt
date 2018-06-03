@@ -42,6 +42,22 @@ type=keyRed
 location=38,15,1,1
 
 [Object Layer]
+type=enemyWalking
+location=8,14,1,1
+
+[Object Layer]
+type=enemyWalking
+location=34,12,1,1
+
+[Object Layer]
+type=enemyFlying
+location=11,7,1,1
+
+[Object Layer]
+type=enemyFlying
+location=21,5,1,1
+
+[Object Layer]
 type=plantBlue
 location=5,16,1,1
 
