@@ -23,8 +23,11 @@ public:
     void Initiate (int spriteTiles, int spritesterPlayer, int spritesterEnemy, int textureID);
     void LoadLevel ();
     void UpdateEnemyMovement (float elapsed);
+    void UpdateFamily (float elapsed);
     void UpdateLevel ();
-    void Update ();
+    void UpdatePlatforms (float elapsed);
+    void UpdatePlants (float elapsed);
+    void Update (float elapsed);
     int GetLevel ();
     int GetLives ();
     void Draw (ShaderProgram* program);
@@ -42,12 +45,15 @@ public:
     std::vector <Entity> enemies;
     std::vector <Entity> platforms;
     std::vector <Entity> playerBullets;
+    std::vector <Entity> family;
     FlareMap* mappy;
     bool keyObtained = false;
     bool powerUpObtained = false;
     ParticleEmitter partSystem;
     int partTexture;
     bool nextLevel = false;
+    bool death = false;
+
     
 private:
     int sprites = 0;

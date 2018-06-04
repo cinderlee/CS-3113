@@ -24,11 +24,12 @@ Entity::Entity (int sprites, float x, float y, float z, float spriteX, float spr
 // drawing an entity
 void Entity::Draw(ShaderProgram *program ) {
         modelMatrix.Identity();
+
+    modelMatrix.Scale (direction, 1.0f, 1.0f);
+        modelMatrix.SetPosition(position.x, position.y, position.z);
     if (rotation != 0.0f) {
         modelMatrix.Rotate(rotation);
     }
-    modelMatrix.Scale (direction, 1.0f, 1.0f);
-        modelMatrix.SetPosition(position.x, position.y, position.z);
         program -> SetModelMatrix(modelMatrix);
         sprite.Draw (program);
 }

@@ -58,6 +58,9 @@ ParticleEmitter gameOverGreen;
 Mix_Chunk *bulletSound;
 Mix_Chunk *jumpSound;
 Mix_Chunk *powerUpSound;
+Mix_Chunk *deathSound;
+Mix_Chunk *bouncingWall;
+Mix_Chunk *keySound;
 
 bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
@@ -124,7 +127,10 @@ int main(int argc, char *argv[])
     
     bulletSound = Mix_LoadWAV (RESOURCE_FOLDER"Resources/slimeball.wav");
     jumpSound = Mix_LoadWAV (RESOURCE_FOLDER"Resources/Jump_01.wav");
-    powerUpSound = Mix_LoadWAV(RESOURCE_FOLDER"Resources/Collect_Point_01.wav");
+    powerUpSound = Mix_LoadWAV(RESOURCE_FOLDER"Resources/sfx_sounds_powerup2.wav");
+    deathSound = Mix_LoadWAV(RESOURCE_FOLDER"Resources/sfx_deathscream_android8.wav");
+    bouncingWall = Mix_LoadWAV(RESOURCE_FOLDER"Resources/sfx_movement_jump13_landing.wav");
+    keySound = Mix_LoadWAV (RESOURCE_FOLDER"Resources/Collect_Point_01.wav");
     
     float lastFrameTicks = 0.0f;
     float elapsed = 0.0f;
@@ -157,6 +163,12 @@ int main(int argc, char *argv[])
         SDL_GL_SwapWindow(displayWindow);
     }
     Mix_FreeMusic(music);
+    Mix_FreeChunk(deathSound);
+    Mix_FreeChunk(bouncingWall);
+    Mix_FreeChunk(keySound);
+    Mix_FreeChunk(powerUpSound);
+    Mix_FreeChunk(bulletSound);
+    Mix_FreeChunk(jumpSound);
     SDL_Quit();
     return 0;
 }
@@ -246,6 +258,11 @@ void ProcessEvents (SDL_Event& event, bool& done) {
             if (keys [SDL_SCANCODE_SPACE] ){
                 nextState = true;
             }
+            
+            // quit game
+            if (keys [SDL_SCANCODE_Q] ){
+                done = true;
+            }
             break;
         case STATE_GAME_LEVEL:
             state.player.acceleration.x = 0.0f;
@@ -255,6 +272,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
                     done = true;
                 }
+                
                 else if (event.type == SDL_KEYDOWN) {
                     if (state.player.active) {
                         // simple jumping
@@ -268,21 +286,29 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                         
                         // bounce off walls but can't combine with left and right keys
                         if (event.key.keysym.scancode == SDL_SCANCODE_A) {
+                            Mix_PlayChannel (-1, bouncingWall, 0);
                             if (state.player.collidedLeft && !keys [SDL_SCANCODE_LEFT]) {
                                 state.player.velocity.y = 4.0f;
                                 state.player.acceleration.y = 1.0f;
                                 state.player.velocity.x = 1.5f;
                                 state.player.acceleration.x = 1.0f;
+                                state.player.direction = 1.0f;
                             }
                             if (state.player.collidedRight && !keys[SDL_SCANCODE_RIGHT] ) {
                                 state.player.velocity.y = 4.0f;
                                 state.player.acceleration.y = 1.0f;
                                 state.player.velocity.x = -1.5f;
                                 state.player.acceleration.x = -1.0f;
+                                state.player.direction = -1.0f;
                             }
                         }
                     }
                 }
+            }
+            
+            // quit game
+            if (keys [SDL_SCANCODE_Q] ){
+                done = true;
             }
             
             if (state.player.active) {
@@ -290,12 +316,14 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 if (keys [SDL_SCANCODE_LEFT]){
                     state.player.velocity.x = -1.5f;
                     state.player.acceleration.x = -1.0f;
+                    state.player.direction = -1.0f;
                 }
                 
                 // move right
-                else if (keys [SDL_SCANCODE_RIGHT] && !state.player.collidedRight){
+                else if (keys [SDL_SCANCODE_RIGHT]){
                     state.player.velocity.x = 1.5f;
                     state.player.acceleration.x = 1.0f;
+                    state.player.direction = 1.0f;
                 }
                 if (keys [SDL_SCANCODE_B] && coolDown >= 0.75f) {
                     Mix_PlayChannel (-1, bulletSound, 0);
@@ -327,6 +355,11 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
                     done = true;
                 }
+            }
+            
+            // quit game
+            if (keys [SDL_SCANCODE_Q] ){
+                done = true;
             }
             
             // reset the game
@@ -363,13 +396,13 @@ void mainGameOverUpdate (float elapsed, int& direction) {
         viewX -= elapsed * 3 * direction;
     }
     // enemies move on title page and game over page
-    state.UpdateEnemyMovement(elapsed);
+    state.Update(elapsed);
 }
 
 //updating the game
 void GameLevelUpdate (float elapsed) {
     
-    state.UpdateEnemyMovement(elapsed);
+    state.Update(elapsed);
     
     state.player.collisionBools();
     
@@ -414,6 +447,15 @@ void GameLevelUpdate (float elapsed) {
     
     // check for player collisions with enemies
     state.CollisionEntities();
+    if (state.player.Collision(&state.key)) {
+        Mix_PlayChannel (-1, keySound, 0);
+    }
+    
+    if (state.death) {
+        Mix_PlayChannel (-1, deathSound, 0);
+        state.LoadLevel();
+        state.death = false;
+    }
     
     // adjusting viewMatrix
     viewX = -state.player.position.x;
@@ -526,6 +568,16 @@ void Update (float elapsed, int& direction ){
                 nextStateEnd = true;
                 alpha = 1.0f;
                 mode = STATE_GAME_OVER;
+                Mix_HaltMusic();
+                if (state.GetLives() == 0) {
+                    music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/PianoLoop.wav");
+                    Mix_VolumeMusic(40);
+                }
+                else {
+                    music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/SummerSunday.wav");
+                    Mix_VolumeMusic(40);
+                }
+                Mix_PlayMusic (music, -1);
                 viewX = -3.55;
                 viewY = -state.player.position.y;
             }
@@ -558,6 +610,7 @@ void Update (float elapsed, int& direction ){
             gameOverRed.UpdateFireworks (elapsed);
             gameOverBlue.UpdateFireworks (elapsed);
             gameOverGreen.UpdateFireworks (elapsed);
+            state.UpdateFamily(elapsed);
             break;
     }
 }
