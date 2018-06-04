@@ -32,7 +32,7 @@ data=
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,194,194,194,194,194,0,0,0,0,0,0,0,194,194,194,194,194,0,0,0,0,0,0,194,194,194,194,194,194,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,193,193,193,193,193,193,193,193,193,193,193,193,193,193,0,0,0,0,0,0,0,0,0,0,0,0,0,0,194,194,194,194,194,194,194,194,194,194,194,194,194,194,0,0,0,0,0,0,0,0,0,0,194,194,194,194,194,194,194,194,194,194,194,194,194,194,0,0,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199,
@@ -46,98 +46,162 @@ data=
 199,199,199,199,199,199,199,199,199,199,199,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,199,199,199,199,199,199,199,199,199,199,199,199,199,199,199
 
 [Object Layer]
-type=platformH
-location=19,26,1,1
-
-[Object Layer]
-type=platformH
-location=26,23,1,1
-
-[Object Layer]
-type=platformH
-location=15,20,1,1
-
-[Object Layer]
-type=platformV
-location=24,14,1,1
-
-[Object Layer]
-type=platformV
-location=34,23,1,1
-
-[Object Layer]
-type=platformV
-location=32,17,1,1
-
-[Object Layer]
-type=platformH
-location=38,14,1,1
-
-[Object Layer]
-type=platformH
-location=43,17,1,1
-
-[Object Layer]
-type=platformV
-location=46,25,1,1
-
-[Object Layer]
-type=platformH
-location=50,19,1,1
-
-[Object Layer]
-type=platformH
-location=57,19,1,1
-
-[Object Layer]
-type=platformV
-location=58,23,1,1
-
-[Object Layer]
-type=platformV
-location=84,10,1,1
-
-[Object Layer]
-type=platformH
-location=78,13,1,1
-
-[Object Layer]
-type=platformV
-location=75,16,1,1
-
-[Object Layer]
-type=platformH
-location=70,12,1,1
-
-[Object Layer]
-type=platformV
-location=65,15,1,1
-
-[Object Layer]
-type=platformH
-location=60,16,1,1
-
-[Object Layer]
-type=platformH
-location=64,21,1,1
-
-[Object Layer]
-type=platformV
-location=69,17,1,1
-
-[Object Layer]
-type=platformH
-location=69,22,1,1
-
-[Object Layer]
-type=platformV
-location=82,17,1,1
-
-[Object Layer]
 type=keyRed
 location=53,15,1,1
 
 [Object Layer]
 type=playerGreen
 location=3,26,1,1
+
+[Object Layer]
+type=plantRed
+location=53,19,1,1
+
+[Object Layer]
+type=smasher
+location=49,15,1,1
+
+[Object Layer]
+type=smasher
+location=57,15,1,1
+
+[Object Layer]
+type=smasher
+location=21,15,1,1
+
+[Object Layer]
+type=smasher
+location=26,15,1,1
+
+[Object Layer]
+type=smasher
+location=30,15,1,1
+
+[Object Layer]
+type=smasher
+location=72,15,1,1
+
+[Object Layer]
+type=smasher
+location=77,15,1,1
+
+[Object Layer]
+type=smasher
+location=82,15,1,1
+
+[Object Layer]
+type=platformV
+location=15,26,1,1
+
+[Object Layer]
+type=platformH
+location=20,26,1,1
+
+[Object Layer]
+type=platformH
+location=26,26,1,1
+
+[Object Layer]
+type=platformH
+location=32,26,1,1
+
+[Object Layer]
+type=platformV
+location=38,26,1,1
+
+[Object Layer]
+type=platformV
+location=42,22,1,1
+
+[Object Layer]
+type=platformV
+location=12,22,1,1
+
+[Object Layer]
+type=platformV
+location=14,17,1,1
+
+[Object Layer]
+type=platformH
+location=14,12,1,1
+
+[Object Layer]
+type=platformH
+location=21,12,1,1
+
+[Object Layer]
+type=platformV
+location=37,18,1,1
+
+[Object Layer]
+type=platformV
+location=40,14,1,1
+
+[Object Layer]
+type=platformH
+location=28,12,1,1
+
+[Object Layer]
+type=platformV
+location=35,11,1,1
+
+[Object Layer]
+type=platformH
+location=45,13,1,1
+
+[Object Layer]
+type=platformH
+location=51,12,1,1
+
+[Object Layer]
+type=platformH
+location=58,13,1,1
+
+[Object Layer]
+type=platformV
+location=65,19,1,1
+
+[Object Layer]
+type=platformH
+location=49,25,1,1
+
+[Object Layer]
+type=platformH
+location=58,25,1,1
+
+[Object Layer]
+type=platformH
+location=70,26,1,1
+
+[Object Layer]
+type=platformH
+location=77,24,1,1
+
+[Object Layer]
+type=platformH
+location=82,24,1,1
+
+[Object Layer]
+type=platformV
+location=64,23,1,1
+
+[Object Layer]
+type=platformV
+location=63,15,1,1
+
+[Object Layer]
+type=platformV
+location=67,12,1,1
+
+[Object Layer]
+type=platformH
+location=73,11,1,1
+
+[Object Layer]
+type=platformH
+location=79,12,1,1
+
+[Object Layer]
+type=platformV
+location=84,10,1,1
 

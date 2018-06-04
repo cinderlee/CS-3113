@@ -37,6 +37,7 @@ public:
     
     float rotation = 0.0f;
     float distance = 1.0f;
+    float direction = 1.0f;
     SheetSprite sprite;
     bool collidedTop = false;
     bool collidedBottom = false;

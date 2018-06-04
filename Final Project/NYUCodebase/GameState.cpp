@@ -57,7 +57,7 @@ void GameState::LoadLevel () {
             }
             else {
                 player = Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE, TILE_SIZE);
-                player.gravity.y = -2.5f;
+                player.gravity.y = -3.5f;
                 player.type = "playerRed";
             }
         }
@@ -68,7 +68,6 @@ void GameState::LoadLevel () {
             }
             if (mappy -> entities [index].type == "playerGreen") {
                 player.position = Vector3((mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f);
-                player.gravity.y = -3.5f;
             }
         }
         
@@ -79,7 +78,6 @@ void GameState::LoadLevel () {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 928.0f/1024.0f, 949/1024.0f, 32/1024.0f, 44/1024.0f, TILE_SIZE, TILE_SIZE));
             //928"    y="949"    width="32"    height="44
             enemies [enemies.size () - 1].velocity.x = 0.5f;
-            enemies [enemies.size () - 1].gravity.y = -1.0f;
             enemies[enemies.size () - 1].type = "enemyGround";
         }
         
@@ -87,7 +85,7 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "spider") {
             enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 0.0f, 326/512.0f, 71/1024.0f, 45/512.0f, TILE_SIZE * 2, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.5f;
-            enemies [enemies.size () - 1].gravity.y = -1.0f;
+            enemies [enemies.size () - 1].direction = -1.0f;
             enemies[enemies.size () - 1].type = "enemyGround";
         }
         
@@ -95,7 +93,6 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "enemyFlying") {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 706.0f/1024.0f, 839/1024.0f, 52/1024.0f, 36/1024.0f, TILE_SIZE, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.1f;
-            enemies [enemies.size () - 1].gravity.y = -1.0f;
             enemies [enemies.size () - 1].type = "enemyAir";
         }
         
@@ -103,10 +100,15 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "ghost") {
             enemies.push_back (Entity (spriteEnemy, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 528.0f/1024.0f, 147/512.0f, 51/1024.0f, 73/512.0f, 2* TILE_SIZE, TILE_SIZE));
             enemies [enemies.size () - 1].velocity.x = 0.1f;
-            enemies [enemies.size () - 1].gravity.y = -1.0f;
             enemies[enemies.size () - 1].type = "ghost";
         }
         
+        if (mappy -> entities [index].type == "smasher") {
+            enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 807.0f/1024.0f, 306/1024.0f, 42/1024.0f, 40/1024.0f, TILE_SIZE, TILE_SIZE));
+            //807"    y="306"    width="42"    height="40
+            enemies [enemies.size () - 1].velocity.y = 0.0f;
+            enemies[enemies.size () - 1].type = "smasher";
+        }
         
         // keys, needed to unlock next level 
         if (mappy -> entities [index].type == "keyRed") {
@@ -120,7 +122,7 @@ void GameState::LoadLevel () {
         }
         
         if (mappy -> entities [index].type == "plantRed") {
-            powerUp.push_back (Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 949/1024.0f, 29/1024.0f, 55/1024.0f, TILE_SIZE, TILE_SIZE));
+            powerUp.push_back (Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 809/1024.0f, 0/1024.0f, 40/1024.0f, 50/1024.0f, TILE_SIZE, TILE_SIZE));
             powerUp [powerUp.size () - 1].type = "plantRed";
             //partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
         }
@@ -139,22 +141,17 @@ void GameState::LoadLevel () {
         }
         
         if (mappy -> entities [index].type == "platformH") {
-//            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE - 3.0 * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 130/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE, TILE_SIZE));
-//            platforms [platforms.size () - 1].velocity = Vector3 ( 1.0f, 0.0f, 0.0f);
-//            platforms [platforms.size () - 1].type = "platformHEnd";
-            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 6.5, TILE_SIZE));
+            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 4, TILE_SIZE));
             platforms [platforms.size () - 1].velocity = Vector3 ( 1.0f, 0.0f, 0.0f);
             platforms [platforms.size () - 1].type = "platformH";
             //platforms [platforms.size () - 1].direction = -1;
         }
         if (mappy -> entities [index].type == "platformV") {
-//            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE - 3.5 * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 130/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE, TILE_SIZE));
-//            platforms [platforms.size () - 1].velocity = Vector3 ( 0.0f, 1.0f, 0.0f);
-//            platforms [platforms.size () - 1].type = "platformV";
-            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 5, TILE_SIZE));
+            platforms.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 195.0f/1024.0f, 65/1024.0f, 64/1024.0f, 64/1024.0f, TILE_SIZE * 4, TILE_SIZE));
             platforms [platforms.size () - 1].velocity = Vector3 ( 0.0f, 1.0f, 0.0f);
             platforms [platforms.size () - 1].type = "platformV";
         }
+        
     }
 }
 
@@ -186,6 +183,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
             }
             if ( !left || !right ) {
                 enemies [index].velocity.x *= -1;
+                enemies [index].direction *= -1;
             }
             enemies[index].position.x += enemies[index].velocity.x * elapsed;
         }
@@ -225,6 +223,27 @@ void GameState::UpdateEnemyMovement(float elapsed) {
             enemies [index].position.x += enemies [index].velocity.x * elapsed;
             enemies [index].position.y += enemies [index].velocity.y * elapsed;
         }
+        
+        if (enemies [index].type == "smasher") {
+            if (enemies [index].DistanceTo(&player) <= 1.5f && enemies [index].velocity.y == 0.0f) {
+                enemies[index].velocity.y = -2.0f;
+            }
+            
+            enemies [index].position.y += enemies [index].velocity.y * elapsed;
+            
+            if (enemies [index].position.y <= (20 + 0.5) * -TILE_SIZE &&
+                enemies [index].velocity.y < 0) {
+                enemies [index].position.y = (20 + 0.5) * -TILE_SIZE;
+                enemies [index].velocity.y = 0.5f;
+            }
+            
+            if (enemies [index].position.y >= (15 + 0.5) * -TILE_SIZE &&
+                enemies [index].velocity.y > 0) {
+                enemies [index].position.y = (15 + 0.5) * -TILE_SIZE;
+                enemies [index].velocity.y = 0.0f;
+            }
+            
+        }
     }
     
     
@@ -234,6 +253,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
             if (index != index2 && enemies [index].active && enemies [index2].active) {
                 if (enemies [index].Collision (&enemies[index2])) {
                     enemies [index].velocity.x *= -1;
+                    enemies [index].direction *= -1;
                 }
             }
         }
@@ -274,10 +294,10 @@ void GameState::UpdateEnemyMovement(float elapsed) {
     }
     
     for (int i = 0; i < powerUp.size (); i++) {
-        if (powerUpObtained && powerUp[i].type == "plantObtained" && powerUp[i].DistanceToY(&player) < 0.6f) {
+        if (powerUpObtained && (powerUp[i].type == "plantRedObtained" || powerUp[i].type == "plantBlueObtained" || powerUp[i].type == "plantGreenObtained") && powerUp[i].DistanceToY(&player) < 0.6f) {
             powerUp [i].position.y += 0.5 * elapsed;
         }
-        if (powerUpObtained && powerUp [i].DistanceToY(&player) >= 0.6f && player.active && powerUp [i].type == "plantObtained") {
+        if (powerUpObtained && powerUp [i].DistanceToY(&player) >= 0.6f && player.active && (powerUp[i].type == "plantRedObtained" || powerUp[i].type == "plantBlueObtained" || powerUp[i].type == "plantGreenObtained")) {
             player.active = false;
             partSystem.ResetLocations(powerUp [i].position.x, powerUp [i].position.y);
             if (powerUp [i].DistanceToX(&player) > 0 && partSystem.velocity.x > 0) {
@@ -288,8 +308,8 @@ void GameState::UpdateEnemyMovement(float elapsed) {
             }
         }
         
-        if (!powerUpObtained && powerUp [i].type == "plantObtained") {
-            if (player.type == "playerRed") {
+        if (!powerUpObtained) {
+            if (powerUp [i].type == "plantBlueObtained") {
                 player = Entity (spritePlayer, player.position.x, player.position.y, 0.0f, 762/1024.0f, 203/1024.0f, 45/1024.0f, 54/1024.0f, TILE_SIZE, TILE_SIZE);
                 player.type = "playerBlue";
                 player.gravity.y = -3.5f;
@@ -297,7 +317,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
                 break;
             }
             
-            if (player.type == "playerBlue") {
+            if (powerUp [i].type == "plantGreenObtained") {
                 player = Entity (spritePlayer, player.position.x, player.position.y, 0.0f, 890/1024.0f, 0/1024.0f, 38/1024.0f, 50/1024.0f, TILE_SIZE, TILE_SIZE);
                 player.type = "playerGreen";
                 player.gravity.y = -3.5f;
@@ -305,7 +325,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
                 break;
             }
             
-            if (player.type == "playerGreen") {
+            if (powerUp [i].type == "plantRedObtained") {
                 player = Entity (spritePlayer, player.position.x, player.position.y, 0.0f, 850/1024.0f, 518/1024.0f, 39/1024.0f, 48/1024.0f, TILE_SIZE, TILE_SIZE);
                 player.gravity.y = -3.5f;
                 player.type = "playerRed";
@@ -321,10 +341,11 @@ void GameState::UpdateEnemyMovement(float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level ++;
+    level += 2;
     keyObtained = false;
     
     LoadLevel();
+    player.active = true;
 }
 
 
@@ -341,13 +362,13 @@ int GameState::GetLives (){
 // drawing game
 void GameState::Draw (ShaderProgram* program) {
     mappy -> Draw (program, sprites);
-    player.Draw (program);
     key.Draw (program);
     for (int i = 0; i < powerUp.size (); i++) {
         if (powerUp[i].type != "plantDead") {
             powerUp [i].Draw (program);
         }
     }
+    player.Draw (program);
     for (int i = 0; i < platforms.size (); i++) {
         platforms [i].Draw (program);
     }
@@ -389,7 +410,7 @@ void GameState::CollisionEntities () {
         for (int enemy = 0; enemy < enemies.size (); enemy++) {
             
             // collision between enemy and player bullet
-            if ( enemies [enemy].type != "ghost" && (level == 1 && player.type == "playerBlue") || (level == 2 && player.type == "playerGreen") || (level == 3 && player.type == "playerRed") ) {
+            if ( ( enemies [enemy].type != "ghost" || enemies [enemy].type != "smasher") && ( (level == 1 && player.type == "playerBlue") || (level == 2 && player.type == "playerGreen") || (level == 3 && player.type == "playerRed") ) ){
                 if (playerBullets [index].Collision(& (enemies[enemy])) && enemies[enemy].active && enemies [enemy].active && playerBullets[index].active) {
                     enemies[enemy].active = false;
                     
@@ -414,7 +435,15 @@ void GameState::CollisionEntities () {
              (player.type == "playerBlue" && powerUp [i].type != "plantBlue") ||
              (player.type == "playerGreen" && powerUp [i].type != "plantGreen"))) {
                 powerUpObtained = true;
-                powerUp [i].type = "plantObtained";
+                if (powerUp [i].type == "plantRed") {
+                    powerUp [i].type = "plantRedObtained";
+                }
+                if (powerUp [i].type == "plantBlue") {
+                    powerUp [i].type = "plantBlueObtained";
+                }
+                if (powerUp [i].type == "plantGreen") {
+                    powerUp [i].type = "plantGreenObtained";
+                }
                 break;
         }
     }
@@ -425,11 +454,11 @@ void GameState::CollisionEntities () {
     player.worldToTileCoordinates(player.position.x, player.position.y, &TileX, &TileY);
     if (keyObtained && (mappy -> mapData [TileY] [TileX] - 1 == 152 || mappy -> mapData [TileY] [TileX] - 1 == 153)) {
         //UpdateLevel ();
+        player.active = false;
+        player.velocity.x = 0.0f;
+        player.velocity.y = 0.0f;
         nextLevel = true;
     }
-//    for (int i = 0; i < platforms.size (); i++ ) {
-//        player.CollisionPlatformY(&platforms [i]) ;
-//    }
     
     int TileBottom;
     player.worldToTileCoordinates(player.position.x, player.position.y - player.sizeEnt.y/2, &TileX, &TileBottom);

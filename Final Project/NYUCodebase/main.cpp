@@ -55,6 +55,10 @@ ParticleEmitter gameOverRed;
 ParticleEmitter gameOverBlue;
 ParticleEmitter gameOverGreen;
 
+Mix_Chunk *bulletSound;
+Mix_Chunk *jumpSound;
+Mix_Chunk *powerUpSound;
+
 bool win = false;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_OVER};
 GameMode mode = STATE_MAIN_MENU;
@@ -117,6 +121,11 @@ int main(int argc, char *argv[])
     
     Mix_VolumeMusic(25);
     Mix_PlayMusic (music, -1);
+    
+    bulletSound = Mix_LoadWAV (RESOURCE_FOLDER"Resources/slimeball.wav");
+    jumpSound = Mix_LoadWAV (RESOURCE_FOLDER"Resources/Jump_01.wav");
+    powerUpSound = Mix_LoadWAV(RESOURCE_FOLDER"Resources/Collect_Point_01.wav");
+    
     float lastFrameTicks = 0.0f;
     float elapsed = 0.0f;
     float accumulator = 0.0f;
@@ -253,6 +262,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                             if (state.player.collidedBottom) {
                                 state.player.velocity.y = 4.0f;
                                 state.player.acceleration.y = 1.0f;
+                                Mix_PlayChannel (-1, jumpSound, 0);
                             }
                         }
                         
@@ -288,6 +298,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                     state.player.acceleration.x = 1.0f;
                 }
                 if (keys [SDL_SCANCODE_B] && coolDown >= 0.75f) {
+                    Mix_PlayChannel (-1, bulletSound, 0);
                     state.shootPlayerBullet(bulletSheet);
                     coolDown = 0.0f;
                 }
@@ -368,7 +379,7 @@ void GameLevelUpdate (float elapsed) {
     
     
     // applying friction
-    state.player.velocity.x = lerp(state.player.velocity.x, 0.0f, elapsed * 1.5);
+    state.player.velocity.x = lerp(state.player.velocity.x, 0.0f, elapsed * 3.0);
     state.player.velocity.y = lerp(state.player.velocity.y, 0.0f, elapsed * 2.0);
     
     // calculating x velocity
@@ -429,7 +440,7 @@ void GameLevelUpdate (float elapsed) {
     }
     
     
-    if (!state.player.active) {
+    if (!state.player.active && state.powerUpObtained) {
         state.partSystem.Update(elapsed);
         timer += elapsed;
     }
@@ -438,6 +449,7 @@ void GameLevelUpdate (float elapsed) {
         timer = 0.0f;
         state.player.active = true;
         state.powerUpObtained = false;
+        Mix_PlayChannel (-1, powerUpSound, 0);
         //state.powerUp.position.x = -5.0f;
     }
     

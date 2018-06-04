@@ -27,6 +27,7 @@ void Entity::Draw(ShaderProgram *program ) {
     if (rotation != 0.0f) {
         modelMatrix.Rotate(rotation);
     }
+    modelMatrix.Scale (direction, 1.0f, 1.0f);
         modelMatrix.SetPosition(position.x, position.y, position.z);
         program -> SetModelMatrix(modelMatrix);
         sprite.Draw (program);
