@@ -290,8 +290,8 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                         
                         // bounce off walls but can't combine with left and right keys
                         if (event.key.keysym.scancode == SDL_SCANCODE_A) {
-                            Mix_PlayChannel (-1, bouncingWall, 0);
                             if (state.player.collidedLeft && !keys [SDL_SCANCODE_LEFT]) {
+                                Mix_PlayChannel (-1, bouncingWall, 0);
                                 state.player.velocity.y = 4.0f;
                                 state.player.acceleration.y = 1.0f;
                                 state.player.velocity.x = 1.5f;
@@ -299,6 +299,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                                 state.player.direction = 1.0f;
                             }
                             if (state.player.collidedRight && !keys[SDL_SCANCODE_RIGHT] ) {
+                                Mix_PlayChannel (-1, bouncingWall, 0);
                                 state.player.velocity.y = 4.0f;
                                 state.player.acceleration.y = 1.0f;
                                 state.player.velocity.x = -1.5f;

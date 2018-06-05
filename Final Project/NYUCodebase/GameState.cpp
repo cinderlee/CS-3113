@@ -491,7 +491,7 @@ void GameState::UpdatePlatforms (float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level += 3 ;
+    level ++;
     keyObtained = false;
     
     LoadLevel();
