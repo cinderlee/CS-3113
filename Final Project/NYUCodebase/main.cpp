@@ -348,7 +348,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                 }
                 
                 Mix_HaltMusic();
-                
+                Mix_FreeMusic(music);
                 music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
                 Mix_VolumeMusic(25);
                 Mix_PlayMusic (music, -1);
@@ -378,6 +378,7 @@ void ProcessEvents (SDL_Event& event, bool& done) {
                     viewY = state.mappy -> mapHeight * TILE_SIZE - 2.0;
                 }
                 Mix_HaltMusic();
+                Mix_FreeMusic(music);
                 music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/awesomeness.wav");
                 Mix_VolumeMusic(25);
                 Mix_PlayMusic (music, -1);
@@ -517,7 +518,7 @@ void Update (float elapsed, int& direction ){
                 nextStateEnd = true;
                 mode = STATE_GAME_LEVEL;
                 Mix_HaltMusic();
-                
+                Mix_FreeMusic(music);
                 music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/gameMusic.wav");
                 Mix_VolumeMusic(25);
                 Mix_PlayMusic (music, -1);
@@ -573,6 +574,7 @@ void Update (float elapsed, int& direction ){
                 alpha = 1.0f;
                 mode = STATE_GAME_OVER;
                 Mix_HaltMusic();
+                Mix_FreeMusic(music);
                 if (state.GetLives() == 0) {
                     music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/PianoLoop.wav");
                     Mix_VolumeMusic(40);
