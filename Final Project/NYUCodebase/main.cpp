@@ -16,8 +16,9 @@
 #include "GameState.h"
 #include <SDL_mixer.h>
 #include "ParticleEmitter.h"
-// In this platform, if you hit an enemy or spikes you return back to the beginning
-// In order to win, you must reach the end of the game and receive the key
+
+// Any collision with enemy results in starting back at level 1
+// Collect keys to unlock doors to the next world!
 
 ShaderProgram program;
 ShaderProgram unTextProgram;
@@ -562,7 +563,6 @@ void Update (float elapsed, int& direction ){
             }
             
             if (state.GetLevel () == 4) {
-                std::cout << alpha << std::endl;
                 state.nextLevel = false;
                 nextState = false;
                 nextStateEnd = true;
@@ -631,7 +631,12 @@ void mainRender () {
     DrawTexture (hillsThree, MAP_WIDTH/6 *0.3 + 2 * (MAP_WIDTH/3) * 0.3, -MAP_HEIGHT/2 * 0.3, MAP_WIDTH/3 * 0.3, MAP_HEIGHT * 0.3);
     state.Draw (&program);
     DrawWords (&program, textie, "Alien Invaders", 0.4, 0.0f, (viewX + (-0.5*0.4) + (14*0.4/2)), viewY - 0.5f);
-    DrawWords (&program, textie, "Press Space to Start", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (20*0.25/2), viewY + 0.5f );
+    DrawWords (&program, textie, "Press Space to Start", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (20*0.25/2), viewY );
+    DrawWords (&program, textie, "ARROWS  MOVE     ", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (17*0.25/2), viewY + 0.5f );
+    DrawWords (&program, textie, "A       WALL JUMP", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (17*0.25/2), viewY + 0.8f );
+    DrawWords (&program, textie, "B       BULLETS  ", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (17*0.25/2), viewY + 1.1f );
+    DrawWords (&program, textie, "Q       QUIT     ", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (17*0.25/2), viewY + 1.4f );
+    
     
     if (nextState) {
         DrawUnTexture(alpha);

@@ -60,19 +60,19 @@ type=spider
 location=63,15,1,1
 
 [Object Layer]
-type=spider
+type=enemyWalking
 location=86,10,1,1
 
 [Object Layer]
-type=spider
+type=enemyWalking
 location=73,8,1,1
 
 [Object Layer]
-type=spider
+type=enemyWalking
 location=96,12,1,1
 
 [Object Layer]
-type=spider
+type=enemyWalking
 location=74,19,1,1
 
 [Object Layer]

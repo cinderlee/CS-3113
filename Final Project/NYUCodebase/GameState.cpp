@@ -178,14 +178,11 @@ void GameState::LoadLevel () {
         if (mappy -> entities [index].type == "plantBlue") {
             powerUp.push_back (Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 961/1024.0f, 949/1024.0f, 29/1024.0f, 55/1024.0f, TILE_SIZE, TILE_SIZE));
             powerUp [powerUp.size () - 1].type = "plantBlue";
-            //partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
         }
         
         if (mappy -> entities [index].type == "plantGreen") {
             powerUp.push_back (Entity (spritePlayer, (mappy -> entities[index].x + 0.5f) * TILE_SIZE, (mappy -> entities[index].y + 0.5f) * -1 * TILE_SIZE, 0.0f, 963/1024.0f, 194/1024.0f, 26/1024.0f, 50/1024.0f, TILE_SIZE, TILE_SIZE));
-            //963"    y="194"    width="26"    height="50
             powerUp[powerUp.size () - 1].type = "plantGreen";
-            //partSystem.ResetLocations(powerUp.position.x, powerUp.position.y);
         }
         
         // platforms for level 3
@@ -325,28 +322,66 @@ void GameState::UpdateEnemyMovement(float elapsed) {
         // smasher AIS
         if (enemies [index].type == "smasher") {
             
-            // if player in range, update velocity
-            if (enemies [index].DistanceTo(&player) <= 1.5f && enemies [index].velocity.y == 0.0f) {
-                enemies[index].velocity.y = -2.0f;
+            if (level == 1 || level == 2) {
+                if (enemies [index].DistanceTo(&player) <= 1.5f && enemies [index].velocity.y <= 0.0f) {
+                    enemies[index].velocity.y = -2.0f;
+                }
+                
+                enemies[index].position.y += enemies[index].velocity.y * elapsed;
+                
+                int TileX;
+                int TileTopY;
+                int TileBottomY;
+                
+                bool top = false;
+                bool bottom = false;
+                
+                // calculate the above Tile values
+                enemies[index].worldToTileCoordinates(enemies[index].position.x, enemies[index].position.y - enemies[index].sizeEnt.y/2, &TileX, &TileBottomY);
+                enemies[index].worldToTileCoordinates(enemies[index].position.x, enemies[index].position.y + enemies[index].sizeEnt.y/2 , &TileX, &TileTopY);
+                
+                for (int x: solidTiles) {
+                    if (x == mappy -> mapData [TileBottomY][TileX] - 1) {
+                        bottom = true;
+                    }
+                    if (x == mappy -> mapData [TileTopY] [TileX] - 1) {
+                        top = true;
+                    }
+                }
+                
+                // if end of a road, reverse
+                if ( bottom ) {
+                    enemies [index].velocity.y = 0.5f;
+                }
+                
+                if (top) {
+                    enemies [index].velocity.y = 0.0f;
+                }
             }
             
-            // update position
-            enemies [index].position.y += enemies [index].velocity.y * elapsed;
-            
-            // bottom boundary
-            if (enemies [index].position.y <= (20 + 0.5) * -TILE_SIZE &&
-                enemies [index].velocity.y < 0) {
-                enemies [index].position.y = (20 + 0.5) * -TILE_SIZE;
-                enemies [index].velocity.y = 0.5f;
+            if (level == 3 ) {
+                // if player in range, update velocity
+                if (enemies [index].DistanceTo(&player) <= 1.5f && enemies [index].velocity.y == 0.0f) {
+                    enemies[index].velocity.y = -2.0f;
+                }
+                
+                // update position
+                enemies [index].position.y += enemies [index].velocity.y * elapsed;
+                
+                // bottom boundary
+                if (enemies [index].position.y <= (20 + 0.5) * -TILE_SIZE &&
+                    enemies [index].velocity.y < 0) {
+                    enemies [index].position.y = (20 + 0.5) * -TILE_SIZE;
+                    enemies [index].velocity.y = 0.5f;
+                }
+                
+                // top boundary
+                if (enemies [index].position.y >= (15 + 0.5) * -TILE_SIZE &&
+                    enemies [index].velocity.y > 0) {
+                    enemies [index].position.y = (15 + 0.5) * -TILE_SIZE;
+                    enemies [index].velocity.y = 0.0f;
+                }
             }
-            
-            // top boundary
-            if (enemies [index].position.y >= (15 + 0.5) * -TILE_SIZE &&
-                enemies [index].velocity.y > 0) {
-                enemies [index].position.y = (15 + 0.5) * -TILE_SIZE;
-                enemies [index].velocity.y = 0.0f;
-            }
-            
         }
     }
     
@@ -359,6 +394,7 @@ void GameState::UpdateEnemyMovement(float elapsed) {
                     enemies [index].velocity.x *= -1;
                     enemies [index].direction *= -1;
                 }
+                
             }
         }
     
@@ -485,7 +521,7 @@ void GameState::Draw (ShaderProgram* program) {
 
 
 bool GameState::shouldRemoveBullet (Entity thing) {
-    return (! (thing.active)  || thing.distance >= 1.0f );
+    return (! (thing.active)  || thing.distance >= 0.5f );
 }
 
 // checking for any collisions in game between entities
@@ -510,14 +546,16 @@ void GameState::CollisionEntities () {
     
     for (size_t index = 0 ; index < playerBullets.size () ; index++) {
         for (int enemy = 0; enemy < enemies.size (); enemy++) {
-            
-            // collision between enemy and player bullet
-            if ( ( enemies [enemy].type != "ghost" || enemies [enemy].type != "smasher") && ( (level == 1 && player.type == "playerBlue") || (level == 2 && player.type == "playerGreen") || (level == 3 && player.type == "playerRed") ) ){
-                if (playerBullets [index].Collision(& (enemies[enemy])) && enemies[enemy].active && enemies [enemy].active && playerBullets[index].active) {
+            if (playerBullets [index].Collision(& (enemies[enemy])) && enemies[enemy].active && enemies [enemy].active && playerBullets[index].active) {
+                // collision between enemy and player bullet
+                if ( ( enemies [enemy].type != "ghost" && enemies [enemy].type != "smasher") && ( (level == 1 && player.type == "playerBlue") || (level == 2 && player.type == "playerGreen") || (level == 3 && player.type == "playerRed") ) ){
                     enemies[enemy].active = false;
                     
                     playerBullets [index].active = false;
                     break;
+                }
+                else {
+                    playerBullets [index].active = false;
                 }
             }
         }
@@ -570,12 +608,12 @@ void GameState::CollisionEntities () {
         if (!lives) {
             level = 4;
             nextLevel = true;
+            LoadLevel();
         }
         else {
             level = 1;
+            death = true;
         }
-        //nextLevel = true;
-        LoadLevel();
     }
 }
 
@@ -621,11 +659,6 @@ void GameState::CollisionX () {
         }
         player.collidedLeft = true;
     }
-    
-//    for (int i = 0; i < platforms.size (); i++ ) {
-//        player.CollisionPlatformX (&platforms[i]);
-//    }
-    
     
 }
 
@@ -691,6 +724,19 @@ void GameState::CollisionY () {
                 player.position.y = platforms[i].position.y - platforms[i].sizeEnt.y/2 - player.sizeEnt.y/2 ;
                 player.collidedTop = true;
                 player.velocity.y = -1.0f;
+            }
+            
+            if (player.collidedBottom && player.collidedTop) {
+                lives--;
+                keyObtained = false;
+                if (!lives ) {
+                    level = 4;
+                    LoadLevel();
+                }
+                else {
+                    level = 1;
+                    death = true;
+                }
             }
         }
     }
