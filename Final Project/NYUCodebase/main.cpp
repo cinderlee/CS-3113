@@ -575,10 +575,14 @@ void Update (float elapsed, int& direction ){
                 mode = STATE_GAME_OVER;
                 Mix_HaltMusic();
                 Mix_FreeMusic(music);
+                
+                // sad song
                 if (state.GetLives() == 0) {
                     music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/PianoLoop.wav");
                     Mix_VolumeMusic(40);
                 }
+                
+                // winning song
                 else {
                     music = Mix_LoadMUS(RESOURCE_FOLDER"Resources/SummerSunday.wav");
                     Mix_VolumeMusic(40);
