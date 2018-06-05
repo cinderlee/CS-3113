@@ -123,7 +123,6 @@ void GameState::LoadLevel () {
         // walking enemy - enemyGround
         if (mappy -> entities [index].type == "enemyWalking" ) {
             enemies.push_back (Entity (spritePlayer, (mappy -> entities [index].x + 0.5) * TILE_SIZE, (mappy -> entities[index].y + 0.5) * -1 * TILE_SIZE, 0.0f, 928.0f/1024.0f, 949/1024.0f, 32/1024.0f, 44/1024.0f, TILE_SIZE, TILE_SIZE));
-            //928"    y="949"    width="32"    height="44
             enemies [enemies.size () - 1].velocity.x = 0.5f;
             enemies[enemies.size () - 1].type = "enemyGround";
         }
@@ -297,9 +296,21 @@ void GameState::UpdateEnemyMovement(float elapsed) {
                 //adjust velocities based on value of distances
                 if ( x < 0 ) {
                     enemies [index].velocity.x = 0.5f;
+                    if (enemies [index].type == "enemyAir") {
+                        enemies [index].direction = 1.0;
+                    }
+                    else {
+                        enemies [index].direction = -1.0f;
+                    }
                 }
                 else if (x > 0){
                     enemies [index].velocity.x = -0.5f;
+                    if (enemies [index].type == "enemyAir") {
+                        enemies [index].direction = -1.0;
+                    }
+                    else {
+                        enemies [index].direction = 1.0f;
+                    }
                 }
                 else {
                     enemies [index].velocity.x = 0.0f;
@@ -480,7 +491,7 @@ void GameState::UpdatePlatforms (float elapsed) {
 // update when player can move on to next level
 void GameState::UpdateLevel() {
     
-    level ++ ;
+    level += 3 ;
     keyObtained = false;
     
     LoadLevel();
@@ -756,6 +767,8 @@ void GameState::shootPlayerBullet(int sprites) {
     if (player.type == "playerGreen") {
         playerBullet = Entity (sprites, 0.0f, -1.5f, 0.0f, 849/1024.0f, 310/1024.0f, 9.0f/1024.0f, 54.0f/1024.0f, 0.3f, 0.3f);
     }
+    
+    // initializing bullet properties
     playerBullet.active = true;
     if (player.direction == 1) {
         playerBullet.position.x = player.position.x + player.sizeEnt.x;

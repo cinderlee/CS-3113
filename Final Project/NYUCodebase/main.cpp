@@ -19,6 +19,9 @@
 
 // Any collision with enemy results in starting back at level 1
 // Collect keys to unlock doors to the next world!
+// In red world, enemies can only be defeated by blue player
+// In blue world, enemies can only be defeated by green player
+// In green world, enemies can only be defeated by red player
 
 ShaderProgram program;
 ShaderProgram unTextProgram;
@@ -680,8 +683,8 @@ void gameRender () {
     }
 }
 
+// render game over
 void gameOverRender () {
-    
     viewMatrix.Identity();
     viewMatrix.SetPosition(viewX, viewY, 0.0f);
     program.SetViewMatrix(viewMatrix);
@@ -710,6 +713,7 @@ void gameOverRender () {
     }
     DrawWords (&program, textie, "Press R to Play Again", 0.25f, 0.0f, viewX + (-0.5f*0.25) + (21*0.25/2), viewY + 0.5f );
     
+    // draw fireworks only if you won
     if (state.GetLives()) {
         modelMatrix.Identity();
         program.SetModelMatrix(modelMatrix);
@@ -815,6 +819,7 @@ void DrawTexture (int textureID, float x, float y, float width, float height) {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
+// draw the black rectangle fading in and fading out
 void DrawUnTexture (float alpha) {
     unTextProgram.SetColor (0.0, 0.0, 0.0, 0.0);
     unTextProgram.SetAlpha (alpha);
