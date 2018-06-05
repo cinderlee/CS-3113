@@ -36,7 +36,7 @@ public:
     Vector3 gravity = Vector3 (0.0f, 0.0f, 0.0f);
     
     float rotation = 0.0f;
-    float distance = 1.0f;
+    float distance = 0.0f;
     float direction = 1.0f;
     SheetSprite sprite;
     bool collidedTop = false;

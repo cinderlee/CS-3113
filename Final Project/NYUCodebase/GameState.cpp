@@ -240,7 +240,12 @@ void GameState::Update (float elapsed) {
     // update bullets
     for (int i = 0; i < playerBullets.size (); i++) {
         playerBullets[i].position.x += playerBullets [i].velocity.x * elapsed;
-        playerBullets[i].distance += playerBullets [i].velocity.x * elapsed;
+        if (playerBullets [i].velocity.x > 0) {
+            playerBullets[i].distance += playerBullets [i].velocity.x * elapsed;
+        }
+        else {
+            playerBullets[i].distance += -playerBullets [i].velocity.x * elapsed;
+        }
     }
     UpdatePlants(elapsed);
     UpdatePlatforms (elapsed);

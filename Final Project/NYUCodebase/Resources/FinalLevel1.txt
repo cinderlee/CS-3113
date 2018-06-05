@@ -107,5 +107,5 @@ location=42,7,1,1
 
 [Object Layer]
 type=enemyFlying
-location=18,6,1,1
+location=17,5,1,1
 
