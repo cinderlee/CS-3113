@@ -537,7 +537,7 @@ void GameState::Draw (ShaderProgram* program) {
 
 
 bool GameState::shouldRemoveBullet (Entity thing) {
-    return (! (thing.active)  || thing.distance >= 0.5f );
+    return (! (thing.active)  || thing.distance >= 0.75f );
 }
 
 // checking for any collisions in game between entities
